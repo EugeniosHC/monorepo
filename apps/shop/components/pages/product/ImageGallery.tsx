@@ -39,47 +39,50 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
 
     // Usar uma ref para acessar o valor atual de activeImageIndex dentro do event listener
     const activeIndexRef = useRef(activeImageIndex);
-    
+
     // Atualizar a ref sempre que activeImageIndex mudar
     activeIndexRef.current = activeImageIndex;
 
     const handleScroll = () => {
       if (!carouselRef.current) return;
-      
+
       const scrollLeft = carouselRef.current.scrollLeft;
       const itemWidth = carouselRef.current.offsetWidth;
       const index = Math.round(scrollLeft / itemWidth);
-      
+
       // Usar a ref para comparar, evitando dependência no closure
       if (index !== activeIndexRef.current) {
         setActiveImageIndex(index);
       }
-    };    const carouselElement = carouselRef.current;
-    carouselElement.addEventListener('scroll', handleScroll);
-    
+    };
+
+    const carouselElement = carouselRef.current;
+
+    carouselElement.addEventListener("scroll", handleScroll);
+
     return () => {
-      carouselElement.removeEventListener('scroll', handleScroll);
+      carouselElement.removeEventListener("scroll", handleScroll);
     };
   }, [isMobile]); // Removido activeImageIndex das dependências
 
   // Função para navegar para uma imagem específica
   const navigateToImage = (index: number) => {
     if (!carouselRef.current) return;
-    
+
     const newIndex = Math.max(0, Math.min(index, allImages.length - 1));
     const targetScrollPosition = newIndex * carouselRef.current.offsetWidth;
-    
+
     carouselRef.current.scrollTo({
       left: targetScrollPosition,
-      behavior: 'smooth'
+      behavior: "smooth",
     });
-    
+
     setActiveImageIndex(newIndex);
   };
 
   // Funções de navegação
   const goToPrevious = () => navigateToImage(activeImageIndex - 1);
-  const goToNext = () => navigateToImage(activeImageIndex + 1);  // Estado de carregamento - exibe um skeleton enquanto determina o layout
+  const goToNext = () => navigateToImage(activeImageIndex + 1); // Estado de carregamento - exibe um skeleton enquanto determina o layout
   if (!isMediaQueryReady) {
     return (
       <div className="w-full">
@@ -100,16 +103,14 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
     <div className="relative">
       {isMobile ? (
         // Carrossel horizontal para mobile
-        <div 
+        <div
           ref={carouselRef}
           className="w-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >          {allImages.map((img, idx) => (
-            <div
-              key={idx}
-              className="flex-shrink-0 w-full snap-start carousel-item"
-              style={{ flex: '0 0 100%' }}
-            >
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {" "}
+          {allImages.map((img, idx) => (
+            <div key={idx} className="flex-shrink-0 w-full snap-start carousel-item" style={{ flex: "0 0 100%" }}>
               <div className="aspect-[4/3] rounded-xl overflow-hidden border">
                 <Image
                   src={img.src}
@@ -146,11 +147,11 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
           ))}
         </motion.div>
       )}
-      
+
       {/* Controles de navegação para mobile */}
       {isMobile && allImages.length > 1 && (
         <div className="absolute bottom-4 right-4 flex gap-2 bg-white/80 backdrop-blur-sm rounded-full shadow-md">
-          <button 
+          <button
             onClick={goToPrevious}
             className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors"
             aria-label="Imagem anterior"
@@ -159,7 +160,7 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
           >
             <ChevronLeft size={24} className={activeImageIndex === 0 ? "text-gray-400" : ""} />
           </button>
-          <button 
+          <button
             onClick={goToNext}
             className="p-2 text-primary hover:bg-primary/10 rounded-full transition-colors"
             aria-label="Próxima imagem"
@@ -170,7 +171,7 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
           </button>
         </div>
       )}
-      
+
       {/* Indicadores de slides para mobile */}
       {isMobile && allImages.length > 1 && (
         <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
@@ -179,9 +180,7 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
               key={idx}
               onClick={() => navigateToImage(idx)}
               className={`w-2 h-2 rounded-full transition-all ${
-                idx === activeImageIndex 
-                  ? "bg-primary w-3" 
-                  : "bg-gray-300"
+                idx === activeImageIndex ? "bg-primary w-3" : "bg-gray-300"
               }`}
               aria-label={`Ir para imagem ${idx + 1}`}
               type="button"
