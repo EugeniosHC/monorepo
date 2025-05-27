@@ -1,0 +1,48 @@
+// schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id          String     @id @default(uuid())
+  name        String
+  price       Float
+  description String
+  duration    String?
+  imageUrl    String
+  categories  Category[] @relation("CategoryToProduct")
+}
+
+model Category {
+  id              String    @id @default(uuid())
+  name            String
+  slug            String    @unique
+  title           String
+  subtitle        String
+  description     String
+  helpDescription String
+  imageUrl        String
+  sections        Section[] @relation("CategoryToSection")
+  products        Product[] @relation("CategoryToProduct")
+}
+
+model Section {
+  id         String     @id @default(uuid())
+  title      String
+  content    String
+  categories Category[] @relation("CategoryToSection")
+}

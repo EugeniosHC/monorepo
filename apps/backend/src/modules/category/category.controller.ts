@@ -1,0 +1,116 @@
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Body,
+  Put,
+  Delete,
+  UseInterceptors,
+  UploadedFile,
+  UseGuards,
+} from '@nestjs/common';
+import { Category, CategoryWithMinPrice } from 'src/types';
+import { CategoryService } from './category.service';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UpdateCategoryDto } from './dto/update-category.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+
+@Controller('category')
+export class CategoryController {
+  constructor(private readonly categoryService: CategoryService) {}
+
+  @Get()
+  async getAllCategories(): Promise<Category[] | null> {
+    return this.categoryService.getAllCategories();
+  }
+
+  @Get(':slug')
+  async getCategoryBySlug(
+    @Param('slug') slug: string,
+  ): Promise<Category | null> {
+    return this.categoryService.getCategoryBySlug(slug);
+  }
+
+  @Get('related/:slug')
+  async getRelatedCategories(
+    @Param('slug') slug: string,
+  ): Promise<CategoryWithMinPrice[] | null> {
+    return this.categoryService.getRelatedCategories(slug);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  async createCategory(
+    @Body() createCategoryDto: CreateCategoryDto,
+  ): Promise<Category> {
+    return this.categoryService.createCategory(createCategoryDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('/:slug')
+  async updateCategory(
+    @Param('slug') slug: string,
+    @Body() updateCategoryDto: UpdateCategoryDto,
+  ): Promise<Category> {
+    return this.categoryService.updateCategory(slug, updateCategoryDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('/:slug')
+  async deleteCategory(@Param('slug') slug: string): Promise<void> {
+    return this.categoryService.deleteCategory(slug);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('add-product')
+  async addProductToCategory(
+    @Body() addProductToCategoryDto: { categoryId: string; productId: string },
+  ): Promise<Category> {
+    return this.categoryService.addProductToCategory(
+      addProductToCategoryDto.categoryId,
+      addProductToCategoryDto.productId,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('remove-product')
+  async removeProductFromCategory(
+    @Body()
+    removeProductFromCategoryDto: {
+      categoryId: string;
+      productId: string;
+    },
+  ): Promise<Category> {
+    return this.categoryService.removeProductFromCategory(
+      removeProductFromCategoryDto.categoryId,
+      removeProductFromCategoryDto.productId,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('add-section')
+  async addSectionToCategory(
+    @Body() addSectionToCategoryDto: { categoryId: string; sectionId: string },
+  ): Promise<Category> {
+    return this.categoryService.addSectionToCategory(
+      addSectionToCategoryDto.categoryId,
+      addSectionToCategoryDto.sectionId,
+    );
+  }
+  @UseGuards(JwtAuthGuard)
+  @Post('remove-section')
+  async removeSectionFromCategory(
+    @Body()
+    removeSectionFromCategoryDto: {
+      categoryId: string;
+      sectionId: string;
+    },
+  ): Promise<Category> {
+    return this.categoryService.removeSectionFromCategory(
+      removeSectionFromCategoryDto.categoryId,
+      removeSectionFromCategoryDto.sectionId,
+    );
+  }
+}
