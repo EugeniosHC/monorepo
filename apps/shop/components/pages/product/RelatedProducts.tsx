@@ -10,6 +10,14 @@ interface RelatedProductsProps {
   title?: string;
 }
 
+/**
+ * Displays a list of related product categories as either a responsive grid or a horizontal carousel, adapting the layout based on the number of categories.
+ *
+ * Renders each category as a card with an image, name, and minimum price, linking to the respective product page. If there are more than four categories, navigation arrows and horizontal scrolling are enabled for carousel navigation. The component ensures accessibility for navigation controls and adapts dynamically to window resizing.
+ *
+ * @param categories - Array of category objects to display.
+ * @param title - Optional section title. Defaults to "TAMBÉM PODERÁ GOSTAR".
+ */
 export default function RelatedProducts({ categories, title = "TAMBÉM PODERÁ GOSTAR" }: RelatedProductsProps) {
   const isCarousel = categories.length > 4;
   const scrollContainerRef = useRef<HTMLDivElement>(null);

@@ -4,6 +4,11 @@ import { Typography } from "@eugenios/ui/components/ui/Typography";
 import Image from "next/image";
 import Link from "next/link";
 
+/**
+ * Renders a full-height banner section with a background image, gradient overlays, and animated heading and link.
+ *
+ * The section displays a visually prominent hero area with a background image, dark overlays for contrast, a bold heading, and a styled link that animates on hover. Content is centered on small screens and left-aligned on larger screens.
+ */
 export default function BannerSection() {
   return (
     <section className="relative h-[90svh]">

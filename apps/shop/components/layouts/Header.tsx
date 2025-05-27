@@ -10,6 +10,13 @@ import { SearchResults } from "@/components/ui/SearchResults";
 import { MobileSearchOverlay } from "@/components/ui/MobileSearchOverlay";
 import { Search } from "lucide-react";
 
+/**
+ * Renders a responsive header with dynamic background, search, and cart functionality.
+ *
+ * The header adapts its appearance based on scroll position and direction, hiding itself when scrolling down and reappearing when scrolling up. It provides mobile and desktop search interfaces, displays a cart button, and conditionally shows a mobile search overlay with results.
+ *
+ * @remark The header is hidden with a vertical translation when the user scrolls down past 100 pixels, unless the mobile search is active.
+ */
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isScrollingDown, setIsScrollingDown] = useState(false);

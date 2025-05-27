@@ -2,6 +2,12 @@ import { Card, CardContent } from "@eugenios/ui/components/card";
 import { Typography } from "@eugenios/ui/src/components/ui/Typography";
 import { Star } from "lucide-react";
 
+/**
+ * Displays a section with customer reviews, including a heading and three identical testimonial cards.
+ *
+ * Each card features a five-star rating, a fixed testimonial text, and reviewer details.
+ * The layout is responsive, showing one column on small screens and three columns on medium and larger screens.
+ */
 export default function Reviews() {
   return (
     <>

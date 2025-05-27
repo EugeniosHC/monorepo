@@ -13,6 +13,12 @@ import Reviews from "@/components/pages/product/Reviews";
 import PageSection from "@eugenios/ui/src/components/ui/PageSection";
 import { Typography } from "@eugenios/ui/src/components/ui/Typography";
 
+/**
+ * Generates metadata for a product category page, including title, description, and Open Graph tags.
+ *
+ * @param name - The name of the product category.
+ * @returns An object containing metadata for the page and Open Graph social sharing.
+ */
 export async function generateMetadata(name: string) {
   return {
     title: `EugéniosHC - ${name}`,
@@ -24,6 +30,13 @@ export async function generateMetadata(name: string) {
   };
 }
 
+/**
+ * Renders the product category details page as a React client component.
+ *
+ * Fetches and displays category data and related categories based on the provided slug. Handles loading and error states, and renders product images, title, subtitle, ratings, purchase options, description, client support, reviews, related products, and detailed product information sections.
+ *
+ * @param slug - The unique identifier for the product category to display.
+ */
 export function CategoryDataClient({ slug }: { slug: string }) {
   const { data: categoryData, isLoading, isError, error } = useCategoryDataBySlug(slug);
   const { data: relatedCategories } = useRelatedCategories(slug);

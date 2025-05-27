@@ -12,6 +12,13 @@ interface ImageGalleryProps {
   CategoryData: Category;
 }
 
+/**
+ * Displays a responsive image gallery for a category, adapting layout and navigation for mobile and desktop.
+ *
+ * On mobile devices, renders a horizontally scrollable carousel with snap points, navigation buttons, and slide indicators. On desktop, displays a vertical list of images with hover animations. Shows a loading skeleton until the layout is determined.
+ *
+ * @param CategoryData - The category data containing the main image and associated product images to display in the gallery.
+ */
 export function ImageGallery({ CategoryData }: ImageGalleryProps) {
   const [isMediaQueryReady, setIsMediaQueryReady] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");

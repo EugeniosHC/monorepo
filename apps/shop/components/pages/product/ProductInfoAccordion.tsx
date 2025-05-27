@@ -11,6 +11,15 @@ interface ProductInfoAccordionProps {
   subtitle?: string;
 }
 
+/**
+ * Displays product information in an accordion layout with optional title and subtitle.
+ *
+ * Renders each provided section as a collapsible accordion item. If no sections are available, displays a fallback message.
+ *
+ * @param sections - Array of product information sections to display.
+ * @param title - Main heading displayed above the accordion. Defaults to "INFORMAÇÕES DO PRODUTO".
+ * @param subtitle - Subtitle displayed below the title. Defaults to "Detalhes importantes".
+ */
 export default function ProductInfoAccordion({
   sections,
   title = "INFORMAÇÕES DO PRODUTO",

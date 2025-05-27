@@ -14,6 +14,13 @@ interface ImageCarouselProps {
   }[];
 }
 
+/**
+ * Displays a responsive, animated image carousel with navigation controls.
+ *
+ * Shows a sliding window of images, adapting the number of visible images based on screen size (1 on mobile, 3 on larger screens). Users can navigate through the images using previous and next buttons, which are disabled at the boundaries. Images are rendered with animated transitions for smooth appearance and removal.
+ *
+ * @param images - Array of image objects, each containing a `src` URL and `alt` text, to display in the carousel.
+ */
 export default function ImageCarousel({ images }: ImageCarouselProps) {
   const [index, setIndex] = useState(0);
   const isMobile = useMediaQuery("(max-width: 768px)");

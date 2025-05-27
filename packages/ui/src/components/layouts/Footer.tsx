@@ -15,6 +15,11 @@ export type FooterProps = {
   }>;
 };
 
+/**
+ * Renders the website footer with newsletter subscription, social media links, contact information, address, opening hours, and legal links.
+ *
+ * @param ImageComponent - A React component used to render the logo image in the footer.
+ */
 export default function Footer({ ImageComponent }: FooterProps) {
   const { isMobile } = useIsMobile();
   const currentYear = new Date().getFullYear();
