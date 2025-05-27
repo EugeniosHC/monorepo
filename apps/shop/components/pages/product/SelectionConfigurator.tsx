@@ -8,7 +8,7 @@ import { Button } from "@eugenios/ui/components/button"; // Ajuste o caminho
 import { Category, Product } from "@eugenios/types";
 import { useCartStore } from "@/store/cartStore";
 import { CartProduct } from "@/store/cartStore"; // Ajuste o caminho para o tipo CartProduct
-import { Typography } from "@eugenios/ui/src/components/ui/Typography";
+import { Typography } from "@eugenios/ui/components/ui/Typography";
 
 interface SelectionConfiguratorProps {
   categoryData: Category; // Usar o tipo correto para a configuração de seleção
@@ -130,7 +130,7 @@ const SelectionConfigurator: React.FC<SelectionConfiguratorProps> = ({ categoryD
                     onClick={() => (!selected ? handleOptionClick(product.id) : handleOptionClick(product.id))}
                   >
                     <div className="flex flex-col">
-                      <Typography as="a" variant="body" className="font-medium">
+                      <Typography as="h5" variant="body" className="font-medium">
                         {product.name}
                       </Typography>
                       <p className="text-sm text-muted-foreground">{product.description}</p>

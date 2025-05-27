@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Section } from "@eugenios/types";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@eugenios/ui/components/accordion";
-import { Typography } from "@eugenios/ui/src/components/ui/Typography";
+import { Typography } from "@eugenios/ui/components/ui/Typography";
 
 interface ProductInfoAccordionProps {
   sections?: Section[];

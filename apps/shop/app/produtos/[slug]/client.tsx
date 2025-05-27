@@ -11,7 +11,7 @@ import ClientSupportSection from "@/components/sections/ClientSupportSection";
 import Breadcrumb from "@/components/pages/product/Breadcrumb";
 import Reviews from "@/components/pages/product/Reviews";
 import PageSection from "@eugenios/ui/src/components/ui/PageSection";
-import { Typography } from "@eugenios/ui/src/components/ui/Typography";
+import { Typography } from "@eugenios/ui/components/ui/Typography";
 
 export async function generateMetadata(name: string) {
   return {
@@ -91,7 +91,7 @@ export function CategoryDataClient({ slug }: { slug: string }) {
             <SelectionConfigurator categoryData={categoryData} />
 
             <div className="mt-8">
-              <p className="text-sm text-muted-foreground over">{categoryData.description}</p>
+              <p className="text-sm text-muted-foreground">{categoryData.description}</p>
             </div>
           </div>
         </div>

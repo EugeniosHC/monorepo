@@ -37,7 +37,7 @@ export default function Header() {
       // Lógica para mostrar/esconder o header baseado na direção do scroll
       if (currentScrollY > lastScrollY) {
         // Scroll para baixo - esconde o header (exceto no topo da página)
-        if (currentScrollY > 100) {
+        if (currentScrollY > 200) {
           setIsScrollingDown(true);
         }
       } else {

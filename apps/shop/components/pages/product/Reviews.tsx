@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@eugenios/ui/components/card";
-import { Typography } from "@eugenios/ui/src/components/ui/Typography";
+import { Typography } from "@eugenios/ui/components/ui/Typography";
 import { Star } from "lucide-react";
 
 export default function Reviews() {

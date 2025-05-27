@@ -33,10 +33,15 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
   useEffect(() => {
     setIsMediaQueryReady(true);
   }, [isMobile]);
-
   // Efeito para rastrear mudanças na posição de rolagem
   useEffect(() => {
     if (!isMobile || !carouselRef.current) return;
+
+    // Usar uma ref para acessar o valor atual de activeImageIndex dentro do event listener
+    const activeIndexRef = useRef(activeImageIndex);
+    
+    // Atualizar a ref sempre que activeImageIndex mudar
+    activeIndexRef.current = activeImageIndex;
 
     const handleScroll = () => {
       if (!carouselRef.current) return;
@@ -45,18 +50,17 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
       const itemWidth = carouselRef.current.offsetWidth;
       const index = Math.round(scrollLeft / itemWidth);
       
-      if (index !== activeImageIndex) {
+      // Usar a ref para comparar, evitando dependência no closure
+      if (index !== activeIndexRef.current) {
         setActiveImageIndex(index);
       }
-    };
-
-    const carouselElement = carouselRef.current;
+    };    const carouselElement = carouselRef.current;
     carouselElement.addEventListener('scroll', handleScroll);
     
     return () => {
       carouselElement.removeEventListener('scroll', handleScroll);
     };
-  }, [isMobile, activeImageIndex]);
+  }, [isMobile]); // Removido activeImageIndex das dependências
 
   // Função para navegar para uma imagem específica
   const navigateToImage = (index: number) => {
