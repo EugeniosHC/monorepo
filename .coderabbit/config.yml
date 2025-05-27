@@ -1,0 +1,20 @@
+# .coderabbit/config.yml
+
+review:
+  language: pt # Comentários em português
+  tone: friendly
+  strictness: medium
+  max_comments: 20
+  summarize: true
+  auto_respond: true
+  comment_suggestions: true
+
+rules:
+  - name: "Não permitir código comentado"
+    pattern: "//.*|#.*"
+    message: "Evita deixar código comentado no repositório."
+
+exclude:
+  files:
+    - "*.md"
+    - "docs/**"

@@ -12,7 +12,7 @@ export function Logo({ hasHeaderBackground, isMobileSearchActive }: LogoProps) {
   return (
     <Link href="/" className={`flex items-center gap-2 py-4 ${isMobileSearchActive ? "hidden" : ""} md:flex`}>
       <Image
-        src={hasHeaderBackground ? "/logos/blue.svg" : "/logos/white.svg"}
+        src={hasHeaderBackground ? "/images/logos/blue.svg" : "/images/logos/white.svg"}
         alt="Eugénios HC Logo"
         width={50}
         height={50}
