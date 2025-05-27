@@ -64,7 +64,7 @@ export function CategoryDataClient({ slug }: { slug: string }) {
 
   return (
     <>
-      <PageSection className="md:pt-36 mb-12">
+      <PageSection className="md:pt-36 mb-12" id="product-details">
         <Breadcrumb categoryName={categoryData.name} />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Coluna da Esquerda (Imagens do Produto) */}
@@ -104,27 +104,26 @@ export function CategoryDataClient({ slug }: { slug: string }) {
         </div>
       </PageSection>
 
-      <section className="container mt-8 px-8 mb-12">
+      <PageSection className="mt-8 mb-12" id="Suporte">
         <ClientSupportSection />
-      </section>
+      </PageSection>
 
-      <section className="container mt-16 px-8 mb-12">
+      <PageSection className="mt-16 mb-12" id="reviews">
         <Reviews />
-      </section>
+      </PageSection>
 
       {relatedCategories && relatedCategories.length > 0 && (
-        <section className="container mb-24 px-8">
-          {" "}
+        <PageSection className="mb-24 ">
           <RelatedProducts categories={relatedCategories} />
-        </section>
+        </PageSection>
       )}
-      <section className="container mb-24 px-8">
+      <PageSection className="mb-24">
         <ProductInfoAccordion
           sections={categoryData.sections}
           title="INFORMAÇÕES DO PRODUTO"
           subtitle="Detalhes importantes"
         />
-      </section>
+      </PageSection>
     </>
   );
 }
