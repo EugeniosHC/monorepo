@@ -8,6 +8,7 @@ import { Button } from "@eugenios/ui/components/button"; // Ajuste o caminho
 import { Category, Product } from "@eugenios/types";
 import { useCartStore } from "@/store/cartStore";
 import { CartProduct } from "@/store/cartStore"; // Ajuste o caminho para o tipo CartProduct
+import { Typography } from "@eugenios/ui/components/ui/Typography";
 
 interface SelectionConfiguratorProps {
   categoryData: Category; // Usar o tipo correto para a configuração de seleção
@@ -75,11 +76,10 @@ const SelectionConfigurator: React.FC<SelectionConfiguratorProps> = ({ categoryD
       return sum + product.price * quantity;
     }, 0);
   };
-
   const handleAddToCart = () => {
     // Cria a lista de itens para adicionar ao carrinho, incluindo a quantidade
     const selectedItems = Object.keys(selectedQuantities)
-      .filter((optionId) => selectedQuantities[optionId] > 0) // Filtra apenas as opções com quantidade > 0
+      .filter((optionId) => (selectedQuantities[optionId] || 0) > 0) // Filtra apenas as opções com quantidade > 0
       .map((optionId) => {
         const product = categoryData.products?.find((prod) => prod.id === optionId);
         if (!product) return null; // Deve ser encontrado, mas safety check
@@ -91,13 +91,11 @@ const SelectionConfigurator: React.FC<SelectionConfiguratorProps> = ({ categoryD
     if (selectedItems.length === 0) {
       alert("Por favor, selecione pelo menos uma opção.");
       return;
-    }
-
-    // Add each selected product to cart individually
+    } // Add each selected product to cart individually
     selectedItems.forEach((product) => {
       const cartProduct: CartProduct = {
         ...product,
-        quantity: selectedQuantities[product.id],
+        quantity: selectedQuantities[product.id] || 0,
       };
 
       addToCart(cartProduct);
@@ -108,11 +106,11 @@ const SelectionConfigurator: React.FC<SelectionConfiguratorProps> = ({ categoryD
     });
   };
 
-  const isOptionSelected = (optionId: string) => selectedQuantities[optionId] > 0;
+  const isOptionSelected = (optionId: string) => (selectedQuantities[optionId] || 0) > 0;
   const getOptionQuantity = (optionId: string) => selectedQuantities[optionId] || 0;
 
   return (
-    <div className="bg-slate-50 p-6 rounded-lg mb-6">
+    <div className="bg-slate-100 p-6 rounded-lg mb-6">
       {categoryData.helpDescription && <p className="font-medium mb-4">{categoryData.helpDescription}</p>}
       {categoryData.products && categoryData.products?.length > 0 ? (
         <>
@@ -124,7 +122,7 @@ const SelectionConfigurator: React.FC<SelectionConfiguratorProps> = ({ categoryD
               return (
                 <div key={product.id} className="space-y-4">
                   <div
-                    className={`p-4 border rounded-lg bg-white hover:border-primary transition-colors ${
+                    className={`p-4 border rounded-lg bg-white hover:border-primary ring-primary hover:ring-2 transition-colors ${
                       selected
                         ? "border-primary bg-primary/10 ring-2 ring-primary"
                         : "border-border hover:border-primary/50 cursor-pointer"
@@ -132,7 +130,9 @@ const SelectionConfigurator: React.FC<SelectionConfiguratorProps> = ({ categoryD
                     onClick={() => (!selected ? handleOptionClick(product.id) : handleOptionClick(product.id))}
                   >
                     <div className="flex flex-col">
-                      <h5 className="font-medium">{product.name}</h5>
+                      <Typography as="h5" variant="body" className="font-medium">
+                        {product.name}
+                      </Typography>
                       <p className="text-sm text-muted-foreground">{product.description}</p>
                       <p className="text-sm text-muted-foreground">Duração: {product.duration}</p>
 
@@ -183,10 +183,10 @@ const SelectionConfigurator: React.FC<SelectionConfiguratorProps> = ({ categoryD
             <div>
               <p className="text-sm text-muted-foreground">Total:</p>
               <p className="text-xl font-bold">{calculateTotal().toFixed(2)} €</p>
-            </div>
+            </div>{" "}
             <Button
               onClick={handleAddToCart}
-              disabled={Object.keys(selectedQuantities).every((id) => selectedQuantities[id] <= 0)}
+              disabled={Object.keys(selectedQuantities).every((id) => (selectedQuantities[id] || 0) <= 0)}
               className="w-fit text-center rounded-full px-6 py-3 text-white  focus:outline-none"
             >
               Adicionar ao Carrinho

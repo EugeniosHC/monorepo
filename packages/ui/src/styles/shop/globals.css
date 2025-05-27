@@ -216,6 +216,18 @@
     scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
 }
 
+/* Esconder barras de rolagem */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
 /* Animação de pulse para o ícone do carrinho */
 @keyframes pulse {
     0% {

@@ -25,7 +25,7 @@ export default function Footer({ ImageComponent }: FooterProps) {
         {/* Top section - Newsletter + Social/Contacts */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-y-12 gap-x-20 mb-10">
           <div className="flex flex-col h-full">
-            <Typography as="h3" variant="footerTitle" className="font-semibold mb-3">
+            <Typography as="h3" variant="title" className="font-semibold mb-3">
               Receba as últimas novidades
             </Typography>
             <Typography as="p" variant="footerText" className="text-white/80 mb-6">
@@ -46,7 +46,7 @@ export default function Footer({ ImageComponent }: FooterProps) {
 
           <div className="flex flex-col h-full ">
             <div className="flex items-center gap-6 mb-8">
-              <Typography as="h3" variant="footerTitle" className="font-semibold text-white">
+              <Typography as="h3" variant="title" className="font-semibold text-white">
                 Siga-nos
               </Typography>
               <div className="flex gap-4">

@@ -7,7 +7,7 @@ type TypographyVariant =
   | "hero"
   | "heroSubtitle"
   | "sectionTitle"
-  | "footerTitle"
+  | "title"
   | "footerSubtitle"
   | "footerText"
   | "subtitle"
@@ -25,7 +25,7 @@ const variantClasses: Record<TypographyVariant, string> = {
   hero: "text-4xl sm:text-5xl md:text-7xl font-bold",
   heroSubtitle: "text-2xl md:text-4xl",
   sectionTitle: "text-3xl sm:text-4xl md:text-5xl font-bold",
-  footerTitle: "text-2xl md:text-3xl",
+  title: "text-2xl md:text-3xl",
   footerSubtitle: "text-xl",
   footerText: "text-base  text-white/80",
   subtitle: "text-xl md:text-2xl",
