@@ -12,6 +12,7 @@ import Breadcrumb from "@/components/pages/product/Breadcrumb";
 import Reviews from "@/components/pages/product/Reviews";
 import PageSection from "@eugenios/ui/src/components/ui/PageSection";
 import { Typography } from "@eugenios/ui/components/ui/Typography";
+import { useEffect } from "react";
 
 export async function generateMetadata(name: string) {
   return {
@@ -27,6 +28,11 @@ export async function generateMetadata(name: string) {
 export function CategoryDataClient({ slug }: { slug: string }) {
   const { data: categoryData, isLoading, isError, error } = useCategoryDataBySlug(slug);
   const { data: relatedCategories } = useRelatedCategories(slug);
+
+  // Efeito para rolar para o topo da página quando o componente montar ou quando o slug mudar
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
 
   if (isLoading) {
     return <div className="container mx-auto px-4 py-8 md:py-36 text-center">Carregando detalhes do produto...</div>;

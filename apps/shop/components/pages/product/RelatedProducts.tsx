@@ -109,13 +109,13 @@ export default function RelatedProducts({ categories, title = "TAMBÉM PODERÁ G
                   : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
           } ${isCarousel ? "" : "auto-rows-fr"}`}
           style={{ minHeight: isCarousel ? `${cardHeight}px` : "auto" }}
-        >
-          {categories.map((category) => (
+        >          {categories.map((category) => (
             <Link
               href={`/produtos/${category.slug}`}
               key={category.id}
               className={`group min-w-[250px] max-w-sm flex-shrink-0 ${isCarousel ? "" : "w-full"} h-full flex`}
               style={{ height: `${cardHeight}px` }}
+              scroll={true}
             >
               <div className="border rounded-lg overflow-hidden transition-all group-hover:shadow-md h-full flex flex-col w-full">
                 <div className="aspect-square relative overflow-hidden w-full">

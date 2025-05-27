@@ -29,7 +29,7 @@ const montserrat = Montserrat({
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt" suppressHydrationWarning>
+    <html lang="pt" suppressHydrationWarning className="scroll-smooth">
       <head>
         <meta name="apple-mobile-web-app-title" content="EugéniosHC" />
       </head>

@@ -55,6 +55,7 @@ const WellnessGrid = () => {
           <Link
             key={id}
             href={linkHref}
+            scroll={true}
             className={`block ${colSpan} relative overflow-hidden rounded-lg h-96 cursor-pointer group transition-all duration-300`}
           >
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300 z-10"></div>

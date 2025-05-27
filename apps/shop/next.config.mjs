@@ -21,6 +21,10 @@ const nextConfig = {
         formats: ["image/webp", "image/avif"],
         minimumCacheTTL: 60,
     },
+    // Configuração para garantir que a página comece no topo quando mudar de rota
+    experimental: {
+        scrollRestoration: true,
+    },
 }
 
 export default nextConfig
