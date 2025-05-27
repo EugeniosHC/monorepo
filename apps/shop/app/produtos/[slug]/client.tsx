@@ -64,7 +64,7 @@ export function CategoryDataClient({ slug }: { slug: string }) {
 
   return (
     <>
-      <PageSection className="md:pt-36 mb-12" id="product-details">
+      <PageSection className="md:pt-36 mb-12" id="detalhes-do-produto">
         <Breadcrumb categoryName={categoryData.name} />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Coluna da Esquerda (Imagens do Produto) */}
@@ -104,7 +104,7 @@ export function CategoryDataClient({ slug }: { slug: string }) {
         </div>
       </PageSection>
 
-      <PageSection className="mt-8 mb-12" id="Suporte">
+      <PageSection className="mt-8 mb-12" id="suporte-cliente">
         <ClientSupportSection />
       </PageSection>
 
