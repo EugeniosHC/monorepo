@@ -11,6 +11,7 @@ import ClientSupportSection from "@/components/sections/ClientSupportSection";
 import Breadcrumb from "@/components/pages/product/Breadcrumb";
 import Reviews from "@/components/pages/product/Reviews";
 import PageSection from "@eugenios/ui/src/components/ui/PageSection";
+import { Typography } from "@eugenios/ui/src/components/ui/Typography";
 
 export async function generateMetadata(name: string) {
   return {
@@ -64,54 +65,43 @@ export function CategoryDataClient({ slug }: { slug: string }) {
 
   return (
     <>
-      <PageSection className="md:pt-36 mb-12" id="detalhes-do-produto">
-        <Breadcrumb categoryName={categoryData.name} />
+      {" "}
+      <PageSection className="pt-20 md:pt-36 mb-12" id="detalhes-do-produto">
+        <Breadcrumb categoryName={categoryData.name} />{" "}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Coluna da Esquerda (Imagens do Produto) */}
-          <div>
+          <div className="max-h-full overflow-hidden">
             <ImageGallery CategoryData={categoryData} />
           </div>
           {/* Coluna da Direita (Título e Opções de Compra Interativas) */}
-          <div className="md:sticky md:top-32 md:self-start h-fit">
-            <h2 className="font-bold mb-2">{categoryData.title || categoryData.name}</h2>
-            {categoryData.subtitle && <p className="text-muted-foreground mb-4">{categoryData.subtitle}</p>}
+          <div className="md:sticky md:top-8 md:self-start h-fit">
+            <Typography as="h2" variant="title" className="font-bold mb-2">
+              {categoryData.title || categoryData.name}
+            </Typography>
+            {categoryData.subtitle && <p className="text-muted-foreground mb-2">{categoryData.subtitle}</p>}
             <div className="flex items-center gap-4 mb-4">
               <div className="flex">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} className="h-5 w-5 fill-primary text-primary" />
+                  <Star key={star} className="h-5 w-5 fill-secondary text-secondary" />
                 ))}
               </div>
               <span className="text-sm text-muted-foreground">4.9 (127 avaliações)</span>
             </div>
 
-            <div className="flex flex-wrap gap-3 mb-6">
-              <Badge variant="outline" className="flex items-center gap-1">
-                <Clock className="h-3 w-3" /> Duração Personalizada
-              </Badge>
-              <Badge variant="outline" className="flex items-center gap-1">
-                <Award className="h-3 w-3" /> Terapeutas Certificados
-              </Badge>
-              <Badge variant="outline" className="flex items-center gap-1">
-                <Heart className="h-3 w-3" /> 98% Satisfação
-              </Badge>
-            </div>
             <SelectionConfigurator categoryData={categoryData} />
 
             <div className="mt-8">
-              <p className="text-sm text-muted-foreground">{categoryData.description}</p>
+              <p className="text-sm text-muted-foreground over">{categoryData.description}</p>
             </div>
           </div>
         </div>
       </PageSection>
-
-      <PageSection className="mt-8 mb-12" id="suporte-cliente">
+      <PageSection className="mt-8 mb-24" id="suporte-cliente">
         <ClientSupportSection />
       </PageSection>
-
-      <PageSection className="mt-16 mb-12" id="reviews">
+      <PageSection className="mb-24" id="reviews">
         <Reviews />
       </PageSection>
-
       {relatedCategories && relatedCategories.length > 0 && (
         <PageSection className="mb-24 ">
           <RelatedProducts categories={relatedCategories} />

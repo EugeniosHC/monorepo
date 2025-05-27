@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { CategoryWithMinPrice } from "@eugenios/types";
+import { Typography } from "@eugenios/ui/src/components/ui/Typography";
 
 interface RelatedProductsProps {
   categories: CategoryWithMinPrice[];
@@ -68,8 +69,10 @@ export default function RelatedProducts({ categories, title = "TAMBÉM PODERÁ G
 
   return (
     <>
-      <div className="text-center mb-12">
-        <h3 className="font-bold tracking-tight">{title}</h3>
+      <div className="text-center mb-10">
+        <Typography as="h2" variant="subtitle" className="uppercase font-bold tracking-tight">
+          {title}
+        </Typography>
         <div className="mt-3 mx-auto w-12 h-1 bg-primary"></div>
       </div>
 
@@ -125,9 +128,9 @@ export default function RelatedProducts({ categories, title = "TAMBÉM PODERÁ G
                   />
                 </div>
                 <div className="p-4 flex flex-col justify-between flex-grow">
-                  <h5 className="font-medium line-clamp-2 mb-2 group-hover:text-primary transition-colors">
+                  <Typography as="a" variant="body" className="font-medium line-clamp-2 mb-2">
                     {category.name}
-                  </h5>
+                  </Typography>
                   <p className="text-sm font-bold">A partir de {category.minPrice}€</p>
                 </div>
               </div>

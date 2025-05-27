@@ -12,9 +12,11 @@ import { Search } from "lucide-react";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrollingDown, setIsScrollingDown] = useState(false);
   const [isMobileSearchActive, setIsMobileSearchActive] = useState(false);
   const [searchResults, setSearchResults] = useState<{ found: boolean; items?: any[] }>({ found: false });
   const [searchQuery, setSearchQuery] = useState("");
+  const [lastScrollY, setLastScrollY] = useState(0);
   const pathname = usePathname();
 
   // Verifica se está na página inicial ou loja
@@ -22,26 +24,44 @@ export default function Header() {
 
   // Determina se o header deve ter fundo
   const hasHeaderBackground = isScrolled || !isHomePage;
-
-  // Detecta scroll da página
+  // Detecta scroll da página e direção do scroll
   useEffect(() => {
+    let lastScrollY = window.scrollY;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+
+      // Determina se scrolled (para mudar o estilo)
+      setIsScrolled(currentScrollY > 50);
+
+      // Lógica para mostrar/esconder o header baseado na direção do scroll
+      if (currentScrollY > lastScrollY) {
+        // Scroll para baixo - esconde o header (exceto no topo da página)
+        if (currentScrollY > 100) {
+          setIsScrollingDown(true);
+        }
+      } else {
+        // Scroll para cima - mostra o header
+        setIsScrollingDown(false);
+      }
+
+      // Atualiza a última posição de scroll
+      lastScrollY = currentScrollY;
     };
 
-    handleScroll(); // Verifica posição inicial
+    // Check scroll position on initial render
+    handleScroll();
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
   // Determina visibilidade do overlay de resultados mobile
   const isOverlayVisible = isMobileSearchActive && (searchQuery || searchResults.found === false);
-
   return (
     <header
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+      className={`fixed top-0 z-50 w-full transition-all duration-300 ease-in-out ${
         hasHeaderBackground ? "bg-white/90 backdrop-blur-lg shadow-md" : ""
-      } `}
+      } ${isScrollingDown ? "-translate-y-full" : "translate-y-0"} ${isMobileSearchActive ? "!translate-y-0" : ""}`}
     >
       {/* Container principal */}
       <div className="container flex min-h-20 items-center justify-between relative">

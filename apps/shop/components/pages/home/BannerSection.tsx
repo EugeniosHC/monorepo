@@ -24,7 +24,7 @@ export default function BannerSection() {
           <div className="flex flex-col gap-6 sm:gap-8 mx-auto text-center md:text-left md:mx-0  text-white">
             <div className="opacity-0 animate-fadeIn" style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}>
               <div className="text-center">
-                <Typography as="h2" variant="footerTitle" className="font-bold leading-relaxed mb-6">
+                <Typography as="h2" variant="title" className="font-bold leading-relaxed mb-6">
                   Descubra mais sobre o melhor <br /> Health Club de Famalicão
                 </Typography>
                 <Link href="/packs/massagens" className="text-white text-xl relative group inline-flex items-center">

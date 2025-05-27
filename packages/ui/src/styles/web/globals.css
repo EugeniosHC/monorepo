@@ -279,3 +279,15 @@
     /* control the shape (can be percentage) */
     clip-path: polygon(0 var(--p), 100% 0, 100% 100%, 0 100%);
 }
+
+/* Esconder barras de rolagem */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}

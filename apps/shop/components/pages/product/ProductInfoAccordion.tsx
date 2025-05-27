@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Section } from "@eugenios/types";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@eugenios/ui/components/accordion";
+import { Typography } from "@eugenios/ui/src/components/ui/Typography";
 
 interface ProductInfoAccordionProps {
   sections?: Section[];
@@ -34,7 +35,9 @@ export default function ProductInfoAccordion({
   return (
     <>
       <div className="text-center mb-10">
-        <h3 className="font-bold tracking-tight">{title}</h3>
+        <Typography as="h2" variant="subtitle" className="uppercase font-bold tracking-tight">
+          {title}
+        </Typography>
         <div className="mt-1 mx-auto w-8 h-0.5 bg-primary/80"></div>
       </div>
       {sections && sections.length > 0 ? (

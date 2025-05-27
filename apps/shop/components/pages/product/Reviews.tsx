@@ -1,11 +1,14 @@
 import { Card, CardContent } from "@eugenios/ui/components/card";
+import { Typography } from "@eugenios/ui/src/components/ui/Typography";
 import { Star } from "lucide-react";
 
 export default function Reviews() {
   return (
     <>
       <div className="text-center mb-10">
-        <h3 className="uppercase font-bold tracking-tight">O Que Os Nossos Clientes Dizem</h3>
+        <Typography as="h2" variant="subtitle" className="uppercase font-bold tracking-tight">
+          O Que Os Nossos Clientes Dizem
+        </Typography>
         <div className="mt-1 mx-auto w-8 h-0.5 bg-primary/80"></div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -14,7 +17,7 @@ export default function Reviews() {
             <CardContent className="pt-6">
               <div className="flex mb-4">
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} className="h-4 w-4 fill-primary text-primary" />
+                  <Star key={star} className="h-4 w-4 fill-secondary text-secondary" />
                 ))}
               </div>
               <p className="text-muted-foreground mb-4">
