@@ -1,30 +1,44 @@
-import { Geist, Geist_Mono } from "next/font/google"
+import "@eugenios/ui/styles/web/globals.css";
+import { Montserrat, Barlow } from "next/font/google";
+import type { Metadata } from "next";
+import Header from "@/components/layouts/Header";
+import Footer from "@eugenios/ui/components/layouts/Footer";
+import { FloatingCTA } from "@/components/floating-cta";
+import { Toaster } from "sonner";
+import { Image } from "@/components/Image";
 
-import "@workspace/ui/globals.css"
-import { Providers } from "@/components/providers"
+export const metadata: Metadata = {
+  title: "Eugenios HC",
+  description: "O MELHOR HEALTH CLUB DE FAMALICÃO",
+};
 
-const fontSans = Geist({
+const barlow = Barlow({
   subsets: ["latin"],
-  variable: "--font-sans",
-})
+  display: "swap",
+  weight: ["200", "300", "400", "500", "600", "700"],
+  variable: "--font-barlow",
+});
 
-const fontMono = Geist_Mono({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  variable: "--font-mono",
-})
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-montserrat",
+});
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
-      >
-        <Providers>{children}</Providers>
+      <head>
+        <meta name="apple-mobile-web-app-title" content="EugéniosHC" />
+      </head>
+      <body className={`${montserrat.variable} ${barlow.variable} font-sans`}>
+        <Header />
+        <main className="flex flex-col min-h-screen bg-white">{children}</main>
+        <Footer ImageComponent={Image} />
+        <FloatingCTA />
+        <Toaster richColors />
       </body>
     </html>
-  )
+  );
 }

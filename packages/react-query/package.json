@@ -1,0 +1,28 @@
+{
+  "name": "@eugenios/react-query",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "lint": "eslint . --max-warnings 0"
+  },
+  "dependencies": {
+    "@eugenios/types": "workspace:*",
+    "@eugenios/services": "workspace:*",
+    "@tanstack/react-query": "^5.77.1",
+    "sonner": "^1.7.4"
+  },
+  "devDependencies": {
+    "@eugenios/eslint-config": "workspace:*",
+    "@eugenios/typescript-config": "workspace:*",
+    "@turbo/gen": "^2.4.2",
+    "@types/node": "^20.17.19",
+    "typescript": "^5.7.3"
+  },
+  "exports": {
+    "./mutations/*": "./src/mutations/*.ts",
+    "./queries/*": "./src/queries/*.ts",
+    "./server/*": "./src/server/*.ts",
+    "./queryKeys": "./src/queryKeys/index.ts"
+  }
+}

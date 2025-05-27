@@ -1,11 +1,12 @@
 {
-  "extends": "@workspace/typescript-config/react-library.json",
+  "extends": "@eugenios/typescript-config/react-library.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@workspace/ui/*": ["./src/*"]
-    }
+      "@eugenios/ui/*": ["./src/*"]
+    },
+    "types": ["next/image-types/global", "node"]
   },
-  "include": ["."],
-  "exclude": ["node_modules", "dist"]
+  "include": ["./src/**/*", "./src/types/*.d.ts"],
+  "exclude": ["node_modules", "dist", "tailwind.config"]
 }
