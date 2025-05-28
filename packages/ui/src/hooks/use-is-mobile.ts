@@ -1,22 +1,19 @@
-import { useEffect, useState } from "react";
+import * as React from "react";
 
-export const useIsMobile = () => {
-  const [width, setWidth] = useState<number | undefined>(undefined);
+const MOBILE_BREAKPOINT = 768;
 
-  const handleWindowSizeChange = () => {
-    setWidth(window.innerWidth);
-  };
+export function useIsMobile() {
+  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined);
 
-  useEffect(() => {
-    // Initialize width after component mounts (client-side only)
-    setWidth(window.innerWidth);
+  React.useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const onChange = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+    mql.addEventListener("change", onChange);
+    setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    return () => mql.removeEventListener("change", onChange);
   }, []);
 
-  useEffect(() => {}, []);
-
-  const isMobile = width !== undefined ? width <= 768 : false;
-  const isTablet = width !== undefined ? width <= 1024 : false;
-  const isDesktop = width !== undefined ? width > 1024 : false;
-
-  return { isMobile, isTablet, isDesktop };
-};
+  return !!isMobile;
+}

@@ -1,18 +1,37 @@
 "use client";
 
 import { useCategoryDataBySlug, useRelatedCategories } from "@eugenios/react-query/queries/useCategories";
-import ProductInfoAccordion from "@/components/pages/product/ProductInfoAccordion";
-import SelectionConfigurator from "@/components/pages/product/SelectionConfigurator";
-import RelatedProducts from "@/components/pages/product/RelatedProducts";
+import dynamic from "next/dynamic";
 import { ImageGallery } from "@/components/pages/product/ImageGallery";
 import { Award, Clock, Heart, Star } from "lucide-react";
 import { Badge } from "@eugenios/ui/components/badge";
-import ClientSupportSection from "@/components/sections/ClientSupportSection";
 import Breadcrumb from "@/components/pages/product/Breadcrumb";
-import Reviews from "@/components/pages/product/Reviews";
 import PageSection from "@eugenios/ui/src/components/ui/PageSection";
 import { Typography } from "@eugenios/ui/components/ui/Typography";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
+
+// Carregar componentes pesados dinamicamente
+const ProductInfoAccordion = dynamic(() => import("@/components/pages/product/ProductInfoAccordion"), {
+  loading: () => <div className="animate-pulse h-48 bg-gray-200 rounded-md"></div>,
+  ssr: false,
+});
+
+const SelectionConfigurator = dynamic(() => import("@/components/pages/product/SelectionConfigurator"), {
+  loading: () => <div className="animate-pulse h-64 bg-gray-200 rounded-md"></div>,
+});
+
+const RelatedProducts = dynamic(() => import("@/components/pages/product/RelatedProducts"), {
+  loading: () => <div className="animate-pulse h-48 bg-gray-200 rounded-md"></div>,
+});
+
+const ClientSupportSection = dynamic(() => import("@/components/sections/ClientSupportSection"), {
+  loading: () => <div className="animate-pulse h-32 bg-gray-200 rounded-md"></div>,
+});
+
+const Reviews = dynamic(() => import("@/components/pages/product/Reviews"), {
+  loading: () => <div className="animate-pulse h-48 bg-gray-200 rounded-md"></div>,
+  ssr: false,
+});
 
 export async function generateMetadata(name: string) {
   return {
@@ -71,9 +90,8 @@ export function CategoryDataClient({ slug }: { slug: string }) {
 
   return (
     <>
-      {" "}
       <PageSection className="pt-20 md:pt-36 mb-12" id="detalhes-do-produto">
-        <Breadcrumb categoryName={categoryData.name} />{" "}
+        <Breadcrumb categoryName={categoryData.name} />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Coluna da Esquerda (Imagens do Produto) */}
           <div className="max-h-full overflow-hidden">
@@ -94,7 +112,9 @@ export function CategoryDataClient({ slug }: { slug: string }) {
               <span className="text-sm text-muted-foreground">4.9 (127 avaliações)</span>
             </div>
 
-            <SelectionConfigurator categoryData={categoryData} />
+            <Suspense fallback={<div className="animate-pulse h-64 bg-gray-200 rounded-md"></div>}>
+              <SelectionConfigurator categoryData={categoryData} />
+            </Suspense>
 
             <div className="mt-8">
               <p className="text-sm text-muted-foreground">{categoryData.description}</p>
@@ -102,24 +122,36 @@ export function CategoryDataClient({ slug }: { slug: string }) {
           </div>
         </div>
       </PageSection>
-      <PageSection className="mt-8 mb-24" id="suporte-cliente">
-        <ClientSupportSection />
-      </PageSection>
-      <PageSection className="mb-24" id="reviews">
-        <Reviews />
-      </PageSection>
-      {relatedCategories && relatedCategories.length > 0 && (
-        <PageSection className="mb-24 ">
-          <RelatedProducts categories={relatedCategories} />
+
+      <Suspense fallback={<div className="animate-pulse h-32 bg-gray-200 rounded-md"></div>}>
+        <PageSection className="mt-8 mb-24" id="suporte-cliente">
+          <ClientSupportSection />
         </PageSection>
+      </Suspense>
+
+      <Suspense fallback={<div className="animate-pulse h-48 bg-gray-200 rounded-md"></div>}>
+        <PageSection className="mb-24" id="reviews">
+          <Reviews />
+        </PageSection>
+      </Suspense>
+
+      {relatedCategories && relatedCategories.length > 0 && (
+        <Suspense fallback={<div className="animate-pulse h-48 bg-gray-200 rounded-md"></div>}>
+          <PageSection className="mb-24 ">
+            <RelatedProducts categories={relatedCategories} />
+          </PageSection>
+        </Suspense>
       )}
-      <PageSection className="mb-24">
-        <ProductInfoAccordion
-          sections={categoryData.sections}
-          title="INFORMAÇÕES DO PRODUTO"
-          subtitle="Detalhes importantes"
-        />
-      </PageSection>
+
+      <Suspense fallback={<div className="animate-pulse h-48 bg-gray-200 rounded-md"></div>}>
+        <PageSection className="mb-24">
+          <ProductInfoAccordion
+            sections={categoryData.sections}
+            title="INFORMAÇÕES DO PRODUTO"
+            subtitle="Detalhes importantes"
+          />
+        </PageSection>
+      </Suspense>
     </>
   );
 }

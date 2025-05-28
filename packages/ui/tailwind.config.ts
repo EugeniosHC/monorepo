@@ -14,6 +14,10 @@ const config = {
     join(__dirname, "../../apps/shop/app/**/*.{ts,tsx}"),
     join(__dirname, "../../apps/shop/components/**/*.{ts,tsx}"),
     join(__dirname, "../../apps/shop/pages/**/*.{ts,tsx}"),
+
+    join(__dirname, "../../apps/admin/app/**/*.{ts,tsx}"),
+    join(__dirname, "../../apps/admin/components/**/*.{ts,tsx}"),
+    join(__dirname, "../../apps/admin/pages/**/*.{ts,tsx}"),
   ],
   theme: {
     container: {

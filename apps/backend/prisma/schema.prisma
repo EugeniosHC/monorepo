@@ -28,19 +28,19 @@ model Product {
 }
 
 model Category {
-  id              String    @id @default(uuid())
+  id              String            @id @default(uuid())
   name            String
-  slug            String    @unique
+  slug            String            @unique
   title           String
   subtitle        String
   description     String
   helpDescription String
   imageUrl        String
-  sections        Section[] @relation("CategoryToSection")
-  products        Product[] @relation("CategoryToProduct")
+  sections        CategorySection[] @relation("CategoryToSection")
+  products        Product[]         @relation("CategoryToProduct")
 }
 
-model Section {
+model CategorySection {
   id         String     @id @default(uuid())
   title      String
   content    String

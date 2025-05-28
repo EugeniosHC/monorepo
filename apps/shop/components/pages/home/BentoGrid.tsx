@@ -58,16 +58,16 @@ const WellnessGrid = () => {
             scroll={true}
             className={`block ${colSpan} relative overflow-hidden rounded-lg h-96 cursor-pointer group transition-all duration-300`}
           >
-            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300 z-10"></div>
-
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300 z-10"></div>{" "}
             <Image
               width={500}
               height={500}
               src={imageSrc}
               alt={imageAlt}
+              {...(index < 2 ? { priority: true } : { loading: "lazy" })}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
             />
-
             <div className="absolute bottom-0 left-0 p-6 z-20 w-full">
               <Typography
                 as="h3"

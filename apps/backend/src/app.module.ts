@@ -6,7 +6,7 @@ import { PrismaModule } from './modules/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoryModule } from './modules/category/category.module';
 import { ProductModule } from './modules/product/product.module';
-import { SectionModule } from './modules/section/section.module';
+import { SectionModule } from './modules/categorySection/section.module';
 import { CloudflareModule } from './modules/cloudflare/cloudflare.module';
 
 @Module({

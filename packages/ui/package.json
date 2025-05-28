@@ -57,6 +57,7 @@
     "./styles": "./src/styles",
     "./styles/web/globals.css": "./src/styles/web/globals.css",
     "./styles/shop/globals.css": "./src/styles/shop/globals.css",
+    "./styles/admin/globals.css": "./src/styles/admin/globals.css",
     "./postcss.config": "./postcss.config.mjs",
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",

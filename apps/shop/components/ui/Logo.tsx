@@ -16,6 +16,7 @@ export function Logo({ hasHeaderBackground, isMobileSearchActive }: LogoProps) {
         alt="Eugénios HC Logo"
         width={50}
         height={50}
+        priority
         className="transition-transform duration-300"
       />
     </Link>

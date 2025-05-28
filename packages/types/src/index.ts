@@ -73,3 +73,16 @@ export interface User {
   email: string;
   avatar: string;
 }
+
+// Tipos de itens arrastáveis
+export const ItemTypes = {
+  PRODUCT: "product",
+  SECTION: "section",
+};
+
+// Define tipos para o DnD
+export interface DragItem {
+  id: string;
+  type: string;
+}
+

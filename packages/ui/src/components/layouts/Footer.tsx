@@ -16,7 +16,6 @@ export type FooterProps = {
 };
 
 export default function Footer({ ImageComponent }: FooterProps) {
-  const { isMobile } = useIsMobile();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -38,7 +37,7 @@ export default function Footer({ ImageComponent }: FooterProps) {
                 placeholder="O seu email"
                 className={`w-full rounded-full px-6 py-4 text-black placeholder-gray-500 focus:outline-none`}
               />
-              <button className="bg-primary p-3 rounded-full absolute top-1/2 right-1 translate-y-[-50%] mr-1 hover:bg-primary/90">
+              <button aria-label="Enviar" className="bg-primary p-3 rounded-full absolute top-1/2 right-1 translate-y-[-50%] mr-1 hover:bg-primary/90">
                 <ArrowRight className=" text-white w-4 h-4" />
               </button>
             </div>

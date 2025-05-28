@@ -2,7 +2,7 @@ import { Product, Section, Category } from 'src/types'; // Ajusta o path conform
 import {
   Category as PrismaCategory,
   Product as PrismaProduct,
-  Section as PrismaSection,
+  CategorySection as PrismaSection,
 } from '@prisma/client';
 
 export function mapProductFromPrisma(product: PrismaProduct): Product {

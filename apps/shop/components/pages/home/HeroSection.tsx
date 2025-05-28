@@ -9,7 +9,15 @@ export default function HeroSection() {
     <section className="relative h-[100svh]">
       <div className="relative h-full w-full overflow-hidden">
         <div className="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100">
-          <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+            preload="none"
+            poster="/images/hero.jpg"
+          >
             <source src="/videos/hero.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>

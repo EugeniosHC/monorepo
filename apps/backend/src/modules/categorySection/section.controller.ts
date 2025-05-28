@@ -1,7 +1,6 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { Section } from 'src/types';
 import { SectionService } from './section.service';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @Controller('section')
 export class SectionController {

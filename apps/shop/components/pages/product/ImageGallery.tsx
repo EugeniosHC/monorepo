@@ -17,6 +17,7 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const carouselRef = useRef<HTMLDivElement>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
 
   const allImages = [
     {
@@ -33,6 +34,21 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
   useEffect(() => {
     setIsMediaQueryReady(true);
   }, [isMobile]);
+
+  // Função para manipular o carregamento da imagem principal
+  const handleMainImageLoad = () => {
+    setIsImageLoaded(true);
+
+    // Reportar o LCP para o Core Web Vitals
+    if (window.performance && "measure" in window.performance) {
+      try {
+        window.performance.measure("lcp-complete");
+      } catch (e) {
+        console.error("Failed to report LCP metric:", e);
+      }
+    }
+  };
+
   // Efeito para rastrear mudanças na posição de rolagem
   useEffect(() => {
     if (!isMobile || !carouselRef.current) return;
@@ -58,12 +74,14 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
 
     const carouselElement = carouselRef.current;
 
-    carouselElement.addEventListener("scroll", handleScroll);
+    if (carouselElement) {
+      carouselElement.addEventListener("scroll", handleScroll);
 
-    return () => {
-      carouselElement.removeEventListener("scroll", handleScroll);
-    };
-  }, [isMobile]); // Removido activeImageIndex das dependências
+      return () => {
+        carouselElement.removeEventListener("scroll", handleScroll);
+      };
+    }
+  }, [isMobile]);
 
   // Função para navegar para uma imagem específica
   const navigateToImage = (index: number) => {
@@ -82,7 +100,9 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
 
   // Funções de navegação
   const goToPrevious = () => navigateToImage(activeImageIndex - 1);
-  const goToNext = () => navigateToImage(activeImageIndex + 1); // Estado de carregamento - exibe um skeleton enquanto determina o layout
+  const goToNext = () => navigateToImage(activeImageIndex + 1);
+
+  // Estado de carregamento - exibe um skeleton enquanto determina o layout
   if (!isMediaQueryReady) {
     return (
       <div className="w-full">
@@ -108,7 +128,6 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
           className="w-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          {" "}
           {allImages.map((img, idx) => (
             <div key={idx} className="flex-shrink-0 w-full snap-start carousel-item" style={{ flex: "0 0 100%" }}>
               <div className="aspect-[4/3] rounded-xl overflow-hidden border">
@@ -117,9 +136,11 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
                   alt={img.alt}
                   width={800}
                   height={600}
-                  className="object-cover w-full h-full"
+                  className={`object-cover w-full h-full ${!isImageLoaded && idx === 0 ? "blur-sm scale-105" : "blur-0 scale-100"} transition-all duration-300`}
                   quality={95}
                   priority={idx === 0}
+                  onLoad={idx === 0 ? handleMainImageLoad : undefined}
+                  fetchPriority={idx === 0 ? "high" : "auto"}
                 />
               </div>
             </div>
@@ -139,9 +160,11 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
                 alt={img.alt}
                 width={800}
                 height={600}
-                className="object-cover w-full h-full"
+                className={`object-cover w-full h-full ${!isImageLoaded && idx === 0 ? "blur-sm scale-105" : "blur-0 scale-100"} transition-all duration-300`}
                 quality={95}
-                priority={idx === 0}
+                priority={idx < 2}
+                onLoad={idx === 0 ? handleMainImageLoad : undefined}
+                fetchPriority={idx === 0 ? "high" : "auto"}
               />
             </motion.div>
           ))}
@@ -180,10 +203,9 @@ export function ImageGallery({ CategoryData }: ImageGalleryProps) {
               key={idx}
               onClick={() => navigateToImage(idx)}
               className={`w-2 h-2 rounded-full transition-all ${
-                idx === activeImageIndex ? "bg-primary w-3" : "bg-gray-300"
+                idx === activeImageIndex ? "bg-white scale-125 shadow-md" : "bg-white/40 hover:bg-white/60"
               }`}
               aria-label={`Ir para imagem ${idx + 1}`}
-              type="button"
             />
           ))}
         </div>

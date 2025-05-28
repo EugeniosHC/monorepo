@@ -1,16 +1,33 @@
 import { Montserrat, Barlow } from "next/font/google";
-
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "@eugenios/ui/styles/web/globals.css";
-import ReactQueryProvider from "@/providers/ReactQueryProvider";
+import dynamic from "next/dynamic";
 import { Toaster } from "sonner";
 import Header from "@/components/layouts/Header";
-import Footer from "@eugenios/ui/components/layouts/Footer";
 import { Image } from "@/components/Image";
+
+// Importação dinâmica do componente pesado
+const Footer = dynamic(() => import("@eugenios/ui/components/layouts/Footer"), {
+  loading: () => <div className="h-80 bg-primary/5"></div>,
+  ssr: true,
+});
+
+// Importação dinâmica do ReactQueryProvider
+const ReactQueryProvider = dynamic(() => import("@/providers/ReactQueryProvider"), {
+  ssr: true,
+});
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#ffffff",
+};
 
 export const metadata: Metadata = {
   title: "Eugenios HC",
   description: "O MELHOR HEALTH CLUB DE FAMALICÃO",
+  metadataBase: new URL("https://eugenios-hc.com"),
 };
 
 const barlow = Barlow({

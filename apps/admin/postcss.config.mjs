@@ -1,0 +1,1 @@
+export { default } from "@eugenios/ui/postcss.config";

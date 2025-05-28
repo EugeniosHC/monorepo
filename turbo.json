@@ -4,7 +4,8 @@
     ".env"
   ],
   "globalEnv": [
-    "NODE_ENV"
+    "NODE_ENV",
+    "NEXT_PUBLIC_*"
   ],
   "tasks": {
     "build": {
@@ -17,7 +18,9 @@
         "!.next/cache/**"
       ]
     },
-    "lint": {},
+    "lint": {
+      "outputs": []
+    },
     "dev": {
       "cache": false,
       "persistent": true
