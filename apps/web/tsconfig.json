@@ -4,7 +4,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@eugenios/ui/*": ["../../packages/ui/*"]
+      "@eugenios/ui/*": ["../../packages/ui/*"],
+      "@eugenios/types/*": ["../../packages/types/*"],
+      "@eugenios/react-query/*": ["../../packages/react-query/*"],
+      "@eugenios/services/*": ["../../packages/services/*"],
     },
     "types": ["node", "next/image-types/global"]
   },

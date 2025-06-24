@@ -10,7 +10,7 @@ export default async function HomePage() {
   const queryClient = getQueryClient(); // <- aqui você chama a função
 
   await prefetchCategories(queryClient);
-  const dehydratedState = dehydrate(queryClient as any); // usando 'as any' para contornar o erro de tipo temporariamente
+  const dehydratedState = dehydrate(queryClient);
 
   return (
     <>

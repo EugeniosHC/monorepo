@@ -1,9 +1,9 @@
 // @ts-ignore
 import { useDrag } from "react-dnd";
-import { Section, ItemTypes, DragItem } from "@eugenios/types";
+import { CategorySection, ItemTypes, DragItem } from "@eugenios/types";
 
 interface DraggableSectionProps {
-  section: Section;
+  section: CategorySection;
 }
 
 export const DraggableSection = ({ section }: DraggableSectionProps) => {

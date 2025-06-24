@@ -6,14 +6,11 @@ import {
   Body,
   Put,
   Delete,
-  UseInterceptors,
-  UploadedFile,
   UseGuards,
 } from '@nestjs/common';
 import { Category, CategoryWithMinPrice } from 'src/types';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
@@ -58,9 +55,9 @@ export class CategoryController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete('/:slug')
-  async deleteCategory(@Param('slug') slug: string): Promise<void> {
-    return this.categoryService.deleteCategory(slug);
+  @Delete('/:id')
+  async deleteCategory(@Param('id') id: string): Promise<void> {
+    return this.categoryService.deleteCategory(id);
   }
 
   @UseGuards(JwtAuthGuard)

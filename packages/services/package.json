@@ -1,6 +1,6 @@
 {
   "name": "@eugenios/services",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "private": true,
   "scripts": {
@@ -25,6 +25,7 @@
     "./authService": "./src/authService.ts",
     "./categoryService": "./src/categoryService.ts",
     "./imageService": "./src/imageService.ts",
+    "./categorySectionService": "./src/categorySectionService.ts",
     "./sectionService": "./src/sectionService.ts",
     "./axios": "./src/axios.ts"
   }

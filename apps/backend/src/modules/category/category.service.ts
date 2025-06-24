@@ -167,15 +167,14 @@ export class CategoryService {
     });
   }
 
-  async deleteCategory(slug: string): Promise<void> {
+  async deleteCategory(id: string): Promise<void> {
     const category = await this.prismaService.category.findUnique({
-      where: { slug: slug },
+      where: { id: id },
     });
 
     if (!category) {
       throw new BadRequestException('Category not found');
     }
-
     await this.prismaService.category.update({
       where: { id: category.id },
       data: {
@@ -189,7 +188,7 @@ export class CategoryService {
     });
 
     await this.prismaService.category.delete({
-      where: { slug: slug },
+      where: { id: category.id },
     });
   }
 

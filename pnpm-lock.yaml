@@ -8,9 +8,33 @@ importers:
 
   .:
     dependencies:
+      '@tabler/icons-react':
+        specifier: ^3.31.0
+        version: 3.33.0(react@19.0.0)
+      '@tanstack/query-sync-storage-persister':
+        specifier: 5.79.0
+        version: 5.79.0
+      '@tanstack/react-query':
+        specifier: 5.79.0
+        version: 5.79.0(react@19.0.0)
+      '@tanstack/react-query-devtools':
+        specifier: 5.79.0
+        version: 5.79.0(@tanstack/react-query@5.79.0(react@19.0.0))(react@19.0.0)
+      '@tanstack/react-query-persist-client':
+        specifier: 5.79.0
+        version: 5.79.0(@tanstack/react-query@5.79.0(react@19.0.0))(react@19.0.0)
+      '@tanstack/react-table':
+        specifier: ^8.21.3
+        version: 8.21.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       critters:
         specifier: ^0.0.25
         version: 0.0.25
+      lucide-react:
+        specifier: ^0.475.0
+        version: 0.475.0(react@19.0.0)
+      tslib:
+        specifier: ^2.8.1
+        version: 2.8.1
     devDependencies:
       '@eugenios/eslint-config':
         specifier: workspace:*
@@ -30,6 +54,9 @@ importers:
 
   apps/admin:
     dependencies:
+      '@eugenios/icons':
+        specifier: workspace:*
+        version: link:../../packages/icons
       '@eugenios/react-query':
         specifier: workspace:*
         version: link:../../packages/react-query
@@ -48,18 +75,6 @@ importers:
       '@tabler/icons-react':
         specifier: ^3.31.0
         version: 3.33.0(react@19.0.0)
-      '@tanstack/query-sync-storage-persister':
-        specifier: ^5.77.2
-        version: 5.77.2
-      '@tanstack/react-query':
-        specifier: ^5.77.2
-        version: 5.77.2(react@19.0.0)
-      '@tanstack/react-query-devtools':
-        specifier: ^5.77.2
-        version: 5.77.2(@tanstack/react-query@5.77.2(react@19.0.0))(react@19.0.0)
-      '@tanstack/react-query-persist-client':
-        specifier: ^5.77.2
-        version: 5.77.2(@tanstack/react-query@5.77.2(react@19.0.0))(react@19.0.0)
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -139,6 +154,9 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.808.0
         version: 3.817.0
+      '@nestjs/axios':
+        specifier: ^4.0.0
+        version: 4.0.0(@nestjs/common@10.4.18(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.1))(axios@1.9.0)(rxjs@7.8.1)
       '@nestjs/common':
         specifier: ^10.0.0
         version: 10.4.18(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)
@@ -158,7 +176,7 @@ importers:
         specifier: ^10.4.17
         version: 10.4.18(@nestjs/common@10.4.18(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.1))(@nestjs/core@10.4.18)
       '@prisma/client':
-        specifier: ^6.7.0
+        specifier: ^6.8.2
         version: 6.8.2(prisma@6.8.2(typescript@5.7.3))(typescript@5.7.3)
       bcrypt:
         specifier: ^6.0.0
@@ -290,18 +308,6 @@ importers:
       '@hookform/resolvers':
         specifier: ^3.9.1
         version: 3.10.0(react-hook-form@7.56.4(react@19.0.0))
-      '@tanstack/query-sync-storage-persister':
-        specifier: ^5.77.2
-        version: 5.77.2
-      '@tanstack/react-query':
-        specifier: ^5.77.2
-        version: 5.77.2(react@19.0.0)
-      '@tanstack/react-query-devtools':
-        specifier: ^5.77.2
-        version: 5.77.2(@tanstack/react-query@5.77.2(react@19.0.0))(react@19.0.0)
-      '@tanstack/react-query-persist-client':
-        specifier: ^5.77.2
-        version: 5.77.2(@tanstack/react-query@5.77.2(react@19.0.0))(react@19.0.0)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -363,11 +369,20 @@ importers:
 
   apps/web:
     dependencies:
+      '@eugenios/react-query':
+        specifier: workspace:*
+        version: link:../../packages/react-query
+      '@eugenios/services':
+        specifier: workspace:*
+        version: link:../../packages/services
+      '@eugenios/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@eugenios/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@hookform/resolvers':
-        specifier: ^3.9.1
+        specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.56.4(react@19.0.0))
       '@radix-ui/react-accordion':
         specifier: ^1.2.2
@@ -382,10 +397,10 @@ importers:
         specifier: ^1.1.2
         version: 1.1.9(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@radix-ui/react-checkbox':
-        specifier: ^1.1.3
+        specifier: ^1.3.1
         version: 1.3.1(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@radix-ui/react-collapsible':
-        specifier: ^1.1.2
+        specifier: ^1.1.10
         version: 1.1.10(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@radix-ui/react-context-menu':
         specifier: ^2.2.4
@@ -418,10 +433,10 @@ importers:
         specifier: ^1.2.2
         version: 1.3.6(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@radix-ui/react-scroll-area':
-        specifier: ^1.2.2
+        specifier: ^1.2.8
         version: 1.2.8(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@radix-ui/react-select':
-        specifier: ^2.1.4
+        specifier: ^2.2.4
         version: 2.2.4(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@radix-ui/react-separator':
         specifier: ^1.1.1
@@ -495,9 +510,15 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.0.0(react@19.0.0)
+      react-hook-form:
+        specifier: ^7.54.1
+        version: 7.56.4(react@19.0.0)
       sonner:
         specifier: ^1.7.4
         version: 1.7.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      zod:
+        specifier: ^3.25.48
+        version: 3.25.48
     devDependencies:
       '@eugenios/eslint-config':
         specifier: workspace:^
@@ -557,6 +578,34 @@ importers:
         specifier: ^8.24.1
         version: 8.24.1(eslint@9.20.1(jiti@2.4.2))(typescript@5.7.3)
 
+  packages/icons:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.0.0
+    devDependencies:
+      '@eugenios/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@eugenios/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@turbo/gen':
+        specifier: ^2.4.2
+        version: 2.4.2(@types/node@20.17.19)(typescript@5.7.3)
+      '@types/node':
+        specifier: ^20.17.19
+        version: 20.17.19
+      '@types/react':
+        specifier: ^19
+        version: 19.0.10
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.0.4(@types/react@19.0.10)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.7.3
+
   packages/react-query:
     dependencies:
       '@eugenios/services':
@@ -565,18 +614,6 @@ importers:
       '@eugenios/types':
         specifier: workspace:*
         version: link:../types
-      '@tanstack/query-sync-storage-persister':
-        specifier: ^5.77.2
-        version: 5.77.2
-      '@tanstack/react-query':
-        specifier: ^5.77.2
-        version: 5.77.2(react@19.0.0)
-      '@tanstack/react-query-devtools':
-        specifier: ^5.77.2
-        version: 5.77.2(@tanstack/react-query@5.77.2(react@19.0.0))(react@19.0.0)
-      '@tanstack/react-query-persist-client':
-        specifier: ^5.77.2
-        version: 5.77.2(@tanstack/react-query@5.77.2(react@19.0.0))(react@19.0.0)
       sonner:
         specifier: ^1.7.4
         version: 1.7.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -593,6 +630,12 @@ importers:
       '@types/node':
         specifier: ^20.17.19
         version: 20.17.19
+      '@types/react':
+        specifier: ^19
+        version: 19.0.10
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.0.4(@types/react@19.0.10)
       typescript:
         specifier: ^5.7.3
         version: 5.7.3
@@ -646,6 +689,9 @@ importers:
       '@radix-ui/react-checkbox':
         specifier: ^1.2.3
         version: 1.3.1(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@radix-ui/react-collapsible':
+        specifier: ^1.1.10
+        version: 1.1.10(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@radix-ui/react-dialog':
         specifier: ^1.1.13
         version: 1.1.13(@types/react-dom@19.0.4(@types/react@19.0.10))(@types/react@19.0.10)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -703,6 +749,9 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.0.0(react@19.0.0)
+      react-hook-form:
+        specifier: ^7.54.1
+        version: 7.56.4(react@19.0.0)
       tailwind-merge:
         specifier: ^3.3.0
         version: 3.3.0
@@ -1540,6 +1589,13 @@ packages:
   '@lukeed/csprng@1.1.0':
     resolution: {integrity: sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==}
     engines: {node: '>=8'}
+
+  '@nestjs/axios@4.0.0':
+    resolution: {integrity: sha512-1cB+Jyltu/uUPNQrpUimRHEQHrnQrpLzVj6dU3dgn6iDDDdahr10TgHFGTmw5VuJ9GzKZsCLDL78VSwJAs/9JQ==}
+    peerDependencies:
+      '@nestjs/common': ^10.0.0 || ^11.0.0
+      axios: ^1.3.1
+      rxjs: ^7.0.0
 
   '@nestjs/cli@10.4.9':
     resolution: {integrity: sha512-s8qYd97bggqeK7Op3iD49X2MpFtW4LVNLAwXFkfbRxKME6IYT7X0muNTJ2+QfI8hpbNx9isWkrLWIp+g5FOhiA==}
@@ -2701,28 +2757,28 @@ packages:
   '@tanstack/query-core@5.77.1':
     resolution: {integrity: sha512-nfxVhy4UynChMFfN4NxwI8pktV9R3Zt/ROxOAe6pdOf8CigDLn26p+ex1YW5uien26BBICLmN0dTvIELHCs5vw==}
 
-  '@tanstack/query-core@5.77.2':
-    resolution: {integrity: sha512-1lqJwPsR6GX6nZFw06erRt518O19tWU6Q+x0fJUygl4lxHCYF2nhzBPwLKk2NPjYOrpR0K567hxPc5K++xDe9Q==}
+  '@tanstack/query-core@5.79.0':
+    resolution: {integrity: sha512-s+epTqqLM0/TbJzMAK7OEhZIzh63P9sWz5HEFc5XHL4FvKQXQkcjI8F3nee+H/xVVn7mrP610nVXwOytTSYd0w==}
 
   '@tanstack/query-devtools@5.76.0':
     resolution: {integrity: sha512-1p92nqOBPYVqVDU0Ua5nzHenC6EGZNrLnB2OZphYw8CNA1exuvI97FVgIKON7Uug3uQqvH/QY8suUKpQo8qHNQ==}
 
-  '@tanstack/query-persist-client-core@5.77.2':
-    resolution: {integrity: sha512-gYVeJOTIRi2S52S8jewP28UV2khSqVSLnUKS6p3naf/oHM1z7IDS+PZ6jmDAhm3m1P9SZsAi3Jn6XAWuzlTEbg==}
+  '@tanstack/query-persist-client-core@5.79.0':
+    resolution: {integrity: sha512-j//0BLzzmUd9SoHesu5SIjmLE8eYuzGmHAeS02lh6mD1QyLuNEENps+DukKp0+fADtQ01MwSo3LNMF8A3j59+w==}
 
-  '@tanstack/query-sync-storage-persister@5.77.2':
-    resolution: {integrity: sha512-cmf46L0GNg1UT6fFyRgol8l3umxCfeTNkEiIJcKj2xJ9po3rj8VJfvCyBO91qeECdlGyjVuEErEqFvTH51DnDw==}
+  '@tanstack/query-sync-storage-persister@5.79.0':
+    resolution: {integrity: sha512-TMfOisngsLy3lQttHKPaO7cL72YD3PeOMlu8ni07srbk8W/F9f4HLLEdmmVqDfo+0FlvIgvdR2S763algI89sw==}
 
-  '@tanstack/react-query-devtools@5.77.2':
-    resolution: {integrity: sha512-TxB9boB0dmTJByAfh36kbhvohNHZiPJe+m+PCnbnfL+gdDHJbp174S6BwbU2dHx980njeAKFmWz8tgHNKG3itw==}
+  '@tanstack/react-query-devtools@5.79.0':
+    resolution: {integrity: sha512-YVRWxjxsWycWChjKxvaIAPdNC5LX0zpiHoNyTB8teDZpQstM1b7mCuAp3x60cjX1MhLoO3vbaeY29EKst4D4ug==}
     peerDependencies:
-      '@tanstack/react-query': ^5.77.2
+      '@tanstack/react-query': ^5.79.0
       react: ^18 || ^19
 
-  '@tanstack/react-query-persist-client@5.77.2':
-    resolution: {integrity: sha512-rE+mYxxwovtMWKcpSj9AU1eLtKRv+bsYVzlXZ/3WNZN8DohUc7BWr5WFWzR0QfFhMtDQN3yLUd7Z0Y8x5pgohg==}
+  '@tanstack/react-query-persist-client@5.79.0':
+    resolution: {integrity: sha512-LpiNa5LtrrE4j4VkoxhO+2KSeUzGyxFZuU4SojGrR7qEpU8Q4mhSqIe3E3Kx6AyyFaIzQTEzGAr0PKEecUDsEQ==}
     peerDependencies:
-      '@tanstack/react-query': ^5.77.2
+      '@tanstack/react-query': ^5.79.0
       react: ^18 || ^19
 
   '@tanstack/react-query@5.77.1':
@@ -2730,8 +2786,8 @@ packages:
     peerDependencies:
       react: ^18 || ^19
 
-  '@tanstack/react-query@5.77.2':
-    resolution: {integrity: sha512-BRHxWdy1mHmgAcYA/qy2IPLylT81oebLgkm9K85viN2Qol/Vq48t1dzDFeDIVQjTWDV96AmqsLNPlH5HjyKCxA==}
+  '@tanstack/react-query@5.79.0':
+    resolution: {integrity: sha512-DjC4JIYZnYzxaTzbg3osOU63VNLP67dOrWet2cZvXgmgwAXNxfS52AMq86M5++ILuzW+BqTUEVMTjhrZ7/XBuA==}
     peerDependencies:
       react: ^18 || ^19
 
@@ -6466,6 +6522,9 @@ packages:
   zod@3.24.2:
     resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
 
+  zod@3.25.48:
+    resolution: {integrity: sha512-0X1mz8FtgEIvaxGjdIImYpZEaZMrund9pGXm3M6vM7Reba0e2eI71KPjSCGXBfwKDPwPoywf6waUKc3/tFvX2Q==}
+
   zustand@5.0.5:
     resolution: {integrity: sha512-mILtRfKW9xM47hqxGIxCv12gXusoY/xTSHBYApXozR0HmQv299whhBeeAcRy+KrPPybzosvJBCOmVjq6x12fCg==}
     engines: {node: '>=12.20.0'}
@@ -7682,6 +7741,12 @@ snapshots:
       call-bind: 1.0.8
 
   '@lukeed/csprng@1.1.0': {}
+
+  '@nestjs/axios@4.0.0(@nestjs/common@10.4.18(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.1))(axios@1.9.0)(rxjs@7.8.1)':
+    dependencies:
+      '@nestjs/common': 10.4.18(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      axios: 1.9.0
+      rxjs: 7.8.1
 
   '@nestjs/cli@10.4.9':
     dependencies:
@@ -9014,29 +9079,29 @@ snapshots:
 
   '@tanstack/query-core@5.77.1': {}
 
-  '@tanstack/query-core@5.77.2': {}
+  '@tanstack/query-core@5.79.0': {}
 
   '@tanstack/query-devtools@5.76.0': {}
 
-  '@tanstack/query-persist-client-core@5.77.2':
+  '@tanstack/query-persist-client-core@5.79.0':
     dependencies:
-      '@tanstack/query-core': 5.77.2
+      '@tanstack/query-core': 5.79.0
 
-  '@tanstack/query-sync-storage-persister@5.77.2':
+  '@tanstack/query-sync-storage-persister@5.79.0':
     dependencies:
-      '@tanstack/query-core': 5.77.2
-      '@tanstack/query-persist-client-core': 5.77.2
+      '@tanstack/query-core': 5.79.0
+      '@tanstack/query-persist-client-core': 5.79.0
 
-  '@tanstack/react-query-devtools@5.77.2(@tanstack/react-query@5.77.2(react@19.0.0))(react@19.0.0)':
+  '@tanstack/react-query-devtools@5.79.0(@tanstack/react-query@5.79.0(react@19.0.0))(react@19.0.0)':
     dependencies:
       '@tanstack/query-devtools': 5.76.0
-      '@tanstack/react-query': 5.77.2(react@19.0.0)
+      '@tanstack/react-query': 5.79.0(react@19.0.0)
       react: 19.0.0
 
-  '@tanstack/react-query-persist-client@5.77.2(@tanstack/react-query@5.77.2(react@19.0.0))(react@19.0.0)':
+  '@tanstack/react-query-persist-client@5.79.0(@tanstack/react-query@5.79.0(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@tanstack/query-persist-client-core': 5.77.2
-      '@tanstack/react-query': 5.77.2(react@19.0.0)
+      '@tanstack/query-persist-client-core': 5.79.0
+      '@tanstack/react-query': 5.79.0(react@19.0.0)
       react: 19.0.0
 
   '@tanstack/react-query@5.77.1(react@19.0.0)':
@@ -9044,9 +9109,9 @@ snapshots:
       '@tanstack/query-core': 5.77.1
       react: 19.0.0
 
-  '@tanstack/react-query@5.77.2(react@19.0.0)':
+  '@tanstack/react-query@5.79.0(react@19.0.0)':
     dependencies:
-      '@tanstack/query-core': 5.77.2
+      '@tanstack/query-core': 5.79.0
       react: 19.0.0
 
   '@tanstack/react-table@8.21.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)':
@@ -11363,7 +11428,7 @@ snapshots:
       '@babel/parser': 7.27.3
       '@istanbuljs/schema': 0.1.3
       istanbul-lib-coverage: 3.2.2
-      semver: 7.7.1
+      semver: 7.7.2
     transitivePeerDependencies:
       - supports-color
 
@@ -11667,7 +11732,7 @@ snapshots:
       jest-util: 29.7.0
       natural-compare: 1.4.0
       pretty-format: 29.7.0
-      semver: 7.7.1
+      semver: 7.7.2
     transitivePeerDependencies:
       - supports-color
 
@@ -11887,7 +11952,7 @@ snapshots:
 
   make-dir@4.0.0:
     dependencies:
-      semver: 7.7.1
+      semver: 7.7.2
 
   make-error@1.3.6: {}
 
@@ -13564,6 +13629,8 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   zod@3.24.2: {}
+
+  zod@3.25.48: {}
 
   zustand@5.0.5(@types/react@19.0.10)(react@19.0.0)(use-sync-external-store@1.5.0(react@19.0.0)):
     optionalDependencies:

@@ -1,13 +1,23 @@
-import { Controller, Get } from '@nestjs/common';
-import { Section } from 'src/types';
-import { SectionService } from './section.service';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { CategorySection } from 'src/types';
+import { CategorySectionService } from './section.service';
+import { CreateCategorySectionDto } from './dto/create-category.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
-@Controller('section')
-export class SectionController {
-  constructor(private readonly sectionService: SectionService) {}
+@Controller('categorySection')
+export class CategorySectionController {
+  constructor(private readonly sectionService: CategorySectionService) {}
 
   @Get()
-  async getAllSections(): Promise<Section[] | null> {
+  async getAllSections(): Promise<CategorySection[] | null> {
     return this.sectionService.getAllSections();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  async createSection(
+    @Body() createCategorySectionDto: CreateCategorySectionDto,
+  ): Promise<CategorySection | null> {
+    return this.sectionService.createCategorySection(createCategorySectionDto);
   }
 }

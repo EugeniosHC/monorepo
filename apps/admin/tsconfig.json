@@ -8,6 +8,7 @@
       "@eugenios/types/*": ["../../packages/types/*"],
       "@eugenios/react-query/*": ["../../packages/react-query/*"],
       "@eugenios/services/*": ["../../packages/services/*"],
+      "@eugenios/icons/*": ["../../packages/icons/*"],
 
     },
     "types": ["node", "next/image-types/global"]

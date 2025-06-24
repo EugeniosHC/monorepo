@@ -65,8 +65,8 @@ export async function updateCategory(data: EditCategory): Promise<Category> {
   }
 }
 
-export function deleteCategory(slug: string): Promise<Category> {
-  return api.delete(`category/${slug}`);
+export function deleteCategory(id: string): Promise<Category> {
+  return api.delete(`category/${id}`);
 }
 
 export async function addProductInCategory(categoryId: string, productId: string): Promise<Category> {

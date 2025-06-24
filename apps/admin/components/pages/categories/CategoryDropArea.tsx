@@ -1,7 +1,7 @@
 // @ts-ignore
 import { useDrop } from "react-dnd";
 import { useRouter } from "next/navigation";
-import { Category, Product, Section } from "@eugenios/types";
+import { Category, Product, CategorySection } from "@eugenios/types";
 import { Button } from "@eugenios/ui/components/button";
 import { Card } from "@eugenios/ui/components/card";
 import { Badge } from "@eugenios/ui/components/badge";
@@ -31,7 +31,7 @@ import Image from "next/image";
 interface CategoryDropAreaProps {
   category: Category;
   products: Product[] | null;
-  sections: Section[] | null;
+  sections: CategorySection[] | null;
   activeCategory: string | null;
   setActiveCategory: (id: string) => void;
 }
@@ -91,9 +91,9 @@ export const CategoryDropArea = ({
   const handleRemoveSectionFromCategory = (sectionId: string) => {
     removeSectionFromCategory.mutate({ categoryId: category.id, sectionId });
   };
-  const handleDeleteCategory = (categorySlug: string) => {
+  const handleDeleteCategory = (id: string) => {
     try {
-      deleteCategory.mutateAsync(categorySlug);
+      deleteCategory.mutateAsync(id);
     } catch (e) {
       console.error("Error deleting category:", e);
     } finally {
@@ -128,7 +128,7 @@ export const CategoryDropArea = ({
             Editar
           </Button>
           <Link
-            href={`/produtos/${category.slug}`}
+            href={`${process.env.NEXT_PUBLIC_SHOP_URL}/produtos/${category.slug}`}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Ver categoria"
@@ -164,7 +164,7 @@ export const CategoryDropArea = ({
                 </Button>
                 <Button
                   variant="destructive"
-                  onClick={() => handleDeleteCategory(category.slug)}
+                  onClick={() => handleDeleteCategory(category.id)}
                   disabled={deleteCategory.isPending}
                 >
                   {deleteCategory.isPending ? "Excluindo..." : "Excluir"}

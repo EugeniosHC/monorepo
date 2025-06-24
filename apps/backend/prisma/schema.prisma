@@ -8,6 +8,38 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Website {
+  id        String    @id @default(uuid())
+  name      String
+  url       String    @unique
+  sections  Section[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Section {
+  id          String      @id @default(uuid())
+  title       String      @unique
+  description String?
+  type        SectionType
+  data        Json
+  isActive    Boolean     @default(false)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  websiteId   String
+  website     Website     @relation(fields: [websiteId], references: [id])
+}
+
+enum SectionType {
+  HERO
+  MARQUEE
+  ABOUTUS
+  SERVICES
+  BANNER
+  FEEDBACK
+  CONTACT
+}
+
 model User {
   id        String   @id @default(uuid())
   name      String

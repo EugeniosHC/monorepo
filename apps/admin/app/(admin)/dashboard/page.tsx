@@ -1,6 +1,6 @@
 import type React from "react";
 import Link from "next/link";
-import { Layers, Package, ShoppingCart, Tag, Users } from "lucide-react";
+import { CameraIcon, FolderIcon, Layers, LayoutTemplate, Package, ShoppingCart, Tag, Users } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@eugenios/ui/components/card";
 
 interface DashboardCardProps {
@@ -41,13 +41,13 @@ export default function DashboardPage() {
           <DashboardCard
             title="Secções"
             description="Gerencie as secções do seu site"
-            icon={<Layers className="h-6 w-6" />}
+            icon={<LayoutTemplate className="h-6 w-6" />}
             href="/dashboard/sections"
           />
           <DashboardCard
             title="Categorias"
             description="Organize seus produtos em categorias"
-            icon={<Tag className="h-6 w-6" />}
+            icon={<FolderIcon className="h-6 w-6" />}
             href="/dashboard/categories"
           />
           <DashboardCard
@@ -57,16 +57,10 @@ export default function DashboardPage() {
             href="/dashboard/products"
           />
           <DashboardCard
-            title="Pedidos"
-            description="Visualize e gerencie pedidos"
-            icon={<ShoppingCart className="h-6 w-6" />}
-            href="/dashboard/orders"
-          />
-          <DashboardCard
-            title="Clientes"
-            description="Gerencie seus clientes"
-            icon={<Users className="h-6 w-6" />}
-            href="/dashboard/customers"
+            title="Galeria"
+            description="Visualize e gerencie sua galeria"
+            icon={<CameraIcon className="h-6 w-6" />}
+            href="/dashboard/gallery"
           />
         </div>
       </div>

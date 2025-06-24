@@ -21,7 +21,7 @@ export default function HeroSection() {
             <source src="/videos/hero.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-black/100 to-black/40" />
+          <div className="absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100" />
         </div>
       </div>
       <div className="absolute inset-0 bg-black/40 flex items-center">
@@ -36,7 +36,10 @@ export default function HeroSection() {
                 >
                   HEALTH & SPA CLUB
                 </Typography>
-                <Link href="/packs/massagens" className="text-white text-xl relative group inline-flex items-center">
+                <Link
+                  href={`${process.env.NEXT_PUBLIC_WEB_URL}`}
+                  className="text-white text-xl relative group inline-flex items-center"
+                >
                   <span>Voltar para o Health Club</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

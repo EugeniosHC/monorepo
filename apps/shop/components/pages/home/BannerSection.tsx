@@ -27,7 +27,10 @@ export default function BannerSection() {
                 <Typography as="h2" variant="title" className="font-bold leading-relaxed mb-6">
                   Descubra mais sobre o melhor <br /> Health Club de Famalicão
                 </Typography>
-                <Link href="/packs/massagens" className="text-white text-xl relative group inline-flex items-center">
+                <Link
+                  href={`${process.env.NEXT_PUBLIC_WEB_URL}`}
+                  className="text-white text-xl relative group inline-flex items-center"
+                >
                   <span>Voltar para o Health Club</span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

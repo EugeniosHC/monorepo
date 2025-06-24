@@ -65,7 +65,7 @@ export default function Header() {
         setIsMenuOpen(false);
 
         window.scrollTo({
-          top: targetElement.offsetTop - 80, // Offset to account for header height
+          top: targetElement.offsetTop, // Offset to account for header height
           behavior: "smooth",
         });
       }
@@ -104,6 +104,7 @@ export default function Header() {
             alt="Eugénios HC Logo"
             width={50}
             height={50}
+            priority
             className="transition-transform duration-300"
           />
           {/* 

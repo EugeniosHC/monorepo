@@ -13,8 +13,6 @@ export async function getImages(serverToken?: string): Promise<ImageGallery> {
 
     const response = await api.get("cloudflare", { headers });
 
-    console.log("response", response.data);
-
     if (!response.data) {
       throw new Error("Nenhuma imagem encontrada");
     }

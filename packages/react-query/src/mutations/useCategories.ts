@@ -104,11 +104,11 @@ export function useDeleteCategory() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (categorySlug: string) => {
-      return await deleteCategory(categorySlug);
+    mutationFn: async (id: string) => {
+      return await deleteCategory(id);
     },
 
-    onMutate: async (categorySlug: string) => {
+    onMutate: async (id: string) => {
       await queryClient.cancelQueries({ queryKey: QueryKeys.getCategories() });
 
       const previousCategories = queryClient.getQueryData<Category[]>(QueryKeys.getCategories());
@@ -116,7 +116,7 @@ export function useDeleteCategory() {
       if (previousCategories) {
         queryClient.setQueryData<Category[]>(
           QueryKeys.getCategories(),
-          previousCategories.filter((cat) => cat.slug !== categorySlug)
+          previousCategories.filter((cat) => cat.id !== id)
         );
       }
 

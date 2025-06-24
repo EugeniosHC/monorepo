@@ -1,6 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { QueryKeys } from "@eugenios/react-query/queryKeys";
-import { getCategories, getCategory, getRelatedCategories } from "@eugenios/services/src/categoryService";
+import { getCategories, getCategory, getRelatedCategories } from "@eugenios/services/categoryService";
 
 
 export async function prefetchCategories(queryClient: QueryClient) {

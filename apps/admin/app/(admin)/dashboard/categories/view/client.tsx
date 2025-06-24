@@ -7,27 +7,39 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { useRouter } from "next/navigation";
 import { Button } from "@eugenios/ui/components/button";
 import { useProducts } from "@eugenios/react-query/queries/useProducts";
-import { useSections } from "@eugenios/react-query/queries/useSections";
+import { useCategorySections } from "@eugenios/react-query/queries/useCategorySections";
 import { useCategories } from "@eugenios/react-query/queries/useCategories";
 import QueryDebugger from "@/components/debug/QueryDebugger";
 import DraggableProduct from "@/components/pages/categories/DraggableProduct";
 import DraggableSection from "@/components/pages/categories/DraggableSection";
 import CategoryDropArea from "@/components/pages/categories/CategoryDropArea";
+import { Plus } from "lucide-react";
+import { CreateProductModal } from "@/components/pages/products/createProductModal";
 
 export default function CategoryboardClient() {
   const router = useRouter();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [isCreateProductModalOpen, setCreateProductModalOpen] = useState(false);
 
-  const { data: categories = [], isLoading: isLoadingCategories } = useCategories();
-  const { data: products = [], isLoading: isLoadingProducts } = useProducts();
-  const { data: sections = [], isLoading: isLoadingSections } = useSections();
+  const { data: categories = [], isLoading: isLoadingCategories, isError: isErrorCategories } = useCategories();
+  const { data: products = [], isLoading: isLoadingProducts, isError: isErrorProducts } = useProducts();
+  const { data: sections = [], isLoading: isLoadingSections, isError: isErrorSections } = useCategorySections();
 
   // Verificar se todos os dados estão sendo carregados
   const isLoading = isLoadingCategories || isLoadingProducts || isLoadingSections;
 
+  const isError = isErrorCategories || isErrorProducts || isErrorSections;
+
+
+
   if (isLoading) {
     return <div className="p-8 text-center">Carregando...</div>;
   }
+
+  if (isError) {
+    return <div className="p-8 text-center">Erro ao carregar dados.</div>;
+  }
+
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -63,7 +75,13 @@ export default function CategoryboardClient() {
           </div>
           <div className="col-span-1 sticky top-24 self-start z-10">
             <div className="mb-8">
-              <h5 className="font-semibold mb-4">Produtos Disponíveis</h5>
+              <div className="flex items-center justify gap-2 mb-4">
+                <h5 className="font-semibold">Produtos Disponíveis</h5>
+                <Button variant="outline" onClick={() => setCreateProductModalOpen(true)}>
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
+
               <div className="border rounded p-4 bg-gray-50 max-h-[300px] overflow-y-auto">
                 {!products ? (
                   <p className="text-gray-500">Nenhum produto disponível.</p>
@@ -96,6 +114,10 @@ export default function CategoryboardClient() {
             </div>
           </div>{" "}
         </div>
+        <CreateProductModal
+          isCreateModalOpen={isCreateProductModalOpen}
+          setIsCreateModalOpen={setCreateProductModalOpen}
+        />
       </div>
 
       {/* Debug component - apenas em ambiente de desenvolvimento */}

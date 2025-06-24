@@ -1,0 +1,17 @@
+{
+  "extends": "@eugenios/typescript-config/react-library.json",
+  "compilerOptions": {
+     "module": "CommonJS",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@eugenios/icons/*": ["./src/*"]
+    }
+  },
+  "include": ["./src/**/*"],
+  "exports": {
+        ".": "./src/index.ts",
+        "./index": "./src/index.ts",
+  },
+  "exclude": ["node_modules", "dist"]
+}

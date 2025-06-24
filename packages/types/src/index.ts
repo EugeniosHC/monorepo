@@ -1,8 +1,68 @@
+// Tipos TypeScript específicos para este componente
+export interface Slide {
+  title: string;
+  imageAlt: string;
+  imageUrl: string;
+  subtitle: string;
+  buttonUrl: string;
+  buttonIcon: string;
+  buttonText: string;
+  buttonIsVisible: boolean;
+}
+
+export interface Highlight {
+  icon: string;
+  description: string;
+  iconLibrary: string;
+}
+
+export interface SectionData {
+  slides?: Slide[];
+  highlights?: Highlight[];
+}
+
+// Tipo para os dados mínimos necessários para criar uma seção
+export interface CreateSectionData {
+  title: string;
+  description: string;
+  type: SectionType;
+  data: any; // Dados específicos da seção (slides, highlights, etc.)
+}
+
+// Usar uma interface compatível que pode aceitar tanto BaseSection quanto nossa extensão
 export interface Section {
   id: string;
   title: string;
-  content: string; // Conteúdo pode ser texto, lista simples ou lista de key/value
+  description: string; // Made required to match the sample data
+  type: string; // Mantemos como string para aceitar valores como "HERO" e "MARQUEE"
+  data: SectionData | any; // Flexível para aceitar diferentes estruturas
+  isActive: boolean;
+  websiteId: string;
+  createdAt: string; // Made required to match the sample data
+  updatedAt: string; // Made required to match the sample data
 }
+
+export enum SectionType {
+  HERO = "HERO",
+  MARQUEE = "MARQUEE",
+  ABOUTUS = "ABOUTUS",
+  SERVICES = "SERVICES",
+  BANNER = "BANNER",
+  FEEDBACK = "FEEDBACK",
+  CONTACT = "CONTACT",
+}
+
+export interface SectionResponse {
+  type: SectionType;
+  section: Section | null;
+}
+
+export interface CategorySection {
+  id: string;
+  title: string;
+  content: string;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -31,7 +91,7 @@ export interface Category {
   description: string;
   helpDescription: string; // Descrição de ajuda para a categoria
   imageUrl: string;
-  sections?: Section[]; // Seções associadas a esta categoria
+  sections?: CategorySection[]; // Seções associadas a esta categoria
   products?: Product[]; // Produtos associados a esta categoria
 }
 
@@ -86,3 +146,13 @@ export interface DragItem {
   type: string;
 }
 
+export interface HeroSlide {
+  title: string;
+  subtitle: string;
+  buttonIsVisible: boolean;
+  buttonText: string;
+  buttonUrl: string;
+  buttonIcon: string;
+  imageUrl: string;
+  imageAlt: string;
+}

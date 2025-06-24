@@ -111,7 +111,7 @@ export default function Footer() {
               </ul>
             </div>
             <div className="flex items-end justify-center">
-              <Image className="pb-1" src="/images/logos/white.svg" alt="Eugénios HC Logo" width={50} height={50} />
+              <Image className="pb-1" src="/images/logos/white.svg" alt="Eugénios HC Logo" priority width={50} height={50} />
             </div>
           </div>
         </div>

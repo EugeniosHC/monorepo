@@ -1,4 +1,4 @@
-import { Product, Section, Category } from 'src/types'; // Ajusta o path conforme tua estrutura
+import { Product, CategorySection, Category } from 'src/types'; // Ajusta o path conforme tua estrutura
 import {
   Category as PrismaCategory,
   Product as PrismaProduct,
@@ -16,7 +16,7 @@ export function mapProductFromPrisma(product: PrismaProduct): Product {
   };
 }
 
-export function mapSectionFromPrisma(section: PrismaSection): Section {
+export function mapSectionFromPrisma(section: PrismaSection): CategorySection {
   return {
     id: section.id,
     title: section.title,

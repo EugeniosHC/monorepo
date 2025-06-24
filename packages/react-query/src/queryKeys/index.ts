@@ -8,9 +8,13 @@ export const QueryKeys = {
   getRelatedCategories: (slug: string) => ["categories", slug, "related"] as const,
   // getBySlug: (slug: string) => ["products", 'products', slug] as const, // Se existir
 
+  getSectionsByWebsite: (websiteName: string) => ["sections", websiteName] as const,
+  getSectionByWebsiteAndType: (websiteId: string, type: string) => ["sections", websiteId, type] as const,
+  getActiveSections: () => ["sections", "active"] as const,
+
   // Novas chaves para buscar 'all'
   getAllProducts: () => ["products", "all"] as const,
-  getAllSections: () => ["sections", "all"] as const,
+  getAllCategorySections: () => ["category", "sections", "all"] as const,
 
   getImages: () => ["images"] as const,
 
