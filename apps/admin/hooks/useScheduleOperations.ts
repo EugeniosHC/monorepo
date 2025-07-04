@@ -59,12 +59,9 @@ export function useUpdateSchedule() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, scheduleData }: { id: string; scheduleData: Partial<CreateScheduleDTO> }) => {
-      // Corrigido para atender ao formato esperado pelo backend: UpdateScheduleDto que estende CreateScheduleDto
-      const { data } = await apiClient.put<Schedule>(`/schedules`, {
-        id, // Usar id diretamente, não scheduleId
-        ...scheduleData,
-      });
+    mutationFn: async (scheduleData: CreateScheduleDTO & { id: string }) => {
+      // Formatação correta para o endpoint de atualização
+      const { data } = await apiClient.put<Schedule>(`/schedules`, scheduleData);
       return data;
     },
     onSuccess: (updatedSchedule) => {
@@ -259,6 +256,7 @@ export interface Schedule {
   dataDesativacao?: string;
   aprovadoPor?: string;
   emailAprovador?: string;
+  atualizadoPor?: string; // Novo campo para registrar quem atualizou o schedule
   dataAprovacao?: string;
   notaAprovacao?: string;
   createdAt: string;

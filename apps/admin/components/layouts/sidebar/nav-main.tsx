@@ -54,7 +54,8 @@ export function NavMain({
                       <ChevronRight />
                       <span className="sr-only">Toggle</span>
                     </SidebarMenuAction>
-                  </CollapsibleTrigger>                  <CollapsibleContent>
+                  </CollapsibleTrigger>{" "}
+                  <CollapsibleContent>
                     <SidebarMenuSub>
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>

@@ -86,7 +86,7 @@ const config = {
           800: "#515151",
           900: "#454545",
         },
-        primary: {
+      primary: {
           DEFAULT: "#293c59",
           foreground: "hsl(var(--primary-foreground))",
           light: "#3e5a86",

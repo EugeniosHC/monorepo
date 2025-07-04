@@ -14,6 +14,7 @@ import { Separator } from "@eugenios/ui/components/separator";
 import { Badge } from "@eugenios/ui/components/badge";
 import { Map, Calendar, Eye, Printer, MoreHorizontal, Trash2, Plus, X } from "lucide-react";
 import { CheckCircle, Edit, Copy, Clock } from "lucide-react";
+import { ScheduleCard, ScheduleAction } from "@/components/schedule/ScheduleCard";
 import {
   Dialog,
   DialogContent,
@@ -34,7 +35,7 @@ import {
 } from "@/hooks/useSchedules";
 import { useUpdateScheduleStatus, useDeleteSchedule } from "@/hooks/useScheduleOperations";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { pt, ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 
 export default function ClassesPage() {
@@ -82,7 +83,7 @@ export default function ClassesPage() {
   // Função para formatar data
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";
-    return format(new Date(dateString), "dd/MM/yyyy às HH:mm", { locale: ptBR });
+    return format(new Date(dateString), "dd/MM/yyyy' às 'HH:mm", { locale: ptBR });
   };
 
   // Função para submeter um rascunho (mudar para PENDENTE)
@@ -122,7 +123,9 @@ export default function ClassesPage() {
     setActivationDate(tomorrowStr || "");
     setActivationType("now");
     setApprovalDialogOpen(true);
-  }; // Função para aprovar uma programação pendente
+  };
+
+  // Função para aprovar uma programação pendente
   const handleApproveSchedule = async () => {
     if (!scheduleToApprove) return;
 
@@ -147,7 +150,6 @@ export default function ClassesPage() {
 
         // A partir de agora não precisamos mais mostrar a mensagem de implementação pendente
         setNeedSchedulingImplementation(false);
-
       }
       // Não precisa mais recarregar a página, o invalidateQueries cuida disso
     } catch (error) {
@@ -291,705 +293,204 @@ export default function ClassesPage() {
           </Button>
         </div>
 
-        {/* Informações sobre o que pode ser excluído */}
-        <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-md text-gray-700">
-          <h3 className="font-semibold mb-1">Gerenciando programações</h3>
-          <p className="text-sm">
-            <strong>Nota:</strong> Apenas programações em estado de rascunho ou rejeitadas podem ser excluídas. Para
-            excluir uma programação pendente ou aprovada, primeiro é necessário rejeitá-la usando a opção "Rejeitar" no
-            menu.
-          </p>
-        </div>
-
         {/* Programação ativa */}
-        <Card className="mb-6">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle>Programação ativa</CardTitle>
-              <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">
-                <CheckCircle className="mr-1 h-3 w-3" />
-                Ativo
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {activeSchedule ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold">{activeSchedule.titulo}</h3>
-                    <div className="flex flex-col text-sm text-muted-foreground mt-1 space-y-1">
-                      <div className="flex items-center">
-                        <Calendar className="mr-1 h-4 w-4" />
-                        <span>Ativado em {formatDate(activeSchedule.dataAtivacao || activeSchedule.createdAt)}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <span className="font-medium mr-1">Criado por:</span>
-                        <span>
-                          {activeSchedule.criadoPor} ({activeSchedule.emailCriador})
-                        </span>
-                      </div>
-                      {activeSchedule.aprovadoPor && (
-                        <div className="flex items-center">
-                          <span className="font-medium mr-1">Aprovado por:</span>
-                          <span>
-                            {activeSchedule.aprovadoPor} ({activeSchedule.emailAprovador})
-                          </span>
-                        </div>
-                      )}
-                      {activeSchedule.dataAprovacao && (
-                        <div className="flex items-center">
-                          <span className="font-medium mr-1">Aprovado em:</span>
-                          <span>{formatDate(activeSchedule.dataAprovacao)}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => router.push(`/dashboard/classes/${activeSchedule.id}`)}
-                    >
-                      <Eye className="mr-1 h-4 w-4" />
-                      Ver
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Printer className="mr-1 h-4 w-4" />
-                      Imprimir
-                    </Button>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEditSchedule(activeSchedule.id)}>
-                          <Edit className="mr-2 h-4 w-4" />
-                          Editar
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDuplicateSchedule(activeSchedule.id, activeSchedule.titulo)}
-                          disabled={actionInProgress === activeSchedule.id}
-                        >
-                          {actionInProgress === activeSchedule.id ? (
-                            <>Processando...</>
-                          ) : (
-                            <>
-                              <Copy className="mr-2 h-4 w-4" />
-                              Duplicar
-                            </>
-                          )}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-                <div className="text-sm">
-                  <p>{activeSchedule.descricao || "Sem descrição"}</p>
-                  <p className="mt-2">
-                    <span className="font-medium">Orçamento:</span>
-                    {activeSchedule.orcamento?.toFixed(2) || "0.00"} €
-                  </p>
-                </div>
+        {activeSchedule && (
+          <ScheduleCard
+            title="Programação ativa"
+            schedules={activeSchedule ? [activeSchedule] : []}
+            status={ScheduleStatus.ATIVO}
+            emptyMessage="Nenhuma programação ativa."
+            actions={[
+              {
+                label: "Editar",
+                icon: <Edit className="mr-2 h-4 w-4" />,
+                onClick: (id) => handleEditSchedule(id),
+              },
+              {
+                label: "Duplicar",
+                icon: <Copy className="mr-2 h-4 w-4" />,
+                onClick: (id, title) => handleDuplicateSchedule(id, title || ""),
+                disabled: true,
+              },
+            ]}
+            isProcessing={actionInProgress}
+            showCreateButton={!activeSchedule}
+            onCreateClick={() => router.push("/dashboard/classes/create")}
+            formatDate={formatDate}
+          />
+        )}
+
+        {!activeSchedule && (
+          <Card className="mb-6">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <CardTitle>Programação ativa</CardTitle>
+                <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">
+                  <CheckCircle className="mr-1 h-3 w-3" />
+                  Ativo
+                </Badge>
               </div>
-            ) : (
+            </CardHeader>
+            <CardContent>
               <div className="py-4 text-center text-muted-foreground">
                 <p>Nenhuma programação ativa.</p>
                 <Button variant="outline" className="mt-2" onClick={() => router.push("/dashboard/classes/create")}>
                   Criar uma programação
                 </Button>
               </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Programações pendentes */}
-        <Card className="mb-6">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle>Programações pendentes</CardTitle>
-              <Badge variant="outline" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
-                <Clock className="mr-1 h-3 w-3" />
-                Pendente
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {pendingSchedules.length > 0 ? (
-              <div className="space-y-4">
-                {pendingSchedules.map((schedule: Schedule) => (
-                  <div key={schedule.id} className="border-b pb-4 last:border-0 last:pb-0">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-lg font-semibold">{schedule.titulo}</h3>
-                        <div className="flex flex-col text-sm text-muted-foreground mt-1 space-y-1">
-                          <div className="flex items-center">
-                            <Calendar className="mr-1 h-4 w-4" />
-                            <span>Criado em {formatDate(schedule.createdAt)}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <span className="font-medium mr-1">Criado por:</span>
-                            <span>
-                              {schedule.criadoPor} ({schedule.emailCriador})
-                            </span>
-                          </div>
-                          <div className="flex items-center">
-                            <span className="font-medium mr-1">Atualizado em:</span>
-                            <span>{formatDate(schedule.updatedAt)}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => router.push(`/dashboard/classes/${schedule.id}`)}
-                        >
-                          <Eye className="mr-1 h-4 w-4" />
-                          Ver
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => handleInitiateApprove(schedule.id)}
-                              disabled={actionInProgress === schedule.id}
-                            >
-                              {actionInProgress === schedule.id ? (
-                                <>Processando...</>
-                              ) : (
-                                <>
-                                  <CheckCircle className="mr-2 h-4 w-4" />
-                                  Aprovar
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleRejectSchedule(schedule.id)}
-                              disabled={actionInProgress === schedule.id}
-                            >
-                              {actionInProgress === schedule.id ? (
-                                <>Processando...</>
-                              ) : (
-                                <>
-                                  <X className="mr-2 h-4 w-4" />
-                                  Rejeitar
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleEditSchedule(schedule.id)}>
-                              <Edit className="mr-2 h-4 w-4" />
-                              Editar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => handleDeleteSchedule(schedule.id)}
-                              disabled={actionInProgress === schedule.id}
-                            >
-                              {actionInProgress === schedule.id ? (
-                                <>Processando...</>
-                              ) : (
-                                <>
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Excluir
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                    <div className="text-sm mt-2">
-                      <p>{schedule.descricao || "Sem descrição"}</p>
-                      <p className="mt-2">
-                        <span className="font-medium">Orçamento:</span>
-                        {schedule.orcamento?.toFixed(2) || "0.00"} €
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-4 text-center text-muted-foreground">
-                <p>Nenhuma programação pendente.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Programações aprovadas */}
-        <Card className="mb-6">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle>Programações aprovadas</CardTitle>
-              <Badge variant="outline" className="bg-green-100 text-green-800 hover:bg-green-100">
-                <CheckCircle className="mr-1 h-3 w-3" />
-                Aprovado
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {needSchedulingImplementation && (
-              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md text-blue-700">
-                <p>
-                  <strong>Nota:</strong> A funcionalidade de agendamento futuro está em desenvolvimento. Por enquanto,
-                  você pode ativar a programação manualmente quando desejar usando o botão "Ativar agora".
-                </p>
-              </div>
-            )}
-            {approvedSchedules.length > 0 ? (
-              <div className="space-y-4">
-                {approvedSchedules.map((schedule: Schedule) => (
-                  <div key={schedule.id} className="border-b pb-4 last:border-0 last:pb-0">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-lg font-semibold">{schedule.titulo}</h3>
-                        <div className="flex flex-col text-sm text-muted-foreground mt-1 space-y-1">
-                          <div className="flex items-center">
-                            <Calendar className="mr-1 h-4 w-4" />
-                            <span>Aprovado em {formatDate(schedule.dataAprovacao)}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <span className="font-medium mr-1">Aprovado por:</span>
-                            <span>
-                              {schedule.aprovadoPor} ({schedule.emailAprovador})
-                            </span>
-                          </div>
-                          <div className="flex items-center">
-                            <span className="font-medium mr-1">Criado por:</span>
-                            <span>
-                              {schedule.criadoPor} ({schedule.emailCriador})
-                            </span>
-                          </div>
-                          {schedule.notaAprovacao && (
-                            <div className="flex items-start">
-                              <span className="font-medium mr-1">Nota:</span>
-                              <span className="italic">{schedule.notaAprovacao}</span>
-                            </div>
-                          )}
-                          {schedule.dataAtivacao && (
-                            <span className="ml-2 px-2 py-0.5 bg-blue-50 text-blue-700 rounded-md text-xs">
-                              Ativação agendada para: {new Date(schedule.dataAtivacao).toLocaleDateString()}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => router.push(`/dashboard/classes/${schedule.id}`)}
-                        >
-                          <Eye className="mr-1 h-4 w-4" />
-                          Ver
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => handleActivateSchedule(schedule.id)}
-                              disabled={actionInProgress === schedule.id}
-                            >
-                              {actionInProgress === schedule.id ? (
-                                <>Processando...</>
-                              ) : (
-                                <>
-                                  <CheckCircle className="mr-2 h-4 w-4" />
-                                  Ativar agora
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleRejectSchedule(schedule.id)}
-                              disabled={actionInProgress === schedule.id}
-                            >
-                              {actionInProgress === schedule.id ? (
-                                <>Processando...</>
-                              ) : (
-                                <>
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Rejeitar
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => handleEditSchedule(schedule.id)}>
-                              <Edit className="mr-2 h-4 w-4" />
-                              Editar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => handleDeleteSchedule(schedule.id)}
-                              disabled={actionInProgress === schedule.id}
-                            >
-                              {actionInProgress === schedule.id ? (
-                                <>Processando...</>
-                              ) : (
-                                <>
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Excluir
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                    <div className="text-sm mt-2">
-                      <p>{schedule.descricao || "Sem descrição"}</p>
-                      <p className="mt-2">
-                        <span className="font-medium">Orçamento:</span>
-                        {schedule.orcamento?.toFixed(2) || "0.00"} €
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-4 text-center text-muted-foreground">
-                <p>Nenhuma programação aprovada aguardando ativação.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <ScheduleCard
+          title="Programações aprovadas"
+          schedules={approvedSchedules}
+          status={ScheduleStatus.APROVADO}
+          emptyMessage="Nenhuma programação aprovada aguardando ativação."
+          actions={[
+            {
+              label: "Ativar agora",
+              icon: <CheckCircle className="mr-2 h-4 w-4" />,
+              onClick: (id) => handleActivateSchedule(id),
+              disabled: true,
+            },
+            {
+              label: "Rejeitar",
+              icon: <X className="mr-2 h-4 w-4" />,
+              onClick: (id) => handleRejectSchedule(id),
+              disabled: true,
+            },
+            {
+              label: "Editar",
+              icon: <Edit className="mr-2 h-4 w-4" />,
+              onClick: (id) => handleEditSchedule(id),
+            },
+            {
+              label: "Excluir",
+              icon: <Trash2 className="mr-2 h-4 w-4" />,
+              onClick: (id) => handleDeleteSchedule(id),
+              disabled: true,
+              destructive: true,
+            },
+          ]}
+          isProcessing={actionInProgress}
+          formatDate={formatDate}
+        />
+
+        {/* Programações pendentes */}
+        <ScheduleCard
+          title="Programações pendentes"
+          schedules={pendingSchedules}
+          status={ScheduleStatus.PENDENTE}
+          emptyMessage="Nenhuma programação pendente."
+          actions={[
+            {
+              label: "Aprovar",
+              icon: <CheckCircle className="mr-2 h-4 w-4" />,
+              onClick: (id) => handleInitiateApprove(id),
+              disabled: true,
+            },
+            {
+              label: "Rejeitar",
+              icon: <X className="mr-2 h-4 w-4" />,
+              onClick: (id) => handleRejectSchedule(id),
+              disabled: true,
+            },
+            {
+              label: "Editar",
+              icon: <Edit className="mr-2 h-4 w-4" />,
+              onClick: (id) => handleEditSchedule(id),
+            },
+            {
+              label: "Excluir",
+              icon: <Trash2 className="mr-2 h-4 w-4" />,
+              onClick: (id) => handleDeleteSchedule(id),
+              disabled: true,
+              destructive: true,
+            },
+          ]}
+          isProcessing={actionInProgress}
+          formatDate={formatDate}
+        />
 
         {/* Rascunhos */}
-        <Card className="mb-6">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle>Rascunhos</CardTitle>
-              <Badge variant="outline" className="bg-gray-100 text-gray-800 hover:bg-gray-100">
-                <Edit className="mr-1 h-3 w-3" />
-                Rascunho
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {rascunhos.length > 0 ? (
-              <div className="space-y-4">
-                {rascunhos.map((schedule: Schedule) => (
-                  <div key={schedule.id} className="border-b pb-4 last:border-0 last:pb-0">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-lg font-semibold">{schedule.titulo}</h3>
-                        <div className="flex flex-col text-sm text-muted-foreground mt-1 space-y-1">
-                          <div className="flex items-center">
-                            <Calendar className="mr-1 h-4 w-4" />
-                            <span>Atualizado em {formatDate(schedule.updatedAt)}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <span className="font-medium mr-1">Criado por:</span>
-                            <span>
-                              {schedule.criadoPor} ({schedule.emailCriador})
-                            </span>
-                          </div>
-                          <div className="flex items-center">
-                            <span className="font-medium mr-1">Criado em:</span>
-                            <span>{formatDate(schedule.createdAt)}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => router.push(`/dashboard/classes/${schedule.id}`)}
-                        >
-                          <Eye className="mr-1 h-4 w-4" />
-                          Ver
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEditSchedule(schedule.id)}>
-                              <Edit className="mr-2 h-4 w-4" />
-                              Editar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleSubmitSchedule(schedule.id)}
-                              disabled={actionInProgress === schedule.id}
-                            >
-                              {actionInProgress === schedule.id ? (
-                                <>Processando...</>
-                              ) : (
-                                <>
-                                  <CheckCircle className="mr-2 h-4 w-4" />
-                                  Submeter
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => handleDeleteSchedule(schedule.id)}
-                              disabled={actionInProgress === schedule.id}
-                            >
-                              {actionInProgress === schedule.id ? (
-                                <>Processando...</>
-                              ) : (
-                                <>
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Excluir
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                    <div className="text-sm mt-2">
-                      <p>{schedule.descricao || "Sem descrição"}</p>
-                      <p className="mt-2">
-                        <span className="font-medium">Orçamento:</span>
-                        {schedule.orcamento?.toFixed(2) || "0.00"} €
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-4 text-center text-muted-foreground">
-                <p>Nenhum rascunho salvo.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <ScheduleCard
+          title="Rascunhos"
+          schedules={rascunhos}
+          status={ScheduleStatus.RASCUNHO}
+          emptyMessage="Nenhum rascunho salvo."
+          actions={[
+            {
+              label: "Editar",
+              icon: <Edit className="mr-2 h-4 w-4" />,
+              onClick: (id) => handleEditSchedule(id),
+            },
+            {
+              label: "Submeter",
+              icon: <CheckCircle className="mr-2 h-4 w-4" />,
+              onClick: (id) => handleSubmitSchedule(id),
+              disabled: true,
+            },
+            {
+              label: "Excluir",
+              icon: <Trash2 className="mr-2 h-4 w-4" />,
+              onClick: (id) => handleDeleteSchedule(id),
+              disabled: true,
+              destructive: true,
+            },
+          ]}
+          isProcessing={actionInProgress}
+          formatDate={formatDate}
+        />
 
         {/* Programações rejeitadas */}
-        <Card className="mb-6">
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle>Programações rejeitadas</CardTitle>
-              <Badge variant="outline" className="bg-red-100 text-red-800 hover:bg-red-100">
-                <X className="mr-1 h-3 w-3" />
-                Rejeitado
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {rejeitados.length > 0 ? (
-              <div className="space-y-4">
-                {rejeitados.map((schedule: Schedule) => (
-                  <div key={schedule.id} className="border-b pb-4 last:border-0 last:pb-0">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-lg font-semibold">{schedule.titulo}</h3>
-                        <div className="flex flex-col text-sm text-muted-foreground mt-1 space-y-1">
-                          <div className="flex items-center">
-                            <Calendar className="mr-1 h-4 w-4" />
-                            <span>Rejeitado em {formatDate(schedule.updatedAt)}</span>
-                          </div>
-                          {schedule.aprovadoPor && (
-                            <div className="flex items-center">
-                              <span className="font-medium mr-1">Rejeitado por:</span>
-                              <span>
-                                {schedule.aprovadoPor} ({schedule.emailAprovador})
-                              </span>
-                            </div>
-                          )}
-                          <div className="flex items-center">
-                            <span className="font-medium mr-1">Criado por:</span>
-                            <span>
-                              {schedule.criadoPor} ({schedule.emailCriador})
-                            </span>
-                          </div>
-                          <div className="flex items-center">
-                            <span className="font-medium mr-1">Criado em:</span>
-                            <span>{formatDate(schedule.createdAt)}</span>
-                          </div>
-                          {schedule.notaAprovacao && (
-                            <div className="flex items-start">
-                              <span className="font-medium mr-1">Motivo:</span>
-                              <span className="italic text-red-600">{schedule.notaAprovacao}</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => router.push(`/dashboard/classes/${schedule.id}`)}
-                        >
-                          <Eye className="mr-1 h-4 w-4" />
-                          Ver
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEditSchedule(schedule.id)}>
-                              <Edit className="mr-2 h-4 w-4" />
-                              Editar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleSubmitSchedule(schedule.id)}
-                              disabled={actionInProgress === schedule.id}
-                            >
-                              {actionInProgress === schedule.id ? (
-                                <>Processando...</>
-                              ) : (
-                                <>
-                                  <CheckCircle className="mr-2 h-4 w-4" />
-                                  Submeter novamente
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-destructive"
-                              onClick={() => handleDeleteSchedule(schedule.id)}
-                              disabled={actionInProgress === schedule.id}
-                            >
-                              {actionInProgress === schedule.id ? (
-                                <>Processando...</>
-                              ) : (
-                                <>
-                                  <Trash2 className="mr-2 h-4 w-4" />
-                                  Excluir
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                    <div className="text-sm mt-2">
-                      <p>{schedule.descricao || "Sem descrição"}</p>
-                      <p className="mt-2">
-                        <span className="font-medium">Orçamento:</span>
-                        {schedule.orcamento?.toFixed(2) || "0.00"} €
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-4 text-center text-muted-foreground">
-                <p>Nenhuma programação rejeitada.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <ScheduleCard
+          title="Programações rejeitadas"
+          schedules={rejeitados}
+          status={ScheduleStatus.REJEITADO}
+          emptyMessage="Nenhuma programação rejeitada."
+          actions={[
+            {
+              label: "Editar",
+              icon: <Edit className="mr-2 h-4 w-4" />,
+              onClick: (id) => handleEditSchedule(id),
+            },
+            {
+              label: "Submeter novamente",
+              icon: <CheckCircle className="mr-2 h-4 w-4" />,
+              onClick: (id) => handleSubmitSchedule(id),
+              disabled: true,
+            },
+            {
+              label: "Excluir",
+              icon: <Trash2 className="mr-2 h-4 w-4" />,
+              onClick: (id) => handleDeleteSchedule(id),
+              disabled: true,
+              destructive: true,
+            },
+          ]}
+          isProcessing={actionInProgress}
+          formatDate={formatDate}
+        />
 
         {/* Substituídos */}
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle>Programações substituídas</CardTitle>
-              <Badge variant="outline" className="bg-blue-100 text-blue-800 hover:bg-blue-100">
-                <Map className="mr-1 h-3 w-3" />
-                Histórico
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent>
-            {substituidos.length > 0 ? (
-              <div className="space-y-4">
-                {substituidos.map((schedule: Schedule) => (
-                  <div key={schedule.id} className="border-b pb-4 last:border-0 last:pb-0">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-lg font-semibold">{schedule.titulo}</h3>
-                        <div className="flex flex-col text-sm text-muted-foreground mt-1 space-y-1">
-                          <div className="flex items-center">
-                            <Calendar className="mr-1 h-4 w-4" />
-                            <span>Substituído em {formatDate(schedule.updatedAt)}</span>
-                          </div>
-                          <div className="flex items-center">
-                            <span className="font-medium mr-1">Criado por:</span>
-                            <span>
-                              {schedule.criadoPor} ({schedule.emailCriador})
-                            </span>
-                          </div>
-                          {schedule.aprovadoPor && (
-                            <div className="flex items-center">
-                              <span className="font-medium mr-1">Aprovado por:</span>
-                              <span>
-                                {schedule.aprovadoPor} ({schedule.emailAprovador})
-                              </span>
-                            </div>
-                          )}
-                          {schedule.dataAprovacao && (
-                            <div className="flex items-center">
-                              <span className="font-medium mr-1">Aprovado em:</span>
-                              <span>{formatDate(schedule.dataAprovacao)}</span>
-                            </div>
-                          )}
-                          {schedule.dataAtivacao && (
-                            <div className="flex items-center">
-                              <span className="font-medium mr-1">Foi ativo de:</span>
-                              <span>
-                                {formatDate(schedule.dataAtivacao)} até {formatDate(schedule.dataDesativacao)}
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => router.push(`/dashboard/classes/${schedule.id}`)}
-                        >
-                          <Eye className="mr-1 h-4 w-4" />
-                          Ver
-                        </Button>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => handleDuplicateSchedule(schedule.id, schedule.titulo)}
-                              disabled={actionInProgress === schedule.id}
-                            >
-                              {actionInProgress === schedule.id ? (
-                                <>Processando...</>
-                              ) : (
-                                <>
-                                  <Copy className="mr-2 h-4 w-4" />
-                                  Duplicar
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
-                    <div className="text-sm mt-2">
-                      <p>{schedule.descricao || "Sem descrição"}</p>
-                      <p className="mt-2">
-                        <span className="font-medium">Orçamento:</span>
-                        {schedule.orcamento?.toFixed(2) || "0.00"} €
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="py-4 text-center text-muted-foreground">
-                <p>Nenhuma programação substituída no histórico.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <ScheduleCard
+          title="Programações substituídas"
+          schedules={substituidos}
+          status={ScheduleStatus.SUBSTITUIDO}
+          emptyMessage="Nenhuma programação substituída no histórico."
+          actions={[
+            {
+              label: "Duplicar",
+              icon: <Copy className="mr-2 h-4 w-4" />,
+              onClick: (id, title) => handleDuplicateSchedule(id, title || ""),
+              disabled: true,
+            },
+          ]}
+          isProcessing={actionInProgress}
+          formatDate={formatDate}
+        />
       </div>
 
       {/* Diálogo de aprovação */}

@@ -9,10 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@eugenios/ui/components/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@eugenios/ui/components/dialog";
 import { Label } from "@eugenios/ui/components/label";
-import { X, Plus, Trash2, Save, ArrowLeft, Loader2 } from "lucide-react";
+import { X, Plus, Save, ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { ClassDetails, CLASS_CONSTANTS } from "@/hooks/useCreateClasses";
 import { useCreateSchedule } from "@/hooks/useScheduleOperations";
+import { ClassMap } from "@/components/schedule/ClassMap";
+import { ClassDialog } from "@/components/schedule/ClassDialog";
 
 export default function CreateClassesPage() {
   const router = useRouter();
@@ -35,13 +37,14 @@ export default function CreateClassesPage() {
   const [currentClass, setCurrentClass] = useState<ClassDetails | null>(null);
   const [editMode, setEditMode] = useState<"create" | "edit">("create");
 
+  // Estado para controle de UI
+  const [saving, setSaving] = useState(false);
+
   // Estado para calcular o orçamento total com base nas aulas adicionadas
   const calcularOrcamentoTotal = (classes: ClassDetails[]) => {
     return classes.reduce((total, aula) => total + (aula.custo || 0), 0);
   };
 
-  // Estado para controle de UI
-  const [saving, setSaving] = useState(false);
   const handleOpenCreateDialog = (dia: number) => {
     setSelectedDay(dia);
     setSelectedCategory("");
@@ -81,49 +84,17 @@ export default function CreateClassesPage() {
   };
 
   // Função para salvar a aula atual
-  const handleSaveClass = () => {
-    if (!currentClass) return;
-
-    if (!currentClass.nome.trim()) {
-      toast.error("Por favor, informe o nome da aula");
-      return;
-    }
-
-    if (!currentClass.categoria) {
-      toast.error("Por favor, selecione a categoria da aula");
-      return;
-    }
-
-    if (!currentClass.horaInicio) {
-      toast.error("Por favor, informe o horário de início da aula");
-      return;
-    }
-
-    // Validações específicas para Express
-    if (currentClass.categoria === "Express") {
-      // Verificar se o horário selecionado é válido para Express (deve ser uma meia hora)
-      if (!CLASS_CONSTANTS.HORARIOS_EXPRESS.includes(currentClass.horaInicio as any)) {
-        toast.error("Aulas Express só podem começar nas meias horas (XX:30)");
-        return;
-      }
-
-      // Garantir que a duração seja 15 minutos
-      currentClass.duracao = CLASS_CONSTANTS.DURACAO_EXPRESS;
-
-      // Garantir que o custo seja zero
-      currentClass.custo = 0;
-    }
-
+  const handleSaveClass = (updatedClass: ClassDetails) => {
     if (editMode === "edit") {
       // Atualizar aula existente
-      const updatedList = classesList.map((cls) => (cls.id === currentClass.id ? currentClass : cls));
+      const updatedList = classesList.map((cls) => (cls.id === updatedClass.id ? updatedClass : cls));
       setClassesList(updatedList);
       // Recalcular orçamento
       setOrcamentoTotal(calcularOrcamentoTotal(updatedList));
     } else {
       // Adicionar nova aula com ID único
       const newClass = {
-        ...currentClass,
+        ...updatedClass,
         id: `class-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       };
       const updatedList = [...classesList, newClass];
@@ -148,7 +119,7 @@ export default function CreateClassesPage() {
     setCurrentClass(null);
   };
 
-  // Função para salvar o horário completo
+  // Função para salvar a programação completa
   const handleSaveSchedule = async () => {
     if (!scheduleTitle.trim()) {
       toast.error("Por favor, insira um título para o horário");
@@ -170,8 +141,9 @@ export default function CreateClassesPage() {
         descricao: scheduleDescription,
         orcamento: totalOrcamento,
         aulas: classesList.map((aula) => ({
+          id: aula.id?.startsWith("class-") ? undefined : aula.id, // Remover IDs temporários
           nome: aula.nome,
-          categoria: aula.categoria.toUpperCase(),
+          categoria: aula.categoria.toUpperCase(), // Convertendo para maiúsculo para corresponder ao enum ClassCategory
           diaSemana: aula.diaSemana,
           horaInicio: aula.horaInicio,
           duracao: aula.duracao,
@@ -182,13 +154,13 @@ export default function CreateClassesPage() {
         })),
       };
 
-
       await createScheduleMutation.mutateAsync(scheduleData);
-      toast.success("Mapa de aulas criado com sucesso!");
+
+      toast.success("Programação criada com sucesso!");
       router.push("/dashboard/classes");
     } catch (err) {
-      console.error("Erro ao guardar horário:", err);
-      toast.error("Erro ao criar mapa de aulas");
+      console.error("Erro ao criar programação:", err);
+      toast.error("Erro ao criar programação");
     } finally {
       setSaving(false);
     }
@@ -200,28 +172,34 @@ export default function CreateClassesPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Criar Novo Mapa de Aulas</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Nova Programação</h1>
             <p className="text-gray-600 mt-1">
-              Clique nos slots para adicionar aulas • Pode adicionar várias aulas no mesmo horário
+              Crie uma nova programação de aulas • Adicione aulas para diferentes dias da semana
             </p>
           </div>
         </div>
 
-        <Button onClick={handleSaveSchedule} disabled={saving || classesList.length === 0}>
-          {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
-          Criar Mapa
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => router.back()}>
+            <X className="h-4 w-4 mr-2" />
+            Cancelar
+          </Button>
+          <Button onClick={handleSaveSchedule} disabled={saving || classesList.length === 0}>
+            {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+            Salvar Programação
+          </Button>
+        </div>
       </div>
 
       {/* Configuração do Schedule */}
       <Card>
         <CardHeader>
-          <CardTitle>Configuração do Mapa</CardTitle>
+          <CardTitle>Configuração da Programação</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="titulo">Título do Mapa</Label>
+              <Label htmlFor="titulo">Título da Programação</Label>
               <Input
                 id="titulo"
                 value={scheduleTitle}
@@ -235,7 +213,7 @@ export default function CreateClassesPage() {
                 id="descricao"
                 value={scheduleDescription}
                 onChange={(e) => setScheduleDescription(e.target.value)}
-                placeholder="Informações adicionais sobre este mapa de aulas..."
+                placeholder="Informações adicionais sobre esta programação de aulas..."
                 rows={1}
               />
             </div>
@@ -285,319 +263,22 @@ export default function CreateClassesPage() {
       </Card>
 
       {/* Grade Horária Interativa */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Mapa de Aulas</CardTitle>
-            <p className="text-sm text-gray-600">Visualize todas as aulas adicionadas ao mapa</p>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full border border-gray-200 table-fixed">
-              <thead>
-                <tr className="bg-gray-900 text-white">
-                  {["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"].map((dia, index) => (
-                    <th key={index} className="p-3 text-center font-medium text-sm">
-                      {dia}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {/* Uma célula para cada dia da semana, contendo as aulas daquele dia */}
-                  {[1, 2, 3, 4, 5, 6, 0].map((dia) => (
-                    <td key={dia} className="border p-0 align-top">
-                      <div className="flex flex-col divide-y divide-gray-200">
-                        {/* Classes para este dia, ordenadas por hora de início */}
-                        {classesList
-                          .filter((aula) => aula.diaSemana === dia)
-                          .sort((a, b) => a.horaInicio.localeCompare(b.horaInicio))
-                          .map((aula) => {
-                            // Obter a cor para a categoria atual
-                            const bgColor = categoryColors[aula.categoria as keyof typeof categoryColors] || "#cccccc";
-
-                            return (
-                              <div
-                                key={aula.id}
-                                className="p-3 hover:bg-opacity-80 cursor-pointer rounded-md m-1"
-                                style={{
-                                  backgroundColor: `${bgColor}20`, // Cor com 20% de opacidade
-                                  borderLeft: `3px solid ${bgColor}`, // Borda sólida à esquerda
-                                }}
-                                onClick={() => handleOpenEditDialog(aula)}
-                              >
-                                <div className="font-medium text-sm mb-1">{aula.nome}</div>
-                                <div className="text-xs text-gray-700 flex flex-col">
-                                  <span className="font-semibold" style={{ color: bgColor }}>
-                                    {aula.categoria}
-                                  </span>
-                                  <span>
-                                    {aula.horaInicio} ({aula.duracao} min)
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        {/* Botão para adicionar nova aula neste dia */}
-                        <div
-                          className="p-3 text-center hover:bg-gray-100 cursor-pointer text-gray-500 hover:text-gray-700 m-1 rounded-md transition-colors"
-                          onClick={() => handleOpenCreateDialog(dia)}
-                        >
-                          <Plus className="h-5 w-5 mx-auto" />
-                          <span className="text-xs">Adicionar</span>
-                        </div>
-                      </div>
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          {classesList.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 text-center mt-4">
-              <div className="rounded-full bg-gray-100 p-3 mb-4">
-                <Plus className="h-8 w-8 text-gray-500" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-1">Nenhuma aula adicionada</h3>
-              <p className="text-gray-500 max-w-md mb-6">
-                Clique no botão "+" em qualquer dia para começar a criar seu mapa de aulas.
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <ClassMap
+        aulas={classesList}
+        mode="create"
+        onAddClass={handleOpenCreateDialog}
+        onClassClick={handleOpenEditDialog}
+      />
 
       {/* Dialog para Editar/Criar Aula */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {editMode === "create" ? "Nova Aula" : "Editar Aula"}
-              {currentClass?.categoria && (
-                <div
-                  className="inline-block w-3 h-3 rounded-full ml-2"
-                  style={{
-                    backgroundColor: categoryColors[currentClass.categoria as keyof typeof categoryColors] || "#cccccc",
-                  }}
-                ></div>
-              )}
-            </DialogTitle>
-          </DialogHeader>
-
-          {currentClass && (
-            <div className="space-y-4">
-              {/* Informações do slot */}
-
-              {/* Detalhes da aula */}
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="diaSemana">Dia da Semana</Label>
-                  <Select
-                    value={currentClass.diaSemana.toString()}
-                    onValueChange={(value) => setCurrentClass({ ...currentClass, diaSemana: parseInt(value) })}
-                  >
-                    <SelectTrigger id="diaSemana">
-                      <SelectValue placeholder="Selecione o dia" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[
-                        { value: "1", label: "Segunda" },
-                        { value: "2", label: "Terça" },
-                        { value: "3", label: "Quarta" },
-                        { value: "4", label: "Quinta" },
-                        { value: "5", label: "Sexta" },
-                        { value: "6", label: "Sábado" },
-                        { value: "0", label: "Domingo" },
-                      ].map((dia) => (
-                        <SelectItem key={dia.value} value={dia.value}>
-                          {dia.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="categoria">Categoria</Label>
-                  <Select
-                    value={currentClass.categoria}
-                    onValueChange={(value) => {
-                      setSelectedCategory(value);
-
-                      // Se a categoria for Express, configurar a duração para 15 minutos
-                      const duracaoAjustada =
-                        value === "Express" ? CLASS_CONSTANTS.DURACAO_EXPRESS : currentClass.duracao || 30;
-
-                      setCurrentClass({
-                        ...currentClass,
-                        categoria: value,
-                        nome: "",
-                        custo: value === "Express" ? 0 : currentClass.custo || 0,
-                        duracao: duracaoAjustada,
-                        // Resetar horaInicio ao mudar categoria
-                        horaInicio: "",
-                      });
-
-                      // Obter os nomes de aulas para a categoria selecionada
-                      const classNames =
-                        CLASS_CONSTANTS.AULAS_POR_CATEGORIA[value as keyof typeof CLASS_CONSTANTS.AULAS_POR_CATEGORIA];
-                      // Converter o array readonly para um array mutável
-                      setAvailableClassNames(classNames ? Array.from(classNames) : []);
-                    }}
-                  >
-                    <SelectTrigger id="categoria">
-                      <SelectValue placeholder="Selecione a categoria" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CLASS_CONSTANTS.CATEGORIAS.map((categoria) => {
-                        const color = categoryColors[categoria as keyof typeof categoryColors] || "#cccccc";
-                        return (
-                          <SelectItem key={categoria} value={categoria}>
-                            <div className="flex items-center">
-                              <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: color }}></div>
-                              {categoria}
-                            </div>
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
-                  <Label htmlFor="horaInicio">Hora de Início</Label>
-                  <Select
-                    value={currentClass.horaInicio}
-                    onValueChange={(value) => setCurrentClass({ ...currentClass, horaInicio: value })}
-                    disabled={!currentClass.categoria} // Desabilitar até que a categoria seja selecionada
-                  >
-                    <SelectTrigger id="horaInicio">
-                      <SelectValue placeholder="Selecione a categoria primeiro" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(currentClass.categoria === "Express"
-                        ? CLASS_CONSTANTS.HORARIOS_EXPRESS
-                        : CLASS_CONSTANTS.HORARIOS_DISPONIVEIS
-                      ).map((hora) => (
-                        <SelectItem key={hora} value={hora}>
-                          {hora}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {currentClass.categoria === "Express" && (
-                    <p className="text-xs text-amber-600 mt-1">Aulas Express só podem ser agendadas nas meias horas</p>
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="nome">Nome da Aula</Label>
-                  {availableClassNames.length > 0 ? (
-                    <Select
-                      value={currentClass.nome}
-                      onValueChange={(value) => setCurrentClass({ ...currentClass, nome: value })}
-                    >
-                      <SelectTrigger id="nome">
-                        <SelectValue placeholder="Selecione o tipo de aula" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableClassNames.map((nome) => (
-                          <SelectItem key={nome} value={nome}>
-                            {nome}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <Input
-                      id="nome"
-                      value={currentClass.nome}
-                      onChange={(e) => setCurrentClass({ ...currentClass, nome: e.target.value })}
-                      placeholder="Selecione uma categoria primeiro"
-                      disabled={!currentClass.categoria}
-                    />
-                  )}
-                </div>
-
-                <div>
-                  <Label htmlFor="duracao">Duração (minutos)</Label>
-                  {currentClass.categoria === "Express" ? (
-                    <Input id="duracao" value="15" disabled className="bg-gray-100" />
-                  ) : (
-                    <Select
-                      value={currentClass.duracao.toString()}
-                      onValueChange={(value) => setCurrentClass({ ...currentClass, duracao: parseInt(value) })}
-                    >
-                      <SelectTrigger id="duracao">
-                        <SelectValue placeholder="Duração" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[30, 45, 60, 90, 120].map((duracao) => (
-                          <SelectItem key={duracao} value={duracao.toString()}>
-                            {duracao === 60
-                              ? "1 hora"
-                              : duracao === 90
-                                ? "1h30"
-                                : duracao === 120
-                                  ? "2 horas"
-                                  : `${duracao} min`}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                  {currentClass.categoria === "Express" && (
-                    <p className="text-xs text-amber-600 mt-1">Aulas Express têm duração fixa de 15 minutos</p>
-                  )}
-                </div>
-
-                {currentClass.categoria !== "Express" && (
-                  <div>
-                    <Label htmlFor="custo">Custo da Aula (€)</Label>
-                    <Input
-                      id="custo"
-                      type="number"
-                      min="0"
-                      step="5"
-                      value={currentClass.custo?.toString() || "0"}
-                      onChange={(e) =>
-                        setCurrentClass({
-                          ...currentClass,
-                          custo: parseInt(e.target.value) || 0,
-                        })
-                      }
-                      placeholder="Valor em euros"
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Botões */}
-              <div className="flex flex-wrap gap-2 pt-4">
-                <Button onClick={handleSaveClass} className="flex-1">
-                  <Save className="h-4 w-4 mr-2" />
-                  {editMode === "create" ? "Criar Aula" : "Atualizar Aula"}
-                </Button>
-
-                {editMode === "edit" && (
-                  <Button variant="destructive" onClick={() => handleDeleteClass(currentClass.id!)}>
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Excluir
-                  </Button>
-                )}
-
-                <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
-                  <X className="h-4 w-4 mr-2" />
-                  Cancelar
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <ClassDialog
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        currentClass={currentClass}
+        mode={editMode}
+        onSave={handleSaveClass}
+        onDelete={handleDeleteClass}
+      />
     </div>
   );
 }

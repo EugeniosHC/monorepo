@@ -12,6 +12,7 @@ import {
   LayoutTemplate,
   LifeBuoy,
   Map,
+  MapIcon,
   Package,
   PieChart,
   Send,
@@ -94,6 +95,11 @@ const data = {
           ],
         },
       ],
+    },
+    {
+      title: "Mapa de Aulas",
+      url: "/dashboard/classes",
+      icon: MapIcon,
     },
     {
       title: "Categorias",

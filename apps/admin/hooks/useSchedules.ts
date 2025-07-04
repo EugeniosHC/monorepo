@@ -40,6 +40,7 @@ export interface Schedule {
   emailAprovador?: string;
   dataAprovacao?: string;
   notaAprovacao?: string;
+  atualizadoPor?: string; // Nome de quem atualizou
   createdAt: string;
   updatedAt: string;
   aulas: ScheduleClass[];

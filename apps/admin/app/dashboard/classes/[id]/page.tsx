@@ -101,13 +101,33 @@ const StatusBadge = ({ status }: { status: ScheduleStatus }) => {
 const getCategoryBgColor = (category: string) => {
   switch (category.toUpperCase()) {
     case "TERRA":
-      return "bg-terrestre-100 text-terrestre-800";
+      return "bg-terrestre-100 text-terrestre-400";
     case "AGUA":
-      return "bg-aqua-100 text-aqua-800";
+      return "bg-aqua-100 text-aqua-400";
     case "EXPRESS":
-      return "bg-xpress-100 text-xpress-800";
+      return "bg-xpress-100 text-xpress-400";
     default:
-      return "bg-gray-100 text-gray-800";
+      return "bg-gray-100 text-gray-400";
+  }
+};
+
+// Função para traduzir o status
+const translateStatus = (status: ScheduleStatus) => {
+  switch (status) {
+    case ScheduleStatus.ATIVO:
+      return "Ativo";
+    case ScheduleStatus.PENDENTE:
+      return "Pendente";
+    case ScheduleStatus.APROVADO:
+      return "Aprovado";
+    case ScheduleStatus.RASCUNHO:
+      return "Rascunho";
+    case ScheduleStatus.SUBSTITUIDO:
+      return "Substituído";
+    case ScheduleStatus.REJEITADO:
+      return "Rejeitado";
+    default:
+      return status;
   }
 };
 
@@ -128,7 +148,7 @@ const translateDayOfWeek = (dayOfWeek: number) => {
 // Função para formatar data
 const formatDate = (dateString?: string) => {
   if (!dateString) return "N/A";
-  return format(new Date(dateString), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR });
+  return format(new Date(dateString), "dd/MM/yyyy' às 'HH:mm", { locale: ptBR });
 };
 
 export default function ScheduleDetailsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -344,7 +364,11 @@ export default function ScheduleDetailsPage({ params }: { params: Promise<{ id: 
               <span>
                 Criado em {formatDate(schedule.createdAt)} por {schedule.criadoPor}
               </span>
-              {schedule.updatedAt !== schedule.createdAt && <span>Atualizado em {formatDate(schedule.updatedAt)}</span>}
+              {schedule.updatedAt !== schedule.createdAt && (
+                <span>
+                  Atualizado em {formatDate(schedule.updatedAt)} - por {schedule.atualizadoPor}
+                </span>
+              )}
               {schedule.dataAprovacao && (
                 <span>
                   Aprovado em {formatDate(schedule.dataAprovacao)} por {schedule.aprovadoPor}
@@ -622,18 +646,33 @@ export default function ScheduleDetailsPage({ params }: { params: Promise<{ id: 
                   <div className="absolute -left-6 mt-1 h-4 w-4 rounded-full bg-primary"></div>
                   <div>
                     <p className="font-medium">Criação da programação</p>
-                    <p className="text-sm text-muted-foreground">{formatDate(schedule.createdAt)}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {formatDate(schedule.createdAt)} - {schedule.criadoPor}
+                    </p>
                   </div>
                 </div>
 
-                {schedule.updatedAt !== schedule.createdAt && (
-                  <div className="relative pb-4">
-                    <div className="absolute -left-6 mt-1 h-4 w-4 rounded-full bg-primary"></div>
-                    <div>
-                      <p className="font-medium">Atualização da programação</p>
-                      <p className="text-sm text-muted-foreground">{formatDate(schedule.updatedAt)}</p>
-                    </div>
-                  </div>
+                {/* Histórico de mudanças de status */}
+                {schedule.statusHistory && schedule.statusHistory.length > 0 && (
+                  <>
+                    {[...schedule.statusHistory].reverse().map((historyItem) => (
+                      <div key={historyItem.id} className="relative pb-4">
+                        <div className="absolute -left-6 mt-1 h-4 w-4 rounded-full bg-primary"></div>
+                        <div>
+                          <p className="font-medium">
+                            Alteração de status: {translateStatus(historyItem.statusAntigo)} →{" "}
+                            {translateStatus(historyItem.statusNovo)}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {formatDate(historyItem.createdAt)} - {historyItem.alteradoPor}
+                          </p>
+                          {historyItem.nota && (
+                            <p className="text-sm italic text-muted-foreground mt-1">"{historyItem.nota}"</p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </>
                 )}
 
                 {/* Versões anteriores, se existirem */}

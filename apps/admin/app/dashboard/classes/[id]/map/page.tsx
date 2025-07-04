@@ -6,9 +6,10 @@ import { Button } from "@eugenios/ui/components/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@eugenios/ui/components/card";
 import { Badge } from "@eugenios/ui/components/badge";
 import { ArrowLeft, Printer } from "lucide-react";
-import { useScheduleById } from "@/hooks/useScheduleOperations";
+import { useScheduleById, ScheduleClass } from "@/hooks/useScheduleOperations";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { ClassMap } from "@/components/schedule/ClassMap";
 
 export default function ScheduleMapPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -19,13 +20,13 @@ export default function ScheduleMapPage({ params }: { params: Promise<{ id: stri
   const getCategoryBgColor = (category: string) => {
     switch (category.toUpperCase()) {
       case "TERRA":
-        return "bg-terrestre-100 text-terrestre-800";
+        return "bg-terrestre-100 text-terrestre-400";
       case "AGUA":
-        return "bg-aqua-100 text-aqua-800";
+        return "bg-aqua-100 text-aqua-400";
       case "EXPRESS":
-        return "bg-xpress-100 text-xpress-800";
+        return "bg-xpress-100 text-xpress-400";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-400";
     }
   };
 
@@ -149,83 +150,7 @@ export default function ScheduleMapPage({ params }: { params: Promise<{ id: stri
       </Card>
 
       {/* Grade Horária */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Mapa de Aulas</CardTitle>
-            <p className="text-sm text-gray-600">Visualização completa das aulas programadas</p>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full border border-gray-200 table-fixed">
-              <thead>
-                <tr className="bg-gray-900 text-white">
-                  {["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"].map((dia, index) => (
-                    <th key={index} className="p-3 text-center font-medium text-sm">
-                      {dia}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {/* Uma célula para cada dia da semana, contendo as aulas daquele dia */}
-                  {[1, 2, 3, 4, 5, 6, 0].map((dia) => (
-                    <td key={dia} className="border p-0 align-top">
-                      <div className="flex flex-col divide-y divide-gray-200">
-                        {/* Aulas para este dia, ordenadas por hora de início */}
-                        {schedule.aulas
-                          ?.filter((aula) => aula.diaSemana === dia)
-                          .sort((a, b) => a.horaInicio.localeCompare(b.horaInicio))
-                          .map((aula) => {
-                            // Obter a classe de cor para a categoria atual
-                            const bgColorClass = getCategoryBgColor(aula.categoria);
-
-                            return (
-                              <div
-                                key={aula.id}
-                                className={`p-3 hover:bg-opacity-80 rounded-md m-1 ${bgColorClass} bg-opacity-60`}
-                                style={{
-                                  borderLeft: "3px solid",
-                                }}
-                              >
-                                <div className="font-medium text-sm mb-1">{aula.nome}</div>
-                                <div className="text-xs text-gray-700 flex flex-col">
-                                  <span className="font-semibold">{aula.categoria}</span>
-                                  <span>
-                                    {aula.horaInicio} ({aula.duracao} min)
-                                  </span>
-                                  <span>
-                                    {aula.professor} • {aula.sala}
-                                  </span>
-                                </div>
-                              </div>
-                            );
-                          })}
-
-                        {/* Mensagem se não houver aulas para este dia */}
-                        {!schedule.aulas?.some((aula) => aula.diaSemana === dia) && (
-                          <div className="p-4 text-center text-gray-500">
-                            <span className="text-xs">Sem aulas</span>
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          {(!schedule.aulas || schedule.aulas.length === 0) && (
-            <div className="flex flex-col items-center justify-center py-12 text-center mt-4">
-              <h3 className="text-lg font-medium text-gray-900 mb-1">Nenhuma aula nesta programação</h3>
-              <p className="text-gray-500 max-w-md mb-6">Esta programação não possui aulas cadastradas.</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <ClassMap aulas={schedule.aulas || []} mode="view" />
     </div>
   );
 }

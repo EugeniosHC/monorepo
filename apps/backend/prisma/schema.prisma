@@ -125,6 +125,8 @@ model ClassSchedule {
   dataAprovacao  DateTime? // Quando foi aprovado/rejeitado
   notaAprovacao  String? // Nota opcional do aprovador
 
+  atualizadoPor String? // Nome de quem atualizou
+
   // Relação para tracking de qual schedule substituiu qual
   substituidoId  String?
   substituido    ClassSchedule?  @relation("HistoricoSubstituicao", fields: [substituidoId], references: [id])

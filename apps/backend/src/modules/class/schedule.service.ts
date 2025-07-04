@@ -91,6 +91,7 @@ export class ScheduleService {
             titulo: true,
             status: true,
             criadoPor: true,
+            atualizadoPor: true,
             updatedAt: true,
           },
           orderBy: {
@@ -244,6 +245,7 @@ export class ScheduleService {
           titulo,
           descricao,
           orcamento: orcamento || calculatedOrcamento,
+          atualizadoPor: user?.email,
           updatedAt: new Date(),
           aulas: {
             create: aulas.map((aula) => ({
