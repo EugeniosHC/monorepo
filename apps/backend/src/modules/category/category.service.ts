@@ -3,16 +3,11 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Category, CategoryWithMinPrice } from 'src/types';
 import { mapCategoryFromPrisma } from './mappers/category.mapper';
 import { CreateCategoryDto } from './dto/create-category.dto';
-import { min } from 'class-validator';
-import { CloudflareService } from '../cloudflare/cloudflare.service';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
 @Injectable()
 export class CategoryService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    private readonly cloudflareService: CloudflareService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
   async getAllCategories(): Promise<Category[] | null> {
     const categories = await this.prismaService.category.findMany({
       include: {

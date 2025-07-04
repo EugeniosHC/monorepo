@@ -2,16 +2,24 @@
 import api from "@eugenios/services/axios";
 import { Section, SectionResponse, SectionType } from "@eugenios/types";
 
-export async function getSectionsByWebsite(websiteName: string): Promise<Section[] | null> {
+export async function getSectionsByWebsite(websiteName: string, serverToken?: string): Promise<Section[] | null> {
   try {
+    const headers: Record<string, string> = {};
+
+    // If we have a server token, use it in the headers
+    if (serverToken) {
+      headers["Authorization"] = `Bearer ${serverToken}`;
+    }
+
     const response = await api.get(`section/${websiteName}`);
+
     if (!response.data) {
       throw new Error("Nenhuma seção encontrada");
     }
     return response.data as Section[];
   } catch (error) {
-    console.error("Erro ao buscar seções:", error);
-    throw new Error("Falha ao buscar seções");
+    console.error("Erro ao buscar seção:", error);
+    throw new Error("Falha ao buscar seção");
   }
 }
 

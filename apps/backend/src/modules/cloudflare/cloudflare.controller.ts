@@ -14,7 +14,8 @@ import { CloudflareService } from './cloudflare.service';
 import { ImageGallery, Image } from 'src/types';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ProductService } from '../product/product.service';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { AuthGuard } from '../auth/guards/auth.guard';
+
 
 @Controller('cloudflare')
 export class CloudflareController {
@@ -23,20 +24,20 @@ export class CloudflareController {
     private readonly productService: ProductService,
   ) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Get()
   async getImageGallery(): Promise<ImageGallery> {
     return this.cloudflareService.getAllImages();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(@UploadedFile() file: Express.Multer.File): Promise<Image> {
     return this.cloudflareService.uploadToR2(file);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Delete('delete')
   async deleteImages(
     @Body() body: { keys: string[] | string },

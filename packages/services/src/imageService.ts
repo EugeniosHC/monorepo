@@ -8,7 +8,7 @@ export async function getImages(serverToken?: string): Promise<ImageGallery> {
 
     // If we have a server token, use it in the headers
     if (serverToken) {
-      headers["Cookie"] = `auth_token=${serverToken}`;
+      headers["Authorization"] = `Bearer ${serverToken}`;
     }
 
     const response = await api.get("cloudflare", { headers });

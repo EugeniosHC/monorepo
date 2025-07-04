@@ -1,106 +1,61 @@
 "use client";
 
-import { BellIcon, CreditCardIcon, LogOutIcon, MoreVerticalIcon, UserCircleIcon } from "lucide-react";
+import { MoreVerticalIcon } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@eugenios/ui/components/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@eugenios/ui/components/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@eugenios/ui/components/sidebar";
-import api from "@eugenios/services/axios";
-import { useRouter } from "next/navigation";
-import { useUser } from "@eugenios/react-query/queries/useAuth";
+
+import { UserButton, useUser } from "@clerk/nextjs";
 
 export function NavUser() {
-  const { data: user, isLoading, isError } = useUser();
-  const router = useRouter();
+  const { user, isLoaded } = useUser();
   const { isMobile } = useSidebar();
 
-  if (isLoading) {
-    return <div>Carregando...</div>;
+  // Verificação mais robusta do estado de carregamento e user
+  if (!isLoaded) {
+    return null; // Ainda carregando
   }
 
-  if (isError) {
-    return <div>Erro ao carregar o utilizador</div>;
+  if (!user || !user.firstName || !user.emailAddresses?.length) {
+    return null; // User não existe ou dados incompletos
   }
-
-  // If user is undefined even after loading, return an appropriate message or fallback
-  if (!user) {
-    return <div>Utilizador não encontrado</div>;
-  }
-
-  const handleLogout = async () => {
-    await api.post("/auth/logout");
-
-    router.refresh();
-  };
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-            >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs text-muted-foreground">{user.email}</span>
-              </div>
-              <MoreVerticalIcon className="ml-auto size-4" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
-          >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs text-muted-foreground">{user.email}</span>
-                </div>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <UserCircleIcon />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCardIcon />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <BellIcon />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              <LogOutIcon />
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-3 py-2 min-h-[44px] rounded-md hover:bg-sidebar-accent/50 transition-colors relative">
+          {/* UserButton invisível que ocupa toda a área */}
+          <UserButton
+            afterSignOutUrl="/sign-in"
+            appearance={{
+              elements: {
+                userButtonAvatarBox: "!hidden",
+                userButtonTrigger: `
+                  !absolute !inset-0 !w-full !h-full !bg-transparent !border-0 !p-0 
+                  hover:!bg-transparent cursor-pointer !z-10 !outline-none
+                  focus:!outline-none focus-visible:!outline-none
+                  focus-visible:!ring-2 focus-visible:!ring-sidebar-ring focus-visible:!ring-offset-0
+                  !rounded-md
+                `,
+              },
+            }}
+          />
+
+          {/* Visual do componente */}
+          <div className="w-8 h-8 flex-shrink-0 relative z-0">
+            <Avatar className="h-8 w-8 rounded-lg">
+              <AvatarImage src={user.imageUrl} alt={user.firstName} />
+              <AvatarFallback className="rounded-lg bg-primary/10 text-primary font-medium">
+                {user.firstName.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+          <div className="flex-1 grid text-left text-sm leading-tight overflow-hidden relative z-0">
+            <span className="truncate font-medium text-sidebar-foreground">{user.firstName}</span>
+            <span className="truncate text-xs text-sidebar-foreground/70">{user.emailAddresses[0]?.emailAddress}</span>
+          </div>
+          <MoreVerticalIcon className="flex-shrink-0 h-4 w-4 text-sidebar-foreground/50 relative z-0" />
+        </div>
       </SidebarMenuItem>
     </SidebarMenu>
   );

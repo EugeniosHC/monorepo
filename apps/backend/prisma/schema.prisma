@@ -40,15 +40,6 @@ enum SectionType {
   CONTACT
 }
 
-model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model Product {
   id          String     @id @default(uuid())
   name        String
@@ -77,4 +68,162 @@ model CategorySection {
   title      String
   content    String
   categories Category[] @relation("CategoryToSection")
+}
+
+// === SISTEMA DE AULAS ===
+
+// Enum para tipos de categorias de aulas
+enum ClassCategory {
+  TERRA
+  AGUA
+  EXPRESS
+}
+
+// Enum para estado das propostas/schedules
+enum ScheduleStatus {
+  ATIVO // Atualmente em uso (apenas um schedule pode ter este status)
+  PENDENTE // Aguarda revisão/aprovação
+  APROVADO // Aprovado, pronto para ser ativado
+  REJEITADO // Rejeitado com motivo
+  SUBSTITUIDO // Foi ativo no passado, mas foi substituído por outro
+  RASCUNHO // Versão em edição, não finalizada
+}
+
+// Modelo unificado para Schedules
+model ClassSchedule {
+  id        String  @id @default(uuid())
+  titulo    String // "Mapa Semana 15-21 Jan" ou "Horário Especial Páscoa"
+  descricao String? // Descrição opcional
+
+  // Informações de orçamento
+  orcamento Float? // Orçamento do schedule completo
+
+  // Flag para indicar se é uma versão original ou uma cópia para edição
+  isOriginal Boolean @default(false)
+
+  // Schedule de origem (se for um duplicado)
+  originalId String?
+  original   ClassSchedule?  @relation("ScheduleVersions", fields: [originalId], references: [id])
+  versoes    ClassSchedule[] @relation("ScheduleVersions")
+
+  // Estado do Schedule
+  status ScheduleStatus @default(PENDENTE)
+
+  // Data em que este schedule ficou ativo (se aplicável)
+  dataAtivacao DateTime? // Preenchido quando o status muda para ATIVO
+
+  // Data em que este schedule deixou de estar ativo (se aplicável)
+  dataDesativacao DateTime? // Preenchido quando outro schedule torna-se ATIVO
+
+  // Informações do criador (sem ligação ao User por causa do Clerk)
+  criadoPor    String // Nome da pessoa que criou
+  emailCriador String // Email para contacto
+
+  // Informações de aprovação
+  aprovadoPor    String? // Nome de quem aprovou/rejeitou
+  emailAprovador String? // Email de quem aprovou/rejeitou
+  dataAprovacao  DateTime? // Quando foi aprovado/rejeitado
+  notaAprovacao  String? // Nota opcional do aprovador
+
+  // Relação para tracking de qual schedule substituiu qual
+  substituidoId  String?
+  substituido    ClassSchedule?  @relation("HistoricoSubstituicao", fields: [substituidoId], references: [id])
+  substituidores ClassSchedule[] @relation("HistoricoSubstituicao")
+
+  // Relação com as aulas
+  aulas Class[]
+
+  // Histórico de alterações de status
+  statusHistory ScheduleStatusLog[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Histórico de alterações de estado do Schedule
+model ScheduleStatusLog {
+  id         String        @id @default(uuid())
+  scheduleId String
+  schedule   ClassSchedule @relation(fields: [scheduleId], references: [id])
+
+  // Status antigo e novo
+  statusAntigo ScheduleStatus
+  statusNovo   ScheduleStatus
+
+  // Quem fez a alteração
+  alteradoPor    String
+  emailAlterador String
+
+  // Nota opcional sobre a alteração
+  nota String?
+
+  createdAt DateTime @default(now())
+}
+
+// Modelo unificado para todas as aulas (Express, Terra, Agua)
+model Class {
+  id         String        @id @default(uuid())
+  nome       String // Nome da modalidade/aula
+  categoria  ClassCategory // Tipo de aula (TERRA, AGUA, EXPRESS)
+  diaSemana  Int // 0=Domingo, 1=Segunda, ..., 6=Sábado
+  horaInicio String // "07:30", "08:30", etc.
+  duracao    Int // Duração em minutos (15 para EXPRESS, variável para outras)
+
+  // Campos comuns a todos os tipos
+  sala        String // Nome da sala (valor padrão pode ser definido no código)
+  professor   String // Nome do professor (valor padrão pode ser definido no código)
+  intensidade String // Nível de intensidade
+
+  // Campos específicos para aulas não-Express
+  custo Float? // Custo da aula (null para Express que são gratuitas)
+
+  // Relação com o schedule
+  schedule   ClassSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  scheduleId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Sistema de notificações de mudanças nos schedules
+model ScheduleNotification {
+  id                String   @id @default(uuid())
+  schedulePrevId    String? // ID do schedule anterior (que foi substituído)
+  scheduleNewId     String // ID do novo schedule ativo
+  schedulePrevTitle String? // Título do schedule anterior
+  scheduleNewTitle  String // Título do novo schedule
+  emailSentTo       String // Email para onde foi enviada a notificação
+  emailContent      String // Conteúdo do email enviado
+  sentAt            DateTime @default(now())
+
+  // Relação com as classes incluídas na notificação
+  classChanges ScheduleClassChange[]
+}
+
+// Registro de mudanças específicas de classes entre schedules
+model ScheduleClassChange {
+  id             String               @id @default(uuid())
+  notificationId String // ID da notificação relacionada
+  notification   ScheduleNotification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  changeType String // "ADDED", "REMOVED", "MODIFIED"
+
+  // Dados da classe (antes e/ou depois da mudança)
+  className     String // Nome da aula
+  classCategory String? // Categoria da aula
+  weekDay       Int? // Dia da semana
+  startTime     String? // Hora de início
+  duration      Int? // Duração
+  room          String? // Sala
+  teacher       String? // Professor
+  intensity     String? // Intensidade
+
+  // Para mudanças do tipo MODIFIED, armazenamos os valores anteriores
+  prevCategory  String?
+  prevDuration  Int?
+  prevRoom      String?
+  prevTeacher   String?
+  prevIntensity String?
+
+  createdAt DateTime @default(now())
 }

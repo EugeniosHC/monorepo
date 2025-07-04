@@ -1,84 +1,95 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
-import { Response } from 'express';
-import { PrismaService } from '../prisma/prisma.service';
-import { ConfigService } from '@nestjs/config';
-const bcrypt = require('bcrypt');
+import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import { verifyToken, createClerkClient } from '@clerk/backend';
+import { ClerkConfig } from '../../config/clerk.config';
+import {
+  ClerkUser,
+  UserRole,
+  type ClerkTokenPayload,
+} from './types/auth.types';
+import * as cookieParser from 'cookie-parser';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private jwt: JwtService,
-    private configService: ConfigService,
-    private prisma: PrismaService,
-  ) {}
+  private readonly logger = new Logger(AuthService.name);
+  private readonly clerkClient;
 
-  async validateUser(email: string, password: string): Promise<any> {
+  constructor(private readonly clerkConfig: ClerkConfig) {
+    this.clerkClient = createClerkClient({
+      secretKey: this.clerkConfig.secretKey,
+    });
+  }
+
+  async verifyJwtToken(token: string): Promise<ClerkUser> {
     try {
-      const user = await this.prisma.user.findFirst({
-        where: { email },
+      // 1. Verificar e decodificar o token JWT usando apenas secret key
+      const payload = await verifyToken(token, {
+        secretKey: this.clerkConfig.secretKey,
       });
-      if (!user) {
-        Logger.warn(`Failed login attempt - user not found: ${email}`);
+
+      if (!payload || !payload.sub) {
+        throw new UnauthorizedException('Invalid token payload');
+      }
+
+      const userId = payload.sub;
+      this.logger.debug(`Token verified for user: ${userId}`);
+
+      // 2. Buscar dados completos do usuário no Clerk
+      const clerkUser = await this.clerkClient.users.getUser(userId);
+
+      if (!clerkUser) {
         throw new UnauthorizedException('User not found');
       }
 
-      const isPasswordMatched = await bcrypt.compare(password, user.password);
-      if (!isPasswordMatched) {
-        Logger.warn(`Failed login attempt - invalid password: ${email}`);
-        throw new UnauthorizedException('Invalid credentials');
-      }
+      // 3. Extrair role dos metadados
+      const role = this.extractUserRole(clerkUser);
 
-      Logger.log(`Successful login: ${email}`);
-      return { id: user.id, name: user.name, email: user.email };
+      // 4. Montar objeto ClerkUser com dados seguros
+      const user: ClerkUser = {
+        userId: clerkUser.id,
+        email: clerkUser.primaryEmailAddress?.emailAddress,
+        firstName: clerkUser.firstName,
+        lastName: clerkUser.lastName,
+        role,
+      };
+
+      this.logger.debug(
+        `User data fetched: ${user.userId} with role: ${user.role}`,
+      );
+
+      return user;
     } catch (error) {
-      throw error;
+      this.logger.error('Token verification failed:', error.message);
+      throw new UnauthorizedException('Invalid or expired token');
     }
   }
 
-  async validateJwtUser(userId: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
-    if (!user) {
-      throw new UnauthorizedException('User not found');
+  private extractUserRole(clerkUser: any): UserRole {
+    // Prioridade: private_metadata > public_metadata > default
+    const role =
+      clerkUser.privateMetadata?.role ||
+      clerkUser.publicMetadata?.role ||
+      UserRole.USER;
+
+    // Validar se o role é válido
+    if (!Object.values(UserRole).includes(role)) {
+      this.logger.warn(`Invalid role detected: ${role}, defaulting to USER`);
+      return UserRole.USER;
     }
 
-    const currentUser = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-    };
-
-    return currentUser;
+    return role;
   }
 
-  async login(user: User, response: Response) {
-    const tokenPayload = {
-      userId: user.id,
-    };
+  extractTokenFromHeader(authHeader: string): string | null {
+    if (!authHeader) {
+      return null;
+    }
 
-    const auth_token = this.jwt.sign(tokenPayload, {
-      secret: this.configService.getOrThrow<string>('JWT_AUTH_SECRET'),
-      expiresIn: this.configService.getOrThrow<string>('JWT_AUTH_EXPIRES_IN'),
-    });
+    const [type, token] = authHeader.split(' ');
 
-    const accessTokenExpiresIn = this.configService.getOrThrow<string>(
-      'JWT_AUTH_EXPIRES_IN',
-    );
+    if (type !== 'Bearer' || !token) {
+      return null;
+    }
 
-    const AccessTokenExpiryDate = new Date();
-    AccessTokenExpiryDate.setDate(
-      AccessTokenExpiryDate.getDate() + parseInt(accessTokenExpiresIn),
-    );
-
-    response.cookie('auth_token', auth_token, {
-      httpOnly: true,
-      secure: this.configService.getOrThrow('NODE_ENV') === 'production',
-      sameSite: 'lax',
-      path: '/',
-      expires: AccessTokenExpiryDate,
-    });
+    return token;
   }
 }

@@ -12,7 +12,7 @@ import { Category, CategoryWithMinPrice } from 'src/types';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { AuthGuard } from '../auth';
 
 @Controller('category')
 export class CategoryController {
@@ -37,7 +37,7 @@ export class CategoryController {
     return this.categoryService.getRelatedCategories(slug);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Post()
   async createCategory(
     @Body() createCategoryDto: CreateCategoryDto,
@@ -45,7 +45,7 @@ export class CategoryController {
     return this.categoryService.createCategory(createCategoryDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Put('/:slug')
   async updateCategory(
     @Param('slug') slug: string,
@@ -54,13 +54,13 @@ export class CategoryController {
     return this.categoryService.updateCategory(slug, updateCategoryDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Delete('/:id')
   async deleteCategory(@Param('id') id: string): Promise<void> {
     return this.categoryService.deleteCategory(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Post('add-product')
   async addProductToCategory(
     @Body() addProductToCategoryDto: { categoryId: string; productId: string },
@@ -71,7 +71,7 @@ export class CategoryController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Post('remove-product')
   async removeProductFromCategory(
     @Body()
@@ -86,7 +86,7 @@ export class CategoryController {
     );
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Post('add-section')
   async addSectionToCategory(
     @Body() addSectionToCategoryDto: { categoryId: string; sectionId: string },
@@ -96,7 +96,7 @@ export class CategoryController {
       addSectionToCategoryDto.sectionId,
     );
   }
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Post('remove-section')
   async removeSectionFromCategory(
     @Body()

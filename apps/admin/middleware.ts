@@ -1,30 +1,31 @@
-// middleware.ts
-import { NextRequest, NextResponse } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-const PUBLIC_PATHS = ["/login"];
+const isProtectedRoute = createRouteMatcher(["/dashboard(.*)", "/admin(.*)", "/profile(.*)"]);
 
-export function middleware(request: NextRequest) {
-  // Verifica se o token está presente (atenção ao nome do cookie: auth_token vs authToken)
-  const token = request.cookies.get("auth_token");
+const isAdminRoute = createRouteMatcher(["/admin(.*)"]);
 
-  const pathname = request.nextUrl.pathname;
-
-  // Ignora rotas públicas (ex: login)
-  const isPublicPath = PUBLIC_PATHS.some((path) => pathname.startsWith(path));
-
-  if (pathname === "/login" && token) {
-    const dashboardUrl = new URL("/dashboard", request.url);
-    return NextResponse.redirect(dashboardUrl);
-  }
-  // Bloqueia tudo que não seja público e não tenha token
-  if (!token && !isPublicPath) {
-    const loginUrl = new URL("/login", request.url);
-    return NextResponse.redirect(loginUrl);
+export default clerkMiddleware(async (auth, req) => {
+  // Proteger rotas que requerem autenticação
+  if (isProtectedRoute(req)) {
+    await auth.protect();
   }
 
-  return NextResponse.next();
-}
+  // Verificar se é rota de admin e se o usuário tem permissão
+  if (isAdminRoute(req)) {
+    const { sessionClaims } = await auth();
+    const userRole = (sessionClaims?.metadata as any)?.role;
+
+    if (userRole !== "admin" && userRole !== "director") {
+      return new Response("Forbidden", { status: 403 });
+    }
+  }
+});
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    // Always run for API routes
+    "/(api|trpc)(.*)",
+  ],
 };

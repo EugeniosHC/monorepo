@@ -8,7 +8,6 @@ import {
 } from '@aws-sdk/client-s3';
 import { randomUUID } from 'crypto';
 import { ConfigService } from '@nestjs/config';
-import * as sharp from 'sharp';
 import { Image, ImageGallery } from 'src/types';
 import { ProductService } from '../product/product.service';
 

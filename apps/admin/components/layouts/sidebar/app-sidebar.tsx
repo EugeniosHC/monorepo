@@ -99,12 +99,6 @@ const data = {
       title: "Categorias",
       url: "/dashboard/categories",
       icon: FolderIcon,
-      items: [
-        {
-          title: "Criar",
-          url: "/dashboard/categories/create",
-        },
-      ],
     },
     {
       title: "Produtos",

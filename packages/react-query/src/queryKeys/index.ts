@@ -19,4 +19,6 @@ export const QueryKeys = {
   getImages: () => ["images"] as const,
 
   getUser: () => ["user"] as const,
+
+  getClass: (date?: string) => (date ? (["class", date] as const) : (["class"] as const)),
 };

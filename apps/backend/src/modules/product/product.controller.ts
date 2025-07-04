@@ -10,8 +10,8 @@ import {
 } from '@nestjs/common';
 import { Product } from 'src/types';
 import { ProductService } from './product.service';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { CreateProductDto } from './dto/create-product';
+import { AuthGuard } from '../auth';
 
 @Controller('product')
 export class ProductController {
@@ -22,7 +22,7 @@ export class ProductController {
     return this.productService.getAllProducts();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Post()
   async createProduct(
     @Body() createProductDto: CreateProductDto,
@@ -30,7 +30,7 @@ export class ProductController {
     return this.productService.createProduct(createProductDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Put('/:id')
   async updateProduct(
     @Param('id') id: string,
@@ -39,7 +39,7 @@ export class ProductController {
     return this.productService.updateProduct(id, product);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Delete('/:id')
   async deleteProduct(@Param('id') id: string): Promise<Product> {
     return this.productService.deleteProduct(id);

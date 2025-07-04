@@ -19,13 +19,14 @@ async function bootstrap() {
       'http://localhost:3000',
       'http://localhost:3001',
       'http://localhost:3002',
+      'http://localhost:3003',
     ],
     credentials: true,
   });
 
-  app.useGlobalPipes(new ValidationPipe());
-
   app.use(cookieParser());
+
+  app.useGlobalPipes(new ValidationPipe());
 
   const prismaService = app.get(PrismaService);
   prismaService.enableShutdownHooks(app);

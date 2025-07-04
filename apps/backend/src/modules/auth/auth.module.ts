@@ -1,21 +1,22 @@
 import { Module } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
+import { APP_GUARD } from '@nestjs/core';
 import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { LocalStrategy } from './strategies/local.strategy';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { PrismaService } from '../prisma/prisma.service';
+import { AuthGuard } from './guards/auth.guard';
+import { RolesGuard } from './guards/roles.guard';
+import { ClerkConfig } from '../../config/clerk.config';
 
 @Module({
-  imports: [
-    PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_AUTH_SECRET,
-      signOptions: { expiresIn: '7d' },
-    }),
+  providers: [
+    ClerkConfig,
+    AuthService,
+    AuthGuard,
+    RolesGuard,
+    // Opcional: Aplicar AuthGuard globalmente
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthGuard,
+    // },
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, PrismaService],
-  controllers: [AuthController],
+  exports: [AuthService, AuthGuard, RolesGuard, ClerkConfig],
 })
 export class AuthModule {}

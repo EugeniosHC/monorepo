@@ -156,3 +156,26 @@ export interface HeroSlide {
   imageUrl: string;
   imageAlt: string;
 }
+
+interface Aula {
+  nome: string;
+  categoria: "Terra" | "Água" | "Express";
+  hora_inicio: string; // formato: "HH:MM"
+  hora_fim: string; // formato: "HH:MM"
+  duracao: string; // em minutos, como string: "60"
+  intensidade: 0 | 1 | 2 | 3 | 4;
+  professor: string;
+  sala: string;
+}
+
+// Representa um dia da semana com uma lista de aulas
+interface DiaDaSemana {
+  dia: string; // ex: "Segunda-feira"
+  data: string; // ex: "23" (pode ser string ou number)
+  aulas: Aula[];
+}
+
+// Interface raiz que representa todas as aulas da semana
+export interface AulasDaSemanaResponse {
+  aulas_da_semana: DiaDaSemana[];
+}

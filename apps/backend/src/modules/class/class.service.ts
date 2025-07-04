@@ -1,17 +1,20 @@
-/*
-https://docs.nestjs.com/providers#services
-*/
-
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { OVGService } from '../ovg/ovg.service';
+import { CreateExpressClassesDTO } from './dto/create-express-class.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreateExpressScheduleDto } from './dto/create-express-scheule.dto';
+import { ClerkUser } from '../auth';
 
 @Injectable()
 export class ClassService {
   private weeklyClassesCache = new Map<string, any>();
   private cacheExpiration = new Map<string, number>();
-  private readonly CACHE_DURATION_MS = 30 * 60 * 1000; // 30 minutos
+  private readonly CACHE_DURATION_MS = 30 * 60 * 1000;
 
-  constructor(private ovgService: OVGService) {}
+  constructor(
+    private ovgService: OVGService,
+    private prisma: PrismaService,
+  ) {}
 
   async getAllClasses(date?: string): Promise<any> {
     if (!date) return {};
@@ -50,6 +53,8 @@ export class ClassService {
     return groupedClasses;
   }
 
+
+
   private getMondayOfWeek(date: Date): string {
     const dayOfWeek = date.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
     const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // Ajustar para segunda-feira
@@ -69,31 +74,105 @@ export class ClassService {
       );
     }
 
-
     const daysOfWeek = [
+      'segunda-feira',
+      'terça-feira',
+      'quarta-feira',
+      'quinta-feira',
+      'sexta-feira',
+      'sábado',
       'domingo',
-      'segunda',
-      'terca',
-      'quarta',
-      'quinta',
-      'sexta',
-      'sabado',
     ];
 
     // Inicializar objeto com todos os dias da semana
-    const groupedClasses = {};
-    daysOfWeek.forEach((day) => {
-      groupedClasses[day] = [];
-    });
+    const groupedClasses = {
+      aulas_da_semana: daysOfWeek.map((dia, index) => ({
+        dia,
+        data: '', // Será preenchido quando tivermos dados
+        aulas: [],
+      })),
+    };
 
     // Agrupar as aulas por dia da semana
     classes.forEach((classItem) => {
       if (classItem.start) {
         const classDate = new Date(classItem.start);
         const dayOfWeek = classDate.getDay(); // 0 = Domingo, 1 = Segunda, etc.
-        const dayName = daysOfWeek[dayOfWeek];
 
-        groupedClasses[dayName].push(classItem);
+        // Ajustar índice para nosso array (Segunda = 0, Domingo = 6)
+        const dayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+        // Se ainda não temos data para este dia, definir
+        if (!groupedClasses.aulas_da_semana[dayIndex].data) {
+          groupedClasses.aulas_da_semana[dayIndex].data = classDate
+            .getDate()
+            .toString();
+        }
+
+        // Calcular duração em minutos
+        const startTime = new Date(classItem.start);
+        const endTime = new Date(classItem.end);
+        const durationMinutes = Math.round(
+          (endTime.getTime() - startTime.getTime()) / (1000 * 60),
+        );
+
+        // Mapear intensidade de texto para número
+        const intensidadeMap = {
+          baixa: 1,
+          suave: 1,
+          leve: 1,
+          moderada: 2,
+          média: 2,
+          'moderada/alta': 3,
+          alta: 4,
+          intensa: 4,
+          máxima: 4,
+          extrema: 4,
+        };
+
+        const intensidadeText = (
+          classItem.intensidade || 'moderada'
+        ).toLowerCase();
+        const intensidadeValue = intensidadeMap[intensidadeText] || 2;
+
+        // Determinar categoria baseada no estúdio/sala e no título da aula
+        let categoria = 'Terra'; // padrão
+        const estudioLower = (classItem.estudio || '').toLowerCase();
+        const titleLower = (classItem.title || '').toLowerCase();
+
+        if (
+          estudioLower.includes('piscina') ||
+          titleLower.includes('natação') ||
+          titleLower.includes('hidro') ||
+          titleLower.includes('aqua')
+        ) {
+          categoria = 'Água';
+        } else if (
+          titleLower.includes('cycling') ||
+          titleLower.includes('spinning') ||
+          titleLower.includes('crossfit') ||
+          titleLower.includes('boxing') ||
+          titleLower.includes('hiit') ||
+          titleLower.includes('circuit') ||
+          estudioLower.includes('spinning') ||
+          estudioLower.includes('crossfit')
+        ) {
+          categoria = 'Express';
+        }
+
+        // Formatar a aula no formato esperado pelo frontend
+        const formattedClass = {
+          nome: classItem.title || 'Aula sem nome',
+          categoria: categoria,
+          intensidade: intensidadeValue,
+          professor: classItem.nickname || 'Professor não disponível',
+          sala: classItem.estudio || 'Sala não disponível',
+          hora_inicio: startTime.toTimeString().slice(0, 5), // HH:MM
+          hora_fim: endTime.toTimeString().slice(0, 5), // HH:MM
+          duracao: durationMinutes,
+        };
+
+        groupedClasses.aulas_da_semana[dayIndex].aulas.push(formattedClass);
       }
     });
 
@@ -116,16 +195,5 @@ export class ClassService {
   private setCache(key: string, data: any): void {
     this.weeklyClassesCache.set(key, data);
     this.cacheExpiration.set(key, Date.now() + this.CACHE_DURATION_MS);
-
-  }
-
-  private clearExpiredCache(): void {
-    const now = Date.now();
-    for (const [key, expiration] of this.cacheExpiration.entries()) {
-      if (now > expiration) {
-        this.weeklyClassesCache.delete(key);
-        this.cacheExpiration.delete(key);
-      }
-    }
   }
 }

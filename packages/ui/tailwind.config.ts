@@ -46,6 +46,46 @@ const config = {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        // Class categories colors
+        terrestre: {
+          DEFAULT: "#ffa752",
+          50: "#fff8f0",
+          100: "#fff0e0",
+          200: "#ffddb7",
+          300: "#ffc483",
+          400: "#ffa752", // Base color
+          500: "#ff8c20",
+          600: "#ff7a0d",
+          700: "#e06600",
+          800: "#b85200",
+          900: "#944200",
+        },
+        aqua: {
+          DEFAULT: "#7e8da2",
+          50: "#f4f6f8",
+          100: "#e8ecf0",
+          200: "#d1d8e2",
+          300: "#b2bfce",
+          400: "#7e8da2", // Base color
+          500: "#697b94",
+          600: "#586580",
+          700: "#485267",
+          800: "#3e4658",
+          900: "#363d4a",
+        },
+        xpress: {
+          DEFAULT: "#a7a7a7",
+          50: "#f8f8f8",
+          100: "#f0f0f0",
+          200: "#e4e4e4",
+          300: "#d1d1d1",
+          400: "#a7a7a7", // Base color
+          500: "#949494",
+          600: "#787878",
+          700: "#636363",
+          800: "#515151",
+          900: "#454545",
+        },
         primary: {
           DEFAULT: "#293c59",
           foreground: "hsl(var(--primary-foreground))",

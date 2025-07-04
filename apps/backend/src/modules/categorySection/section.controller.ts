@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { CategorySection } from 'src/types';
 import { CategorySectionService } from './section.service';
 import { CreateCategorySectionDto } from './dto/create-category.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
+import { AuthGuard } from '../auth';
 
 @Controller('categorySection')
 export class CategorySectionController {
@@ -13,7 +13,7 @@ export class CategorySectionController {
     return this.sectionService.getAllSections();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard)
   @Post()
   async createSection(
     @Body() createCategorySectionDto: CreateCategorySectionDto,

@@ -27,6 +27,7 @@
     "./imageService": "./src/imageService.ts",
     "./categorySectionService": "./src/categorySectionService.ts",
     "./sectionService": "./src/sectionService.ts",
+    "./classService": "./src/classService.ts",
     "./axios": "./src/axios.ts"
   }
 }

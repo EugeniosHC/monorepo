@@ -16,4 +16,14 @@ export class ClassController {
   ): Promise<any[] | null> {
     return this.classService.getAllClasses(query.date);
   }
+
+  /*
+  @Post('express-classes')
+  async createExpressClass(
+    @Body(new ValidationPipe({ transform: true }))
+    createExpressClassesDto: CreateExpressClassesDTO,
+  ): Promise<any> {
+    return this.classService.createExpressClasses(createExpressClassesDto);
+  }
+  */
 }
