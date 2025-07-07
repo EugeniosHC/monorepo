@@ -337,11 +337,7 @@ export default function HeroSectionEditorPage() {
                 <div>
                   <div className="rounded-md overflow-hidden mb-3 aspect-video bg-gray-800">
                     {slide.image ? (
-                      <img 
-                        src={slide.image} 
-                        alt={slide.alt || "Preview"} 
-                        className="w-full h-full object-cover"
-                      />
+                      <img src={slide.image} alt={slide.alt || "Preview"} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gray-800 text-gray-400">
                         <ImageIcon className="w-8 h-8" />
@@ -368,7 +364,7 @@ export default function HeroSectionEditorPage() {
                     // Store both the update function and the current slide
                     setActiveSlideUpdate({
                       updateFn: onUpdate,
-                      slide: slide
+                      slide: slide,
                     });
                     setIsGalleryOpen(true);
                   }}
@@ -421,15 +417,15 @@ export default function HeroSectionEditorPage() {
         onSelectImage={(imageUrl) => {
           console.log("Image selected:", imageUrl);
           console.log("Active slide update:", activeSlideUpdate);
-          
+
           if (activeSlideUpdate.updateFn) {
             // Call the update function with the image field and selected URL
             activeSlideUpdate.updateFn("image", imageUrl);
-            
+
             // Close the modals
             setIsGalleryOpen(false);
             setEditMode(null);
-            
+
             console.log("Image updated successfully");
           } else {
             console.error("No update handler available");
@@ -437,7 +433,6 @@ export default function HeroSectionEditorPage() {
         }}
         selectedImage={activeSlideUpdate.slide?.image || ""}
         title="Selecionar Imagem de Fundo"
-      />
       />
     </>
   );
