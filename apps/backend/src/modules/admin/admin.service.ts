@@ -287,7 +287,7 @@ export class AdminService {
         publicMetadata: {
           role: createInviteDto.role,
         },
-        redirectUrl: process.env.FRONTEND_URL || 'http://localhost:3000',
+        redirectUrl: process.env.FRONTEND_ADMIN_URL || 'http://localhost:3003',
       });
 
       this.logger.log(

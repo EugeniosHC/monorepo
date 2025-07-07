@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
+import { AdminService } from '../admin/admin.service';
+import { UserRole } from '../auth';
 
 interface ClassChange {
   changeType: 'ADDED' | 'REMOVED' | 'MODIFIED';
@@ -17,6 +19,7 @@ export class NotificationService {
   constructor(
     private prisma: PrismaService,
     private configService: ConfigService,
+    private adminService: AdminService,
   ) {}
 
   /**
@@ -225,8 +228,6 @@ export class NotificationService {
   <strong>${aula.nome}</strong> (${aula.categoria}) - 
   ${dayNames[aula.diaSemana]} às ${aula.horaInicio} - 
   ${aula.duracao} min - 
-  Professor: ${aula.professor} - 
-  Sala: ${aula.sala}
 </li>`;
       });
       content += `</ul>`;
@@ -669,9 +670,7 @@ export class NotificationService {
           content += `<li>
   <strong>${aula.nome}</strong> (${aula.categoria}) - 
   às ${aula.horaInicio} - 
-  ${aula.duracao} min - 
-  Professor: ${aula.professor} - 
-  Sala: ${aula.sala}
+  ${aula.duracao} min 
 </li>`;
         });
         content += `</ul>`;
@@ -685,9 +684,7 @@ export class NotificationService {
           content += `<li>
   <strong>${aula.nome}</strong> (${aula.categoria}) - 
   às ${aula.horaInicio} - 
-  ${aula.duracao} min - 
-  Professor: ${aula.professor} - 
-  Sala: ${aula.sala}
+  ${aula.duracao} min 
 </li>`;
         });
         content += `</ul>`;
@@ -740,6 +737,7 @@ export class NotificationService {
   private async sendEmail(
     recipientEmail: string,
     content: string,
+    subject?: string,
   ): Promise<void> {
     try {
       // Obter configurações de email das variáveis de ambiente
@@ -777,7 +775,8 @@ export class NotificationService {
       const mailOptions = {
         from: emailConfig.from,
         to: recipientEmail,
-        subject: "Alterações no Horário de Aulas - Eugenio's Health Club",
+        subject:
+          subject || "Alterações no Horário de Aulas - Eugenio's Health Club",
         html: content,
       };
 
@@ -856,6 +855,173 @@ export class NotificationService {
         error.stack,
       );
       throw error;
+    }
+  }
+
+  /**
+   * Notifica todos os administradores e gerentes de clube sobre mudanças no status do schedule
+   * @param scheduleId ID do schedule que teve seu status alterado
+   * @param newStatus Novo status do schedule
+   * @param changedBy Usuário que fez a alteração
+   * @param note Nota opcional sobre a alteração
+   */
+  async notifyAdminsAndManagersAboutStatusChange(
+    scheduleId: string,
+    newStatus: string,
+    changedBy: any,
+    note?: string,
+  ): Promise<void> {
+    try {
+      // Buscar o schedule que teve seu status alterado
+      const schedule = await this.prisma.classSchedule.findUnique({
+        where: { id: scheduleId },
+      });
+
+      if (!schedule) {
+        this.logger.warn(
+          `Schedule ${scheduleId} não encontrado para notificação de status`,
+        );
+        return;
+      }
+
+      // Buscar todos os usuários admin e club_manager
+      const { users } = await this.adminService.getAllUsers(
+        UserRole.ADMIN, // Permissão necessária para buscar usuários
+        1, // Página
+        100, // Limite (ajustar conforme necessário)
+      );
+
+      // Filtrar apenas admin e club_manager
+      const adminAndManagerUsers = users.filter(
+        (user) =>
+          user.role === UserRole.ADMIN || user.role === UserRole.CLUB_MANAGER,
+      );
+
+      if (adminAndManagerUsers.length === 0) {
+        this.logger.warn(
+          'Nenhum administrador ou gerente encontrado para notificar',
+        );
+        return;
+      }
+
+      // Preparar o conteúdo do email
+      const statusLabels = {
+        RASCUNHO: 'Rascunho',
+        PENDENTE: 'Pendente de Aprovação',
+        APROVADO: 'Aprovado',
+        ATIVO: 'Ativo',
+        SUBSTITUIDO: 'Substituído',
+        REJEITADO: 'Rejeitado',
+      };
+
+      const statusColors = {
+        RASCUNHO: '#6B7280', // gray-500
+        PENDENTE: '#F59E0B', // amber-500
+        APROVADO: '#10B981', // emerald-500
+        ATIVO: '#3B82F6', // blue-500
+        SUBSTITUIDO: '#6366F1', // indigo-500
+        REJEITADO: '#EF4444', // red-500
+      };
+
+      const changedByName =
+        changedBy?.firstName && changedBy?.lastName
+          ? `${changedBy.firstName} ${changedBy.lastName}`
+          : changedBy?.email || 'Sistema';
+
+      const statusLabel = statusLabels[newStatus] || newStatus;
+      const statusColor = statusColors[newStatus] || '#6B7280';
+
+      const emailSubject = `Alteração de Status do Horário - ${schedule.titulo}`;
+
+      const emailContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${emailSubject}</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { text-align: center; margin-bottom: 20px; }
+    .status-badge { 
+      display: inline-block; 
+      padding: 6px 12px; 
+      border-radius: 16px; 
+      font-weight: bold; 
+      background-color: ${statusColor}; 
+      color: white; 
+    }
+    .details { 
+      background-color: #f9fafb; 
+      border: 1px solid #e5e7eb; 
+      border-radius: 8px; 
+      padding: 15px; 
+      margin: 20px 0; 
+    }
+    .footer { 
+      font-size: 12px; 
+      color: #6B7280; 
+      text-align: center; 
+      margin-top: 30px; 
+      border-top: 1px solid #e5e7eb; 
+      padding-top: 15px; 
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Alteração de Status do Horário</h1>
+    </div>
+    
+    <p>O horário <strong>${schedule.titulo}</strong> teve seu status alterado para <span class="status-badge">${statusLabel}</span></p>
+    
+    <div class="details">
+      <p><strong>Detalhes da alteração:</strong></p>
+      <ul>
+        <li><strong>ID do Horário:</strong> ${schedule.id}</li>
+        <li><strong>Nome do Horário:</strong> ${schedule.titulo}</li>
+        <li><strong>Status anterior:</strong> ${statusLabels[schedule.status] || schedule.status}</li>
+        <li><strong>Novo status:</strong> ${statusLabel}</li>
+        <li><strong>Alterado por:</strong> ${changedByName}</li>
+        <li><strong>Data da alteração:</strong> ${new Date().toLocaleString('pt-BR')}</li>
+        ${note ? `<li><strong>Nota:</strong> ${note}</li>` : ''}
+      </ul>
+    </div>
+    
+    <p>
+      Para visualizar ou gerenciar este horário, acesse o <a href="${process.env.FRONTEND_ADMIN_URL || 'http://localhost:3003'}/dashboard/classes">Painel de Administração</a>.
+    </p>
+    
+    <div class="footer">
+      <p>Esta é uma mensagem automática. Por favor, não responda a este email.</p>
+      <p>Eugenio's Health Club - Sistema de Gerenciamento de Aulas</p>
+    </div>
+  </div>
+</body>
+</html>
+      `;
+
+      // Enviar email para cada administrador e gerente
+      for (const user of adminAndManagerUsers) {
+        if (user.email) {
+          await this.sendEmail(user.email, emailContent, emailSubject);
+          this.logger.log(
+            `Email de notificação de status enviado para ${user.email}`,
+          );
+        }
+      }
+
+      this.logger.log(
+        `Notificação de alteração de status enviada para ${adminAndManagerUsers.length} administradores e gerentes`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Erro ao enviar notificação de status para admins e gerentes: ${error.message}`,
+        error.stack,
+      );
+      // Não lançar exceção para não interromper o fluxo principal
     }
   }
 }

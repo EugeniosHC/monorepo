@@ -38,6 +38,7 @@ export class AdminController {
   // ========================================
 
   @Get('users')
+  @UseGuards(RolesGuard)
   @Roles(UserRole.ADMIN)
   async getAllUsers(
     @CurrentUser() user: ClerkUser,

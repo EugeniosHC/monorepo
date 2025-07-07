@@ -354,12 +354,14 @@ export default function ClassesPage() {
               icon: <CheckCircle className="mr-2 h-4 w-4" />,
               onClick: (id) => handleActivateSchedule(id),
               disabled: true,
+              adminOnly: true,
             },
             {
               label: "Rejeitar",
               icon: <X className="mr-2 h-4 w-4" />,
               onClick: (id) => handleRejectSchedule(id),
               disabled: true,
+              adminOnly: true,
             },
             {
               label: "Editar",
@@ -390,12 +392,14 @@ export default function ClassesPage() {
               icon: <CheckCircle className="mr-2 h-4 w-4" />,
               onClick: (id) => handleInitiateApprove(id),
               disabled: true,
+              adminOnly: true,
             },
             {
               label: "Rejeitar",
               icon: <X className="mr-2 h-4 w-4" />,
               onClick: (id) => handleRejectSchedule(id),
               disabled: true,
+              adminOnly: true,
             },
             {
               label: "Editar",

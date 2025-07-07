@@ -36,25 +36,17 @@ export function AdminOnly({ children, fallback = null }: { children: ReactNode; 
   );
 }
 
-export function DirectorOnly({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
+export function ClubManagerOnly({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
   return (
-    <RoleGuard allowedRoles={[UserRole.DIRECTOR]} fallback={fallback}>
+    <RoleGuard allowedRoles={[UserRole.CLUB_MANAGER]} fallback={fallback}>
       {children}
     </RoleGuard>
   );
 }
 
-export function AdminOrDirector({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
+export function AdminOrClubManager({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
   return (
-    <RoleGuard allowedRoles={[UserRole.ADMIN, UserRole.DIRECTOR]} fallback={fallback}>
-      {children}
-    </RoleGuard>
-  );
-}
-
-export function ModeratorOrAbove({ children, fallback = null }: { children: ReactNode; fallback?: ReactNode }) {
-  return (
-    <RoleGuard allowedRoles={[UserRole.ADMIN, UserRole.DIRECTOR, UserRole.MODERATOR]} fallback={fallback}>
+    <RoleGuard allowedRoles={[UserRole.ADMIN, UserRole.CLUB_MANAGER]} fallback={fallback}>
       {children}
     </RoleGuard>
   );

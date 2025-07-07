@@ -15,6 +15,8 @@ import { ScheduleStatus, Schedule } from "@/hooks/useSchedules";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { ReactNode } from "react";
+import { AdminOnly } from "@/components/security/RoleGuard";
+import { Separator } from "@eugenios/ui/src/components/separator";
 
 // Define the type for actions that can be performed on a schedule
 export type ScheduleAction = {
@@ -23,6 +25,7 @@ export type ScheduleAction = {
   onClick: (scheduleId: string, title?: string) => void;
   disabled?: boolean;
   destructive?: boolean;
+  adminOnly?: boolean; // Flag to indicate if the action should only be visible to admins
 };
 
 // Props interface for the ScheduleCard component
@@ -165,13 +168,14 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({
     <Card className="mb-6">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle>{title}</CardTitle>
+          <CardTitle className="text-xl font-semibold">{title}</CardTitle>
           <Badge variant="outline" className={badgeProps.className}>
             {badgeProps.icon}
             {badgeProps.text}
           </Badge>
         </div>
       </CardHeader>
+      <Separator className="my-4" />
       <CardContent>
         {schedules.length > 0 ? (
           <div className="space-y-4">
@@ -370,23 +374,42 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          {actions.map((action, index) => (
-                            <DropdownMenuItem
-                              key={index}
-                              onClick={() => action.onClick(schedule.id, schedule.titulo)}
-                              disabled={isProcessing === schedule.id && action.disabled}
-                              className={action.destructive ? "text-destructive" : ""}
-                            >
-                              {isProcessing === schedule.id && action.disabled ? (
-                                <>Processando...</>
-                              ) : (
-                                <>
-                                  {action.icon}
-                                  {action.label}
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                          ))}
+                          {actions.map((action, index) =>
+                            action.adminOnly ? (
+                              <AdminOnly key={index}>
+                                <DropdownMenuItem
+                                  onClick={() => action.onClick(schedule.id, schedule.titulo)}
+                                  disabled={isProcessing === schedule.id && action.disabled}
+                                  className={action.destructive ? "text-destructive" : ""}
+                                >
+                                  {isProcessing === schedule.id && action.disabled ? (
+                                    <>Processando...</>
+                                  ) : (
+                                    <>
+                                      {action.icon}
+                                      {action.label}
+                                    </>
+                                  )}
+                                </DropdownMenuItem>
+                              </AdminOnly>
+                            ) : (
+                              <DropdownMenuItem
+                                key={index}
+                                onClick={() => action.onClick(schedule.id, schedule.titulo)}
+                                disabled={isProcessing === schedule.id && action.disabled}
+                                className={action.destructive ? "text-destructive" : ""}
+                              >
+                                {isProcessing === schedule.id && action.disabled ? (
+                                  <>Processando...</>
+                                ) : (
+                                  <>
+                                    {action.icon}
+                                    {action.label}
+                                  </>
+                                )}
+                              </DropdownMenuItem>
+                            )
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     )}

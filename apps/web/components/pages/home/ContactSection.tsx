@@ -75,7 +75,7 @@ export function ContactSection() {
               className="text-lg min-h-[180px] bg-white border border-neutral-800 text-neutral-800 placeholder:text-gray-500 rounded-2xl  px-4 py-3 shadow-md focus:outline-none focus-visible:ring-none"
             />
           </div>
-          <div className="flex items-center justify-end">
+          <div className="flex items-center justify-center md:justify-end">
             <CustomButton variant="primary" type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <span className="flex items-center gap-2">

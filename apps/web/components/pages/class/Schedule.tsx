@@ -788,7 +788,6 @@ export default function ElegantClassSchedule({
                   return (
                     <td key={dayIndex} className="p-3 align-top border border-gray-200 min-h-[160px]">
                       <div className="space-y-3">
-                        <h4 className="text-xs font-medium text-gray-700 uppercase tracking-wider mb-4">Noite</h4>
                         {evening.map((aula, aulaIndex) => (
                           <div
                             key={aulaIndex}

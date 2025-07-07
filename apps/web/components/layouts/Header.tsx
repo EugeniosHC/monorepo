@@ -131,7 +131,7 @@ export default function Header() {
         <div className="flex items-center gap-4">
           <CustomButton
             variant="primary"
-            className={`hidden sm:flex ${isScrolled ? "bg-primary text-white" : "bg-primary text-white hover:text-white hover:border-white"}`}
+            className={`hidden sm:flex ${isScrolled || !isHomeOrLojaPage ? "bg-primary text-white" : "bg-primary text-white hover:text-white hover:border-white"}`}
             onClick={() => setIsModalOpen(true)}
           >
             Adesão

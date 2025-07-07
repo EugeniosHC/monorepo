@@ -95,6 +95,7 @@ export function ImageGalleryModal({
       <DialogContent className="max-w-4xl max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
+          <div className="text-sm text-gray-500">Selecione uma imagem da galeria para utilizar</div>
         </DialogHeader>
 
         <div className="space-y-4">

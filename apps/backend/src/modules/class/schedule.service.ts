@@ -366,6 +366,22 @@ export class ScheduleService {
       );
     }
 
+    // Notificar administradores e gerentes sobre a mudança de status
+    try {
+      await this.notificationService.notifyAdminsAndManagersAboutStatusChange(
+        scheduleId,
+        novoStatus,
+        user,
+        nota,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Erro ao enviar notificação de status para admins e gerentes: ${error.message}`,
+        error.stack,
+      );
+      // Não interromper o fluxo se a notificação falhar
+    }
+
     // Regras especiais para ativação de um schedule
     if (novoStatus === ScheduleStatus.ATIVO) {
       // Se estamos ativando um schedule, precisamos desativar o schedule ativo atual
