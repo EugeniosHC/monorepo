@@ -8,6 +8,11 @@ import { AuthGuard } from '../auth';
 export class SectionController {
   constructor(private readonly sectionService: SectionService) {}
 
+  @Get('/:id')
+  async getSectionById(@Param('id') id: string): Promise<Section | null> {
+    return this.sectionService.getSectionById(id);
+  }
+
   @UseGuards(AuthGuard)
   @Get()
   async getAllSections(): Promise<Section[] | null> {

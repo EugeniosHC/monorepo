@@ -10,6 +10,23 @@ export interface Slide {
   buttonIsVisible: boolean;
 }
 
+// Interface para uso no editor que inclui o ID necessário
+export interface SlideItem extends Slide {
+  id: number;
+}
+
+export interface HeroSection {
+  id: string;
+  title: string;
+  description: string; // Made required to match the sample data
+  type: string; // Mantemos como string para aceitar valores como "HERO" e "MARQUEE"
+  data: Slide[];
+  isActive: boolean;
+  websiteId: string;
+  createdAt: string; // Made required to match the sample data
+  updatedAt: string; // Made required to match the sample data
+}
+
 export interface Highlight {
   icon: string;
   description: string;

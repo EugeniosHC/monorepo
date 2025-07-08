@@ -15,6 +15,7 @@ import { PrismaModule } from 'src/modules/prisma/prisma.module';
 import { CloudflareModule } from 'src/modules/cloudflare/cloudflare.module';
 import { ClassModule } from './modules/class/class.module';
 import { NotificationModule } from './modules/notification/notification.module';
+import { ClosumModule } from './modules/closum/closum.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { NotificationModule } from './modules/notification/notification.module';
     CloudflareModule,
     ClassModule,
     NotificationModule,
+    ClosumModule,
   ],
   controllers: [ProtectedController],
 })

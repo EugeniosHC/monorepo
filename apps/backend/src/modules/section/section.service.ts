@@ -53,6 +53,24 @@ export class SectionService {
     });
   }
 
+  async getSectionById(id: string): Promise<Section | null> {
+    if (!id) {
+      Logger.error('ID parameter is empty');
+      throw new BadRequestException('ID is required');
+    }
+
+    const section = await this.prismaService.section.findUnique({
+      where: { id },
+    });
+
+    if (!section) {
+      Logger.error(`Section with ID "${id}" not found`);
+      throw new BadRequestException('Section not found');
+    }
+
+    return section;
+  }
+
   async getSectionsByWebsite(websiteName: string): Promise<Section[] | null> {
     if (!websiteName) {
       Logger.error('Website name parameter is empty');
