@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config'; // Assuming you have a config package to manage environment variables
 import { AddLeadDto } from './dto/add-lead.dto';
 import { BadRequestException } from '@nestjs/common/exceptions/bad-request.exception';
+import { AddNewsletterDto } from './dto/add-newsletter.dto';
 
 @Injectable()
 export class ClosumService {
@@ -26,6 +27,54 @@ export class ClosumService {
       consent_sms: true,
       contact_lifecycle_stage_id: 4,
       tags: ['website'],
+    };
+
+    try {
+      const response = await this.httpService
+        .post(`${apiUrl}/lead/add/?api-key=${apiKey}`, leadPayload)
+        .toPromise();
+
+      if (
+        response.data.status &&
+        response.data.code === 200 &&
+        response.data.responseData &&
+        response.data.responseData.length > 0 &&
+        response.data.responseData[0].lead_id &&
+        response.data.message &&
+        response.data.message.includes('success')
+      ) {
+        return {
+          success: true,
+          lead_id: response.data.responseData[0].lead_id,
+          message: response.data.message,
+        };
+      }
+      throw new BadRequestException(
+        'Failed to add lead: ' + response.data.message || 'Unknown error',
+      );
+    } catch (error) {
+      console.error('Error adding lead to Closum:', error);
+      throw error;
+    }
+  }
+
+  async subscribeToNewsletter(addNewsLetterDto: AddNewsletterDto) {
+    if (!addNewsLetterDto.email) {
+      throw new BadRequestException(
+        'Email is required for newsletter subscription',
+      );
+    }
+    const apiUrl = this.configService.getOrThrow<string>('CLOSUM_API_URL');
+    const apiKey = this.configService.getOrThrow<string>('CLOSUM_API_KEY');
+    if (!apiUrl) {
+      throw new Error('CLOSUM_API_URL is not defined in environment variables');
+    }
+
+    const leadPayload = {
+      email: addNewsLetterDto.email,
+      consent_email: true,
+      consent_sms: false,
+      tags: ['website', 'newsletter'],
     };
 
     try {

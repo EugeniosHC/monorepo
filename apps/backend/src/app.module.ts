@@ -23,7 +23,7 @@ import { ClosumModule } from './modules/closum/closum.module';
       isGlobal: true,
       load: [appConfig, ovgConfig, emailConfig],
     }),
-    ScheduleModule.forRoot(), // Habilitando o suporte a agendamento de tarefas
+    ScheduleModule.forRoot(),
     AuthModule,
     AdminModule,
     CategoryModule,

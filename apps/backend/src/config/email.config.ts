@@ -10,5 +10,6 @@ export default () => ({
       process.env.EMAIL_FROM ||
       "Eugenio's Health Club <danielaoliveira.fitnessup@gmail.com>",
     notification: process.env.NOTIFICATION_EMAIL || 'programacoes@eugenios.pt',
+    recipientEmail: process.env.ADMIN_EMAIL || 'afonsovelosof@gmail.com',
   },
 });

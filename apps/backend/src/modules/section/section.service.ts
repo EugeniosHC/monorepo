@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { Section } from '@prisma/client';
 import { CreateSectionDto } from './dto/create-section.dto';
+import { UpdateSectionDto } from './dto/update-section.dto';
 import { SectionType } from '@prisma/client';
 import { validateSectionData } from './validator/validateSectionData.validator';
 
@@ -183,5 +184,120 @@ export class SectionService {
         },
       },
     });
+  }
+
+  async updateSection(
+    id: string,
+    updateSectionDto: UpdateSectionDto,
+  ): Promise<Section | null> {
+    if (!id) {
+      Logger.error('ID parameter is empty');
+      throw new BadRequestException('ID is required');
+    }
+
+    Logger.log(`Attempting to update section with ID: "${id}"`);
+
+    // Check if section exists
+    const existingSection = await this.prismaService.section.findUnique({
+      where: { id },
+    });
+
+    if (!existingSection) {
+      Logger.error(`Section with ID "${id}" not found`);
+      throw new BadRequestException(`Section with ID "${id}" not found`);
+    }
+
+    Logger.log(
+      `Found section: ${existingSection.title} (Type: ${existingSection.type})`,
+    );
+
+    // If data is being updated, validate it against the section type
+    if (updateSectionDto.data) {
+      const sectionType = updateSectionDto.type || existingSection.type;
+      Logger.log(`Validating data for section type: ${sectionType}`);
+      Logger.log(
+        `Data being validated: ${JSON.stringify(updateSectionDto.data, null, 2)}`,
+      );
+
+      const isValid = validateSectionData(sectionType, updateSectionDto.data);
+      Logger.log(`Validation result: ${isValid}`);
+
+      if (!isValid) {
+        Logger.error(`Invalid data provided for section type: ${sectionType}`);
+        throw new BadRequestException(
+          'Invalid data for section type: ' + sectionType,
+        );
+      }
+    }
+
+    // If title is being updated, check for duplicates
+    if (
+      updateSectionDto.title &&
+      updateSectionDto.title !== existingSection.title
+    ) {
+      const existingSectionWithTitle =
+        await this.prismaService.section.findFirst({
+          where: {
+            title: updateSectionDto.title,
+            id: { not: id }, // Exclude current section
+          },
+        });
+
+      if (existingSectionWithTitle) {
+        Logger.error(
+          `Section with title "${updateSectionDto.title}" already exists`,
+        );
+        throw new BadRequestException('Section with this title already exists');
+      }
+    }
+
+    Logger.log(`Updating section with ID: ${id}`);
+
+    const updateData = {
+      ...(updateSectionDto.title && { title: updateSectionDto.title }),
+      ...(updateSectionDto.description !== undefined && {
+        description: updateSectionDto.description,
+      }),
+      ...(updateSectionDto.type && { type: updateSectionDto.type }),
+      ...(updateSectionDto.data && { data: updateSectionDto.data as any }),
+      ...(updateSectionDto.isActive !== undefined && {
+        isActive: updateSectionDto.isActive,
+      }),
+    };
+
+    Logger.log(
+      `Update data being sent to Prisma: ${JSON.stringify(updateData, null, 2)}`,
+    );
+
+    // Use a transaction to ensure the data is properly committed
+    const updatedSection = await this.prismaService.$transaction(
+      async (prisma) => {
+        const result = await prisma.section.update({
+          where: { id },
+          data: updateData,
+        });
+
+        Logger.log(
+          `Transaction - updated section: ${JSON.stringify(result.data, null, 2)}`,
+        );
+        return result;
+      },
+    );
+
+    Logger.log(`Section updated successfully: ${updatedSection.id}`);
+    Logger.log(
+      `Updated section data: ${JSON.stringify(updatedSection.data, null, 2)}`,
+    );
+
+    // Verify the update by fetching the section again
+    const verificationSection = await this.prismaService.section.findUnique({
+      where: { id },
+    });
+
+    Logger.log(
+      `Verification - section data in DB: ${JSON.stringify(verificationSection?.data, null, 2)}`,
+    );
+
+    return updatedSection;
   }
 }

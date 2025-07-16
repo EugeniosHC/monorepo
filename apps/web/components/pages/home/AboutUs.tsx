@@ -20,9 +20,9 @@ export default function AboutUs({ data }: AboutUsProps) {
     data?.description ||
     "Há mais de vinte cinco anos que o Eugénios Health Club é sinónimo de excelência em Famalicão. Oferecemos um espaço exclusivo e sofisticado, equipado com tecnologia de ponta e acompanhado por profissionais altamente qualificados.";
   const stats: StatItem[] = data?.stats || [
-    { value: "+25", label: "Anos de excelência" },
-    { value: "+200", label: "Aulas semanais" },
-    { value: "+1000", label: "Membros exclusivos" },
+    { value: "+1500m\u00B2", label: "Área de treino" },
+    { value: "+140", label: "Aulas de Grupo" },
+    { value: "+2000", label: "Membros exclusivos" },
   ];
   const videoUrl =
     data?.videoUrl || "https://www.youtube-nocookie.com/embed/CwkMej8edJM?si=kQpnSs2IIqzabwTk&autoplay=1";

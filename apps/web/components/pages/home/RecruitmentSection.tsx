@@ -4,8 +4,12 @@ import Image from "next/image";
 import { Users } from "lucide-react";
 import { Typography } from "@eugenios/ui/components/ui/Typography";
 import CustomButton from "@eugenios/ui/components/ui/CustomButton";
+import { useState } from "react";
+import { RecrutamentoModal } from "@/components/recrutamento-modal";
 
 export default function RecruitmentSection() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="bg-white rounded-xl shadow-lg px-10 py-12 md:px-16 md:py-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-stretch md:gap-8">
@@ -17,15 +21,17 @@ export default function RecruitmentSection() {
 
           <div className="space-y-4">
             <Typography as="h2" variant="sectionTitle" className="font-semibold text-gray-800 leading-tight">
-              Quer fazer parte da equipa?
+              Quer fazer parte da nossa equipa?
             </Typography>
             <Typography as="p" variant="body">
-              Estamos sempre à procura de talento. Se é apaixonado por fitness e saúde, junte-se à nossa equipa.
+              Se é apaixonado pelo mundo do fitness e saúde, queremos conhecê-lo!
             </Typography>
           </div>
 
           <div>
-            <CustomButton variant="primary">Recrutamento</CustomButton>
+            <CustomButton variant="primary" onClick={() => setIsModalOpen(true)}>
+              Enviar Candidatura
+            </CustomButton>
           </div>
         </div>
 
@@ -40,6 +46,7 @@ export default function RecruitmentSection() {
         </div>
         {/* Image with same height as content */}
       </div>
+      <RecrutamentoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 }

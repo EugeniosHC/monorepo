@@ -85,29 +85,31 @@ export default function Header() {
   );
 
   const navLinks = [
-    { href: "#sobre-nos", label: "SOBRE NÓS" },
-    { href: "#servicos", label: "SERVIÇOS" },
+    { href: "/#sobre-nos", label: "SOBRE NÓS" },
+    { href: "/#servicos", label: "SERVIÇOS" },
+    { href: "/#recrutamento", label: "RECRUTAMENTO" },
     { href: "/aulas", label: "AULAS DE GRUPO" },
-    { href: "#contactos", label: "CONTACTOS" },
+    { href: "/#contactos", label: "CONTACTOS" },
   ];
 
   return (
-    <header
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ease-in-out ${
-        isScrolled || !isHomeOrLojaPage ? "bg-white/90 backdrop-blur-lg shadow-md" : ""
-      } ${isVisible ? "translate-y-0" : "-translate-y-full"}`}
-    >
-      <div className="container flex min-h-20 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 py-4">
-          <Image
-            src={isScrolled || !isHomeOrLojaPage ? "/images/logos/blue.svg" : "/images/logos/white.svg"}
-            alt="Eugénios HC Logo"
-            width={50}
-            height={50}
-            priority
-            className="transition-transform duration-300"
-          />
-          {/* 
+    <>
+      <header
+        className={`fixed top-0 z-50 w-full transition-all duration-300 ease-in-out ${
+          isScrolled || !isHomeOrLojaPage ? "bg-white/90 backdrop-blur-lg shadow-md" : ""
+        } ${isVisible ? "translate-y-0" : "-translate-y-full"}`}
+      >
+        <div className="container flex min-h-20 items-center justify-between">
+          <Link href="/" className="flex items-center gap-2 py-4">
+            <Image
+              src={isScrolled || !isHomeOrLojaPage ? "/images/logos/blue.svg" : "/images/logos/white.svg"}
+              alt="Eugénios HC Logo"
+              width={50}
+              height={50}
+              priority
+              className="transition-transform duration-300"
+            />
+            {/* 
               <span
         className={`font-medium text-xl tracking-wider ${
           isScrolled ? "text-neutral-800" : "text-white"
@@ -116,81 +118,81 @@ export default function Header() {
         EUGÉNIOS<span className="font-semibold"> HC</span>
         </span>
         */}
-        </Link>
+          </Link>
 
-        {/* Menu Desktop */}
-        <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <NavLink key={link.href} href={link.href}>
-              {link.label}
-            </NavLink>
-          ))}
-        </nav>
+          {/* Menu Desktop */}
+          <nav className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <NavLink key={link.href} href={link.href}>
+                {link.label}
+              </NavLink>
+            ))}
+          </nav>
 
-        {/* Botão de adesão visível em todos os dispositivos */}
-        <div className="flex items-center gap-4">
-          <CustomButton
-            variant="primary"
-            className={`hidden sm:flex ${isScrolled || !isHomeOrLojaPage ? "bg-primary text-white" : "bg-primary text-white hover:text-white hover:border-white"}`}
-            onClick={() => setIsModalOpen(true)}
-          >
-            Adesão
-          </CustomButton>
+          {/* Botão de adesão visível em todos os dispositivos */}
+          <div className="flex items-center gap-4">
+            <CustomButton
+              variant="primary"
+              className={`hidden sm:flex ${isScrolled || !isHomeOrLojaPage ? "bg-primary text-white" : "bg-primary text-white hover:text-white hover:border-white"}`}
+              onClick={() => setIsModalOpen(true)}
+            >
+              Adesão
+            </CustomButton>
 
-          {/* Menu Mobile - Ícone maior */}
-          <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-            <SheetTrigger asChild>
-              <Button
-                variant="ghost"
-                className={`md:hidden p-3 h-14 w-14 flex items-center justify-center ${
-                  isScrolled || !isHomeOrLojaPage ? "text-neutral-800" : "text-white"
-                }`}
-              >
-                <Menu size={44} strokeWidth={2.5} />
-                <span className="sr-only">Menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[80vw] sm:w-[350px] p-0">
-              <div className="flex flex-col h-full bg-white">
-                <div className="flex justify-between items-center p-4 border-b">
-                  <span className="font-medium text-xl tracking-wider text-neutral-800 text-center w-full">
-                    EUGÉNIOS<span className="font-semibold"> HC</span>
-                  </span>
-                </div>
+            {/* Menu Mobile - Ícone maior */}
+            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+              <SheetTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className={`md:hidden p-3 h-14 w-14 flex items-center justify-center ${
+                    isScrolled || !isHomeOrLojaPage ? "text-neutral-800" : "text-white"
+                  }`}
+                >
+                  <Menu size={44} strokeWidth={2.5} />
+                  <span className="sr-only">Menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[80vw] sm:w-[350px] p-0">
+                <div className="flex flex-col h-full bg-white">
+                  <div className="flex justify-between items-center p-4 border-b">
+                    <span className="font-medium text-xl tracking-wider text-neutral-800 text-center w-full">
+                      EUGÉNIOS HC
+                    </span>
+                  </div>
 
-                <nav className="flex flex-col p-6 space-y-6">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="text-base font-medium tracking-wider text-neutral-800"
-                      onClick={(e) =>
-                        link.href.startsWith("#") ? handleSmoothScroll(e, link.href) : setIsMenuOpen(false)
-                      }
+                  <nav className="flex flex-col p-6 space-y-6">
+                    {navLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className="text-base font-medium tracking-wider text-neutral-800"
+                        onClick={(e) =>
+                          link.href.startsWith("#") ? handleSmoothScroll(e, link.href) : setIsMenuOpen(false)
+                        }
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </nav>
+
+                  <div className="mt-auto p-6 border-t">
+                    <Button
+                      className="w-full bg-primary hover:bg-primary/90 text-white rounded-full py-6 font-semibold"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        setIsModalOpen(true);
+                      }}
                     >
-                      {link.label}
-                    </Link>
-                  ))}
-                </nav>
-
-                <div className="mt-auto p-6 border-t">
-                  <Button
-                    className="w-full bg-primary hover:bg-primary/90 text-white rounded-full py-6 font-semibold"
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      setIsModalOpen(true);
-                    }}
-                  >
-                    ADESÃO
-                  </Button>
+                      ADESÃO
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
-
-        <AdesaoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      </div>
-    </header>
+      </header>
+      <AdesaoModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    </>
   );
 }

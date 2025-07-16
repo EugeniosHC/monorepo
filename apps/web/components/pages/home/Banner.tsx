@@ -24,7 +24,11 @@ export default function Banner({ data }: BannerProps) {
           <Typography as="p" variant="body" className="mb-8 max-w-lg">
             {description}
           </Typography>
-          <CustomButton variant="white" className="w-fit mb-16">
+          <CustomButton
+            variant="white"
+            className="w-fit mb-16"
+            onClick={() => window.open("https://lp.closum.co/lp/eugenios/7-dias-gratis", "_blank")}
+          >
             {buttonText}
           </CustomButton>
         </div>

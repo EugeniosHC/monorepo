@@ -94,7 +94,6 @@ export default function EditSchedulePage({ params }: EditSchedulePageProps) {
   // Função para abrir o diálogo de edição de aula
   const handleOpenEditDialog = (aula: ClassDetails) => {
     // Log para debug do objeto recebido
-    console.log(`Abrindo diálogo para edição:`, aula);
 
     // Garantir que a categoria esteja definida e normalizada para o formato usado no frontend
     if (!aula.categoria) {
@@ -112,12 +111,10 @@ export default function EditSchedulePage({ params }: EditSchedulePageProps) {
         categoria = "Terra";
       }
       aula.categoria = categoria;
-      console.log(`Categoria inferida: ${categoria}`);
     } else {
       // Normalizar a categoria (primeira letra maiúscula, resto minúsculo)
       const normalizedCategory = aula.categoria.charAt(0).toUpperCase() + aula.categoria.slice(1).toLowerCase();
       if (aula.categoria !== normalizedCategory) {
-        console.log(`Normalizando categoria: de ${aula.categoria} para ${normalizedCategory}`);
         aula.categoria = normalizedCategory;
       }
     }
@@ -128,10 +125,8 @@ export default function EditSchedulePage({ params }: EditSchedulePageProps) {
     // Corrigir durações, especialmente para Express
     if (aula.categoria === "Express" && (!aula.duracao || aula.duracao !== CLASS_CONSTANTS.DURACAO_EXPRESS)) {
       aula.duracao = CLASS_CONSTANTS.DURACAO_EXPRESS;
-      console.log("Corrigida duração da aula Express para", CLASS_CONSTANTS.DURACAO_EXPRESS);
     } else if (!aula.duracao) {
       aula.duracao = 30; // Duração padrão
-      console.log("Definida duração padrão:", aula.duracao);
     }
 
     // Garantir que todos os campos obrigatórios estejam presentes
@@ -149,8 +144,6 @@ export default function EditSchedulePage({ params }: EditSchedulePageProps) {
       custo: aula.categoria === "Express" ? 0 : (aula.custo ?? 0),
     };
 
-    console.log("Aula ajustada:", aulaAjustada);
-
     // Obter os nomes de aulas para a categoria selecionada
     try {
       const classNames =
@@ -158,7 +151,6 @@ export default function EditSchedulePage({ params }: EditSchedulePageProps) {
 
       // Converter o array readonly para um array mutável
       setAvailableClassNames(classNames ? Array.from(classNames) : []);
-      console.log(`Nomes de aulas disponíveis para categoria ${aulaAjustada.categoria}:`, classNames);
     } catch (error) {
       console.error(`Erro ao obter nomes para categoria ${aulaAjustada.categoria}:`, error);
       setAvailableClassNames([]);

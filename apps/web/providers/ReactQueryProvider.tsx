@@ -1,19 +1,10 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import dynamic from "next/dynamic";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useState, useEffect } from "react";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
-
-// Carregar DevTools apenas em desenvolvimento e de forma dinâmica
-const ReactQueryDevtools = dynamic(
-  () =>
-    process.env.NODE_ENV === "development"
-      ? import("@tanstack/react-query-devtools").then((mod) => mod.ReactQueryDevtools)
-      : Promise.resolve(() => null),
-  { ssr: false }
-);
 
 export default function ReactQueryProvider({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -57,7 +48,7 @@ export default function ReactQueryProvider({ children }: { children: React.React
   }, [queryClient]);
 
   return (
-    <QueryClientProvider client={queryClient}   >
+    <QueryClientProvider client={queryClient}>
       {children}
       {process.env.NODE_ENV === "development" && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>

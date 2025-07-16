@@ -5,9 +5,10 @@ import dynamic from "next/dynamic";
 import { Toaster } from "sonner";
 import Header from "@/components/layouts/Header";
 import { Image } from "@/components/Image";
+import { FloatingCTA } from "@/components/floating-cta";
 
 // Importação dinâmica do componente pesado
-const Footer = dynamic(() => import("@eugenios/ui/components/layouts/Footer"), {
+const Footer = dynamic(() => import("@/components/layouts/Footer"), {
   loading: () => <div className="h-80 bg-primary/5"></div>,
   ssr: true,
 });
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Header />
           <div className="flex flex-col min-h-screen bg-white">{children}</div>
           <Footer ImageComponent={Image} />
+          <FloatingCTA />
         </ReactQueryProvider>
       </body>
     </html>

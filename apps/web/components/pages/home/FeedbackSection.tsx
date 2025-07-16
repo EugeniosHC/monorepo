@@ -158,10 +158,10 @@ export default function FeedbackSection() {
       <div className="mb-10 relative z-10">
         <div className="mb-12 space-y-4">
           <Typography as="h2" variant="sectionTitle" className="font-semibold text-center text-white">
-            Excelência em fitness desde 1998
+            Referência no fitness desde 1998
           </Typography>
           <Typography as="p" variant="body" className="text-center text-white">
-            No Eugénios Health Club, oferecemos uma variedade de serviços para atender às suas necessidades.
+            O maior health club de Vila Nova de Famalicão 
           </Typography>
         </div>
         {/* Desktop version - Infinite moving cards */}

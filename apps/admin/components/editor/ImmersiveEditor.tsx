@@ -386,7 +386,13 @@ export default function ImmersiveEditor<T extends EditorItem>({
   const handleUpdate = (field: keyof T, value: any) => {
     if (items.length === 0) return;
 
-    console.log(`ImmersiveEditor: Updating ${String(field)} to:`, value);
+    console.log(`🔄 ImmersiveEditor: Updating ${String(field)} to:`, value);
+
+    // Special logging for button fields
+    if (String(field) === "buttonText" || String(field) === "buttonUrl") {
+      console.log(`🔴 BUTTON UPDATE: ${String(field)} = "${value}"`);
+      console.log(`🔴 Current item before update:`, items[safeCurrentIndex]);
+    }
 
     const newItems = [...items];
     newItems[safeCurrentIndex] = {
@@ -395,7 +401,12 @@ export default function ImmersiveEditor<T extends EditorItem>({
     } as T;
     setItems(newItems);
 
-    console.log("Items after update:", newItems);
+    console.log("🔄 Items after update:", newItems);
+
+    // Special logging for button fields after update
+    if (String(field) === "buttonText" || String(field) === "buttonUrl") {
+      console.log(`🔴 BUTTON AFTER UPDATE: Updated item:`, newItems[safeCurrentIndex]);
+    }
   };
 
   const handleNext = () => {
@@ -409,6 +420,11 @@ export default function ImmersiveEditor<T extends EditorItem>({
   };
 
   const handleSave = () => {
+    console.log("💾 ImmersiveEditor handleSave called");
+    console.log("💾 Items being passed to onSave:", items);
+    console.log("💾 First item:", items[0]);
+    console.log("💾 First item buttonText:", (items[0] as any)?.buttonText);
+    console.log("💾 First item buttonUrl:", (items[0] as any)?.buttonUrl);
     onSave(items);
   };
 

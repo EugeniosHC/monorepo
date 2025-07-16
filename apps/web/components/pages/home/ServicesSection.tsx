@@ -104,6 +104,65 @@ export default function ServicesSection() {
     onPrevious: handlePrev,
   };
 
+  const data = [
+    {
+      category: "Serviços",
+      title: "Piscina Interior",
+      src: "/images/home/services/swimming-pool.jpg",
+    },
+
+    {
+      category: "Serviços",
+      title: "Estúdio Cycling",
+      src: "/images/home/services/jacuzzi.jpg",
+    },
+    {
+      category: "Serviços",
+      title: "Banho Turco",
+      src: "/images/home/services/turkish-bath.jpg",
+    },
+    {
+      category: "Serviços",
+      title: "Sala de Musculação",
+      src: "/images/home/services/bodybuilding-hall.jpg",
+    },
+    {
+      category: "Serviços",
+      title: "Jacuzzi",
+      src: "/images/home/services/jacuzzi.jpg",
+    },
+    {
+      category: "Serviços",
+      title: "Massagens",
+      src: "/images/home/services/massage.png",
+    },
+    {
+      category: "Serviços",
+      title: "Aulas de Grupo",
+      src: "/images/home/services/dance-studio.jpg",
+    },
+    {
+      category: "Serviços",
+      title: "Nutrição",
+      src: "/images/home/services/nutrition.jpg",
+    },
+    {
+      category: "Serviços",
+      title: "Sauna",
+      src: "/images/home/services/sauna.jpg",
+    },
+    {
+      category: "Serviços",
+      title: "Parque Privado",
+      src: "/images/home/services/parking-lot.jpg",
+    },
+    {
+      category: "Serviços",
+      title: "Zona de Combate",
+      src: "/images/home/services/pilates-studio.jpg",
+    },
+  ];
+
   return (
     <>
       <div className="mb-12 space-y-4">
@@ -203,52 +262,3 @@ export default function ServicesSection() {
     </>
   );
 }
-
-const data = [
-  {
-    category: "Serviços",
-    title: "Piscina Interior",
-    src: "/images/home/services/swimming-pool.jpg",
-  },
-
-  {
-    category: "Serviços",
-    title: "JACUZZI",
-    src: "/images/home/services/jacuzzi.jpg",
-  },
-  {
-    category: "Serviços",
-    title: "SPA",
-    src: "/images/home/services/spa.jpg",
-  },
-  {
-    category: "Serviços",
-    title: "MASSAGEM",
-    src: "/images/home/services/massage.png",
-  },
-  {
-    category: "Serviços",
-    title: "SALA DE MUSCULAÇÃO",
-    src: "/images/home/services/bodybuilding-hall.jpg",
-  },
-  {
-    category: "Serviços",
-    title: "PARQUE PRIVADO",
-    src: "/images/home/services/parking-lot.jpg",
-  },
-  {
-    category: "Serviços",
-    title: "BANHO TURCO",
-    src: "/images/home/services/turkish-bath.jpg",
-  },
-  {
-    category: "Serviços",
-    title: "SAUNA",
-    src: "/images/home/services/sauna.jpg",
-  },
-  {
-    category: "Serviços",
-    title: "NUTRIÇÃO",
-    src: "/images/home/services/nutrition.jpg",
-  },
-];

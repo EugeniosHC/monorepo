@@ -104,9 +104,6 @@ export default function HomeClient() {
       <PageSection id="recrutamento" className="bg-neutral-100 py-16 md:py-32">
         <RecruitmentSection />
       </PageSection>
-      <PageSection id="contactos" className="flex flex-col w-full py-20 bg-white">
-        <ContactSection />
-      </PageSection>
     </div>
   );
 }

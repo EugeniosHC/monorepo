@@ -4,6 +4,9 @@ import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { AdminService } from '../admin/admin.service';
 import { UserRole } from '../auth';
+import { SendCurriculoDto } from './dto/send-curriculo.dto';
+import { SendContactDto } from './dto/send-contact.dto';
+import emailConfig from 'src/config/email.config';
 
 interface ClassChange {
   changeType: 'ADDED' | 'REMOVED' | 'MODIFIED';
@@ -859,6 +862,403 @@ export class NotificationService {
   }
 
   /**
+   * Envia currículo por email para o departamento de recursos humanos
+   * @param applicationData Dados do formulário de candidatura
+   * @param curriculumFile Arquivo do currículo em PDF
+   */
+  async sendCurriculumApplication(
+    sendCurriculoDto: SendCurriculoDto,
+    curriculumFile: Express.Multer.File,
+  ): Promise<void> {
+    try {
+      const recipientEmail = 'geral@eugenioshc.com';
+      const subject = `Nova Candidatura - ${sendCurriculoDto.function}`;
+
+      // Preparar conteúdo do email
+      const emailContent = this.prepareCurriculumEmailContent(sendCurriculoDto);
+
+      // Enviar email com anexo
+      await this.sendEmailWithAttachment(
+        recipientEmail,
+        emailContent,
+        subject,
+        curriculumFile,
+      );
+
+      this.logger.log(
+        `Candidatura enviada com sucesso para ${recipientEmail} - ${sendCurriculoDto.name}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Erro ao enviar candidatura: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Prepara o conteúdo HTML do email para candidatura
+   */
+  private prepareCurriculumEmailContent(
+    sendCurriculoDto: SendCurriculoDto,
+  ): string {
+    const currentDate = new Date().toLocaleString('pt-BR');
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nova Candidatura - ${sendCurriculoDto.function}</title>
+  <style>
+    body { 
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif; 
+      line-height: 1.6; 
+      color: #2d3748; 
+      margin: 0; 
+      padding: 0; 
+      background-color: #f7fafc; 
+    }
+    .container { 
+      max-width: 600px; 
+      margin: 30px auto; 
+      background-color: white; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 12px rgba(41, 60, 89, 0.08); 
+      overflow: hidden; 
+    }
+    .header { 
+      background: #293c59;
+      color: white; 
+      padding: 32px 24px; 
+      text-align: center; 
+    }
+    .logo { 
+      font-size: 18px; 
+      font-weight: 600; 
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+    .header h1 { 
+      margin: 0; 
+      font-size: 24px; 
+      font-weight: 600; 
+    }
+    .header p { 
+      margin: 4px 0 0 0; 
+      opacity: 0.8; 
+      font-size: 14px; 
+    }
+    .content { 
+      padding: 32px 24px; 
+    }
+    .intro-text {
+      font-size: 15px;
+      color: #4a5568;
+      margin-bottom: 24px;
+    }
+    .candidate-info { 
+      border: 1px solid #e2e8f0; 
+      border-radius: 6px; 
+      padding: 20px; 
+      margin: 24px 0; 
+      background: #fafafa;
+    }
+    .info-row { 
+      display: flex; 
+      margin-bottom: 12px; 
+      align-items: flex-start; 
+    }
+    .info-row:last-child { 
+      margin-bottom: 0; 
+    }
+    .info-label { 
+      font-weight: 600; 
+      color: #293c59; 
+      min-width: 80px; 
+      margin-right: 12px; 
+      font-size: 14px;
+    }
+    .info-value { 
+      color: #2d3748; 
+      flex: 1; 
+      font-size: 14px;
+    }
+    .info-value strong {
+      color: #1a202c;
+    }
+    .info-value a {
+      color: #293c59;
+      text-decoration: none;
+    }
+    .info-value a:hover {
+      text-decoration: underline;
+    }
+    .position-badge { 
+      display: inline-block; 
+      padding: 4px 12px; 
+      border-radius: 4px; 
+      font-weight: 500; 
+      background: #293c59; 
+      color: white; 
+      font-size: 13px; 
+    }
+    .attachment-info { 
+      background: #f0f9ff;
+      border: 1px solid #bfdbfe; 
+      border-radius: 6px; 
+      padding: 16px; 
+      margin: 24px 0; 
+      display: flex; 
+      align-items: center; 
+    }
+    .attachment-icon { 
+      width: 36px; 
+      height: 36px; 
+      background: #293c59; 
+      border-radius: 4px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      margin-right: 12px; 
+      color: white; 
+      font-size: 14px;
+    }
+    .attachment-text {
+      flex: 1;
+    }
+    .attachment-text strong {
+      color: #1a202c;
+      font-size: 14px;
+    }
+    .attachment-text small {
+      color: #6b7280;
+      font-size: 12px;
+    }
+    .contact-section {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 16px;
+      margin: 24px 0;
+      text-align: center;
+    }
+    .contact-section p {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      color: #4a5568;
+    }
+    .contact-link {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 8px 16px;
+      background: #293c59;
+      border-radius: 4px;
+      display: inline-block;
+      font-size: 14px;
+    }
+
+    .contact-link a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 8px 16px;
+      background: #293c59;
+      border-radius: 4px;
+      display: inline-block;
+      font-size: 14px;
+    }
+
+  
+    .contact-link:hover {
+      background: #3e5a86;
+    }
+    .divider {
+      height: 1px;
+      background: #e2e8f0;
+      margin: 24px 0;
+    }
+    .footer { 
+      background: #f7fafc;
+      color: #6b7280;
+      padding: 20px 24px; 
+      text-align: center; 
+      border-top: 1px solid #e2e8f0;
+    }
+    .footer p { 
+      margin: 0; 
+      font-size: 12px; 
+      line-height: 1.4;
+    }
+    .footer p:first-child {
+      margin-bottom: 4px;
+    }
+    @media (max-width: 600px) {
+      .container {
+        margin: 15px;
+        border-radius: 6px;
+      }
+      .header, .content, .footer {
+        padding: 20px 16px;
+      }
+      .info-row {
+        flex-direction: column;
+        margin-bottom: 16px;
+      }
+      .info-label {
+        margin-bottom: 4px;
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Eugenio's Health Club</div>
+      <h1>Nova Candidatura</h1>
+      <p>Recursos Humanos</p>
+    </div>
+    
+    <div class="content">
+      <p class="intro-text">Nova candidatura recebida através do website:</p>
+      
+      <div class="candidate-info">
+        <div class="info-row">
+          <span class="info-label">Nome:</span>
+          <span class="info-value"><strong>${sendCurriculoDto.name}</strong></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email:</span>
+          <span class="info-value">
+            <a href="mailto:${sendCurriculoDto.email}">
+              ${sendCurriculoDto.email}
+            </a>
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Telefone:</span>
+          <span class="info-value">
+            <a href="tel:${sendCurriculoDto.phone}">
+              ${sendCurriculoDto.phone}
+            </a>
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Função:</span>
+          <span class="info-value">
+            <span class="position-badge">${sendCurriculoDto.function}</span>
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Data:</span>
+          <span class="info-value">${currentDate}</span>
+        </div>
+      </div>
+
+      <div class="attachment-info">
+        <div class="attachment-icon">📄</div>
+        <div class="attachment-text">
+          <strong>Currículo em anexo</strong>
+          <br>
+          <small>Arquivo PDF incluído neste email</small>
+        </div>
+      </div>
+      
+      <div class="divider"></div>
+      
+      <div class="contact-section">
+        <p>Para responder ao candidato:</p>
+        <a href="mailto:${sendCurriculoDto.email}" class="contact-link" style="text-decoration: none; color: white;">
+          Enviar Email
+        </a>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>Sistema de candidaturas - Eugenio's Health Club</p>
+      <p>${currentDate}</p>
+    </div>
+  </div>
+</body>
+</html>
+    `;
+  }
+
+  /**
+   * Envia email com anexo
+   */
+  private async sendEmailWithAttachment(
+    recipientEmail: string,
+    content: string,
+    subject: string,
+    attachment: Express.Multer.File,
+  ): Promise<void> {
+    try {
+      // Obter configurações de email das variáveis de ambiente
+      const emailConfig = this.configService.get('email');
+
+      if (
+        !emailConfig ||
+        !emailConfig.host ||
+        !emailConfig.user ||
+        !emailConfig.password
+      ) {
+        // Se não estiverem configuradas, apenas simular o envio
+        this.logger.warn(
+          'Configurações de email não definidas. Simulando envio...',
+        );
+        this.logger.log(`[SIMULAÇÃO] Email enviado para ${recipientEmail}`);
+        this.logger.log(`[SIMULAÇÃO] Assunto: ${subject}`);
+        this.logger.log(`[SIMULAÇÃO] Anexo: ${attachment.originalname}`);
+        this.logger.log(
+          `[SIMULAÇÃO] Conteúdo do email: ${content.substring(0, 200)}...`,
+        );
+        return;
+      }
+
+      // Criar transportador de email
+      const transporter = nodemailer.createTransport({
+        host: emailConfig.host,
+        port: emailConfig.port,
+        secure: emailConfig.port === 465, // true para 465, false para outros portos
+        auth: {
+          user: emailConfig.user,
+          pass: emailConfig.password,
+        },
+      });
+
+      // Definir opções do email com anexo
+      const mailOptions = {
+        from: emailConfig.from,
+        to: recipientEmail,
+        subject: subject,
+        html: content,
+        attachments: [
+          {
+            filename: attachment.originalname,
+            content: attachment.buffer,
+            contentType: attachment.mimetype,
+          },
+        ],
+      };
+
+      // Enviar email
+      const info = await transporter.sendMail(mailOptions);
+      this.logger.log(`Email com anexo enviado: ${info.messageId}`);
+    } catch (error) {
+      this.logger.error(
+        `Erro ao enviar email com anexo: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
+
+  /**
    * Notifica todos os administradores e gerentes de clube sobre mudanças no status do schedule
    * @param scheduleId ID do schedule que teve seu status alterado
    * @param newStatus Novo status do schedule
@@ -1022,6 +1422,217 @@ export class NotificationService {
         error.stack,
       );
       // Não lançar exceção para não interromper o fluxo principal
+    }
+  }
+
+  /**
+   * Processa e envia mensagem de contacto
+   * @param sendContactDto Dados da mensagem de contacto
+   */
+  async sendContactMessage(sendContactDto: SendContactDto): Promise<void> {
+    try {
+      const emailConfig = this.configService.get('email');
+
+      const recipientEmail =
+        emailConfig.recipientEmail || 'afonsovelosof@gmail.com';
+
+      const subject = `Nova mensagem de contacto: ${sendContactDto.subject}`;
+
+      // Preparar conteúdo do email
+      const emailContent = this.prepareContactEmailContent(sendContactDto);
+
+      // Enviar email
+      await this.sendContactEmail(recipientEmail, emailContent, subject);
+
+      this.logger.log(
+        `Mensagem de contacto enviada com sucesso para ${recipientEmail} - ${sendContactDto.name}`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `Erro ao enviar mensagem de contacto: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
+
+  /**
+   * Prepara o conteúdo HTML do email para mensagem de contacto
+   * @param sendContactDto Dados da mensagem de contacto
+   * @returns Conteúdo HTML formatado
+   */
+  private prepareContactEmailContent(sendContactDto: SendContactDto): string {
+    return `
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Mensagem de Contacto</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #293c59 0%, #4a5f7a 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px 10px 0 0;
+            margin: -30px -30px 30px -30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .info-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #293c59;
+        }
+        .info-item {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #293c59;
+            display: inline-block;
+            width: 80px;
+        }
+        .message-section {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .message-title {
+            color: #293c59;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+        .message-content {
+            line-height: 1.8;
+            white-space: pre-wrap;
+            font-size: 15px;
+            color: #444;
+        }
+        .footer {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .footer p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .reply-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .reply-link {
+            display: inline-block;
+            background-color: #293c59;
+            color: white !important;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        .reply-link:hover {
+            background-color: #1e2a3f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Nova Mensagem de Contacto</h1>
+        </div>
+        
+        <div class="info-section">
+            <div class="info-item">
+                <span class="info-label">Nome:</span>
+                <strong>${sendContactDto.name}</strong>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Email:</span>
+                <strong>${sendContactDto.email}</strong>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Assunto:</span>
+                <strong>${sendContactDto.subject}</strong>
+            </div>
+        </div>
+        
+        <div class="message-section">
+            <h3 class="message-title">Mensagem:</h3>
+            <div class="message-content">${sendContactDto.message}</div>
+        </div>
+        
+        <div class="reply-section">
+            <p><strong>Responder ao cliente:</strong></p>
+            <a href="mailto:${sendContactDto.email}?subject=Re: ${sendContactDto.subject}" class="reply-link">
+                Responder por Email
+            </a>
+        </div>
+        
+        <div class="footer">
+            <p>Esta mensagem foi enviada através do formulário de contacto do site <strong>Eugénios Health Club</strong>.</p>
+        </div>
+    </div>
+</body>
+</html>
+    `;
+  }
+
+  /**
+   * Envia email de contacto público
+   * @param recipientEmail Email do destinatário
+   * @param content Conteúdo HTML do email
+   * @param subject Assunto do email
+   */
+  async sendContactEmail(
+    recipientEmail: string,
+    content: string,
+    subject: string,
+  ): Promise<void> {
+    try {
+      await this.sendEmail(recipientEmail, content, subject);
+      this.logger.log(`Email de contacto enviado para ${recipientEmail}`);
+    } catch (error) {
+      this.logger.error(
+        `Erro ao enviar email de contacto: ${error.message}`,
+        error.stack,
+      );
+      throw error;
     }
   }
 }

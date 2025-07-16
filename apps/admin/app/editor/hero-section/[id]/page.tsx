@@ -12,7 +12,7 @@ import { Link, Image as ImageIcon, X, Loader2, AlertTriangle, ArrowLeft, Check }
 import { motion, AnimatePresence } from "framer-motion";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@eugenios/ui/components/tooltip";
 import { ImageGalleryModal } from "@/components/image-gallery";
-import { useSectionsById } from "@/hooks/useSections";
+import { useSectionsById, useUpdateSection } from "@/hooks/useSections";
 import type { Slide, SlideItem } from "@eugenios/types";
 
 interface EditorPageProps {
@@ -26,7 +26,6 @@ export default function HeroSectionEditorPage({ params }: EditorPageProps) {
   const router = useRouter();
   const [editMode, setEditMode] = useState<"title" | "subtitle" | "button" | "image" | null>(null);
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [notification, setNotification] = useState<{
     type: "success" | "error";
     message: string;
@@ -37,6 +36,7 @@ export default function HeroSectionEditorPage({ params }: EditorPageProps) {
     slide: SlideItem | null;
   }>({ updateFn: null, slide: null });
   const { data: section, isLoading, isError } = useSectionsById(id);
+  const updateSectionMutation = useUpdateSection();
 
   // Function to show notifications
   const showNotification = (type: "success" | "error", message: string) => {
@@ -132,24 +132,42 @@ export default function HeroSectionEditorPage({ params }: EditorPageProps) {
   }));
 
   const handleSave = async (slides: SlideItem[]) => {
-    setIsSaving(true);
     try {
+      console.log("🚀 HANDLE SAVE START 🚀");
+      console.log("Slides received in handleSave:", slides);
+      console.log("First slide in handleSave:", slides[0]);
+      console.log("First slide buttonText:", slides[0]?.buttonText);
+      console.log("First slide buttonUrl:", slides[0]?.buttonUrl);
+
       // Convert SlideItems back to Slides (remove id) for API
       const slidesForApi: Slide[] = slides.map(({ id, ...slide }) => slide);
 
-      // Here you would typically save to your backend
-      console.log("Saving slides:", slidesForApi);
+      console.log("🔄 After removing ID:");
+      console.log("Slides for API:", slidesForApi);
+      console.log("First slide for API:", slidesForApi[0]);
+      console.log("First slide for API buttonText:", slidesForApi[0]?.buttonText);
+      console.log("First slide for API buttonUrl:", slidesForApi[0]?.buttonUrl);
+      console.log("🚀 HANDLE SAVE END 🚀");
 
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.log("Slides being sent to API:", JSON.stringify(slidesForApi, null, 2));
+      console.log("Section ID:", section.id);
 
-      // Show success notification
+      // Call the backend API to save the section data
+      await updateSectionMutation.mutateAsync({
+        id: section.id, // Use the actual section ID from the loaded data
+        data: { slides: slidesForApi },
+      });
+
+      // Show success notification only if mutation succeeds
       showNotification("success", "Alterações guardadas com sucesso!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving:", error);
-      showNotification("error", "Erro ao guardar alterações. Tente novamente.");
-    } finally {
-      setIsSaving(false);
+
+      // Try to get a more specific error message from the API response
+      const errorMessage =
+        error?.response?.data?.message || error?.message || "Erro ao guardar alterações. Tente novamente.";
+
+      showNotification("error", errorMessage);
     }
   };
 
@@ -160,7 +178,7 @@ export default function HeroSectionEditorPage({ params }: EditorPageProps) {
   const createNewSlide = (): SlideItem => {
     return {
       id: Date.now(), // Generate a temporary unique ID
-      imageUrl: "/images/home/wt.jpg",
+      imageUrl: "/images/home/hero-1.jpg",
       imageAlt: "Eugénios Health Club",
       title: "Novo\n#Slide#",
       subtitle: "Adicione seu texto",
@@ -509,7 +527,7 @@ export default function HeroSectionEditorPage({ params }: EditorPageProps) {
       />
 
       {/* Saving Overlay */}
-      {isSaving && (
+      {updateSectionMutation.isPending && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center">
           <div className="bg-black/70 backdrop-blur-md rounded-xl p-6 text-center">
             <Loader2 className="h-8 w-8 text-blue-500 animate-spin mx-auto mb-3" />

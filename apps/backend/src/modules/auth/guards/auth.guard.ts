@@ -33,7 +33,6 @@ export class AuthGuard implements CanActivate {
 
       const user = await this.authService.verifyJwtToken(token);
 
-      // Adicionar o usuário ao request
       (request as Request & { user: ClerkUser }).user = user;
 
       this.logger.debug(`User authenticated: ${user.userId}`);

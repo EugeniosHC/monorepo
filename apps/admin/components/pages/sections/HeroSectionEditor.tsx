@@ -110,11 +110,14 @@ export default function HeroSectionEditor() {
 
   const handleEdit = (index: number, field: keyof SlideType, value: string | boolean) => {
     const newSlides = [...slides];
-    newSlides[index] = {
-      ...newSlides[index],
-      [field]: value,
-    };
-    setSlides(newSlides);
+    const currentSlide = newSlides[index];
+    if (currentSlide) {
+      newSlides[index] = {
+        ...currentSlide,
+        [field]: value,
+      } as SlideType;
+      setSlides(newSlides);
+    }
   };
 
   const handleNextSlide = () => {
@@ -456,7 +459,7 @@ export default function HeroSectionEditor() {
                 <Label className="text-white mb-2 block">Título (use # para destaque)</Label>
                 <textarea
                   ref={inputRef as any}
-                  value={slides[currentSlide].title || ""}
+                  value={slides[currentSlide]?.title || ""}
                   onChange={(e) => handleEdit(currentSlide, "title", e.target.value)}
                   className="bg-transparent border border-white/30 text-white w-full h-32 rounded-md p-2 resize-none"
                   onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && (setEditMode(null), e.preventDefault())}
@@ -498,7 +501,7 @@ export default function HeroSectionEditor() {
                 <Input
                   ref={inputRef}
                   type="text"
-                  value={slides[currentSlide].subtitle || ""}
+                  value={slides[currentSlide]?.subtitle || ""}
                   onChange={(e) => handleEdit(currentSlide, "subtitle", e.target.value)}
                   className="bg-transparent border-white/30 text-white"
                   onKeyDown={(e) => e.key === "Enter" && (setEditMode(null), e.preventDefault())}
@@ -539,7 +542,7 @@ export default function HeroSectionEditor() {
                   <Label className="text-white mb-2 block">Texto do botão</Label>
                   <Input
                     type="text"
-                    value={slides[currentSlide].buttonText || ""}
+                    value={slides[currentSlide]?.buttonText || ""}
                     onChange={(e) => handleEdit(currentSlide, "buttonText", e.target.value)}
                     className="bg-transparent border-white/30 text-white"
                   />
@@ -549,7 +552,7 @@ export default function HeroSectionEditor() {
                   <Label className="text-white mb-2 block">URL do botão</Label>
                   <Input
                     type="text"
-                    value={slides[currentSlide].buttonUrl || ""}
+                    value={slides[currentSlide]?.buttonUrl || ""}
                     onChange={(e) => handleEdit(currentSlide, "buttonUrl", e.target.value)}
                     className="bg-transparent border-white/30 text-white"
                     placeholder="/"
@@ -558,7 +561,7 @@ export default function HeroSectionEditor() {
 
                 <div className="flex items-center gap-2">
                   <Switch
-                    checked={slides[currentSlide].buttonIsVisible}
+                    checked={slides[currentSlide]?.buttonIsVisible ?? true}
                     onCheckedChange={(checked) => handleEdit(currentSlide, "buttonIsVisible", checked)}
                     id="button-visible"
                   />
@@ -603,7 +606,7 @@ export default function HeroSectionEditor() {
                   <Label className="text-white mb-2 block">URL da imagem</Label>
                   <Input
                     type="text"
-                    value={slides[currentSlide].image || ""}
+                    value={slides[currentSlide]?.image || ""}
                     onChange={(e) => handleEdit(currentSlide, "image", e.target.value)}
                     className="bg-transparent border-white/30 text-white"
                     placeholder="/images/your-image.jpg"
@@ -614,7 +617,7 @@ export default function HeroSectionEditor() {
                   <Label className="text-white mb-2 block">Texto alternativo</Label>
                   <Input
                     type="text"
-                    value={slides[currentSlide].alt || ""}
+                    value={slides[currentSlide]?.alt || ""}
                     onChange={(e) => handleEdit(currentSlide, "alt", e.target.value)}
                     className="bg-transparent border-white/30 text-white"
                     placeholder="Descrição da imagem para acessibilidade"

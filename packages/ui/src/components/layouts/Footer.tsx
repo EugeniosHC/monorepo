@@ -148,10 +148,10 @@ export default function Footer({ ImageComponent }: FooterProps) {
             <p>© {currentYear} Eugénios Health Club. Todos os direitos reservados.</p>
           </div>
           <div className="text-sm text-white/70 text-center space-y-1 md:space-y-0 md:space-x-4">
-            <a href="#" className="block md:inline hover:underline">
+            <a href="/politica-privacidade" className="block md:inline hover:underline">
               Política de Privacidade
             </a>
-            <a href="#" className="block md:inline hover:underline">
+            <a href="/termos-condicoes" className="block md:inline hover:underline">
               Termos e Condições
             </a>
             <a href="#" className="block md:inline hover:underline">

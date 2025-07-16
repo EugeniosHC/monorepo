@@ -1,0 +1,3 @@
+retirar a aula Natacao crianças
+Horas de aulas!
+ocultar aulas de agua ao criar mapa de aulas

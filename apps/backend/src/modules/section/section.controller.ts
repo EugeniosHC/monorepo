@@ -1,7 +1,16 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { SectionService } from './section.service';
 import { Section, SectionType } from '@prisma/client';
 import { CreateSectionDto } from './dto/create-section.dto';
+import { UpdateSectionDto } from './dto/update-section.dto';
 import { AuthGuard } from '../auth';
 
 @Controller('section')
@@ -49,5 +58,14 @@ export class SectionController {
     @Body() createSectionDto: CreateSectionDto,
   ): Promise<Section> {
     return this.sectionService.createSection(createSectionDto, websiteName);
+  }
+
+  @UseGuards(AuthGuard)
+  @Put('/:id')
+  async updateSection(
+    @Param('id') id: string,
+    @Body() updateSectionDto: UpdateSectionDto,
+  ): Promise<Section> {
+    return this.sectionService.updateSection(id, updateSectionDto);
   }
 }
