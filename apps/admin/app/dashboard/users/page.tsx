@@ -10,13 +10,13 @@ import {
 } from "@/hooks/useUsers";
 import { ButtonLoading, PageLoading } from "@/components/ui/loading";
 import { Textarea } from "@eugenios/ui/components/textarea";
-import { Ban, XCircle, Check } from "lucide-react";
+import { Ban } from "lucide-react";
 import { AdminOnly } from "@/components/security/RoleGuard";
 import { Button } from "@eugenios/ui/components/button";
 import { ReusableDataTable, DataTableConfig } from "@/components/ui/reusable-data-table";
 import { useState } from "react";
 import { toast } from "sonner";
-import { UserCircle, UserCog, Shield, ShieldCheck, ShieldX, User, UserPlus, Mail, Trash2 } from "lucide-react";
+import { UserCircle, UserCog, Shield, ShieldCheck, ShieldX, User, UserPlus, Mail } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -44,9 +44,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 // Component for the User Management page
 export default function UsersManagementPage() {
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(20);
-  const { data, isLoading, error, refetch } = useUsers(page, limit);
+  const [page] = useState(1);
+  const [limit] = useState(20);
+  const { data: usersData, isLoading, error, refetch } = useUsers(page, limit);
   const updateUserRole = useUpdateUserRole();
   const banUser = useBanUser();
   const unbanUser = useUnbanUser();
@@ -251,7 +251,7 @@ export default function UsersManagementPage() {
   };
 
   // Table configuration
-  const tableConfig: DataTableConfig<UserType> = {
+  const tableConfig: DataTableConfig<import("@/hooks/useUsers").User> = {
     columns: [
       {
         key: "firstName",
@@ -368,7 +368,8 @@ export default function UsersManagementPage() {
               </Button>
             </div>
           </div>
-        ) : !data?.users || data.users.length === 0 ? (
+        ) : !(usersData as import("@/hooks/useUsers").UserListResponse)?.users ||
+          (usersData as import("@/hooks/useUsers").UserListResponse).users.length === 0 ? (
           <div className="text-center py-10">
             <p className="text-muted-foreground">Nenhum utilizador encontrado.</p>
             <Button onClick={() => refetch()} className="mt-4">
@@ -377,7 +378,10 @@ export default function UsersManagementPage() {
           </div>
         ) : (
           <div>
-            <ReusableDataTable data={data.users} config={tableConfig} />
+            <ReusableDataTable
+              data={(usersData as import("@/hooks/useUsers").UserListResponse).users}
+              config={tableConfig}
+            />
           </div>
         )}
 

@@ -10,10 +10,8 @@ import {
   DropdownMenuItem,
 } from "@eugenios/ui/components/dropdown-menu";
 import { Badge } from "@eugenios/ui/components/badge";
-import { Calendar, Eye, Printer, MoreHorizontal, Trash2, Edit, Copy, CheckCircle, X, Clock, Map } from "lucide-react";
+import { Calendar, Eye, MoreHorizontal, Edit, CheckCircle, X, Clock, Map } from "lucide-react";
 import { ScheduleStatus, Schedule } from "@/hooks/useSchedules";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { ReactNode } from "react";
 import { AdminOnly } from "@/components/security/RoleGuard";
 import { Separator } from "@eugenios/ui/src/components/separator";

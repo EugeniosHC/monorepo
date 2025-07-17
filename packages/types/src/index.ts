@@ -13,6 +13,7 @@ export interface Slide {
 // Interface para uso no editor que inclui o ID necessário
 export interface SlideItem extends Slide {
   id: number;
+  [key: string]: unknown;
 }
 
 export interface HeroSection {

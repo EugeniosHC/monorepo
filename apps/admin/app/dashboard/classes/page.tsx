@@ -4,17 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@eugenios/ui/components/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@eugenios/ui/components/card";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@eugenios/ui/components/dropdown-menu";
-import { Separator } from "@eugenios/ui/components/separator";
 import { Badge } from "@eugenios/ui/components/badge";
-import { Map, Calendar, Eye, Printer, MoreHorizontal, Trash2, Plus, X } from "lucide-react";
-import { CheckCircle, Edit, Copy, Clock } from "lucide-react";
-import { ScheduleCard, ScheduleAction } from "@/components/schedule/ScheduleCard";
+import { Trash2, Plus, X } from "lucide-react";
+import { CheckCircle, Edit, Copy } from "lucide-react";
+import { ScheduleCard } from "@/components/schedule/ScheduleCard";
 import {
   Dialog,
   DialogContent,
@@ -35,7 +28,7 @@ import {
 } from "@/hooks/useSchedules";
 import { useUpdateScheduleStatus, useDeleteSchedule } from "@/hooks/useScheduleOperations";
 import { format } from "date-fns";
-import { pt, ptBR } from "date-fns/locale";
+import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
 
 export default function ClassesPage() {
@@ -55,9 +48,6 @@ export default function ClassesPage() {
   // Estado de loading para operações
   const [actionInProgress, setActionInProgress] = useState<string | null>(null);
 
-  // Estado para indicar que precisamos implementar o agendamento futuro
-  const [needSchedulingImplementation, setNeedSchedulingImplementation] = useState<boolean>(false);
-
   // Estados para o diálogo de aprovação
   const [approvalDialogOpen, setApprovalDialogOpen] = useState<boolean>(false);
   const [scheduleToApprove, setScheduleToApprove] = useState<string | null>(null);
@@ -65,12 +55,14 @@ export default function ClassesPage() {
   const [activationDate, setActivationDate] = useState<string>("");
 
   // Extrair dados dos resultados da query
-  const activeSchedule = activeScheduleData;
-  const pendingSchedules = pendingSchedulesData?.schedules || [];
-  const approvedSchedules = approvedSchedulesData?.schedules || [];
-  const rascunhos = rascunhosData?.schedules || [];
-  const substituidos = substituidosData?.schedules || [];
-  const rejeitados = rejeitadosData?.schedules || [];
+  const activeSchedule = activeScheduleData as import("@/hooks/useSchedules").Schedule | undefined;
+  const pendingSchedules =
+    (pendingSchedulesData as { schedules?: import("@/hooks/useSchedules").Schedule[] })?.schedules || [];
+  const approvedSchedules =
+    (approvedSchedulesData as { schedules?: import("@/hooks/useSchedules").Schedule[] })?.schedules || [];
+  const rascunhos = (rascunhosData as { schedules?: import("@/hooks/useSchedules").Schedule[] })?.schedules || [];
+  const substituidos = (substituidosData as { schedules?: import("@/hooks/useSchedules").Schedule[] })?.schedules || [];
+  const rejeitados = (rejeitadosData as { schedules?: import("@/hooks/useSchedules").Schedule[] })?.schedules || [];
 
   const isLoading =
     isLoadingActive ||
@@ -149,7 +141,6 @@ export default function ClassesPage() {
         toast.success("Programação aprovada com sucesso");
 
         // A partir de agora não precisamos mais mostrar a mensagem de implementação pendente
-        setNeedSchedulingImplementation(false);
       }
       // Não precisa mais recarregar a página, o invalidateQueries cuida disso
     } catch (error) {
@@ -191,8 +182,10 @@ export default function ClassesPage() {
       ...(approvedSchedules || []),
       ...(substituidos || []),
       ...(rejeitados || []),
-      activeSchedule ? [activeSchedule] : [],
-    ].find((s) => s?.id === scheduleId);
+      ...(activeSchedule ? [activeSchedule] : []),
+    ].find((s) => (s as import("@/hooks/useSchedules").Schedule)?.id === scheduleId) as
+      | import("@/hooks/useSchedules").Schedule
+      | undefined;
 
     // Verificar se o schedule está em um estado que permite deleção
     if (schedule && schedule.status !== ScheduleStatus.RASCUNHO && schedule.status !== ScheduleStatus.REJEITADO) {
@@ -207,9 +200,12 @@ export default function ClassesPage() {
       await deleteMutation.mutateAsync(scheduleId);
       toast.success("Programação excluída com sucesso");
       // Não precisa mais recarregar a página, o invalidateQueries cuida disso
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Exibir a mensagem de erro específica que vem do backend
-      const errorMessage = error?.message || "Erro ao excluir programação";
+      let errorMessage = "Erro ao excluir programação";
+      if (typeof error === "object" && error !== null && "message" in error) {
+        errorMessage = (error as { message?: string }).message || errorMessage;
+      }
       toast.error(errorMessage);
       console.error("Erro ao excluir programação:", error);
     } finally {
@@ -304,12 +300,12 @@ export default function ClassesPage() {
               {
                 label: "Editar",
                 icon: <Edit className="mr-2 h-4 w-4" />,
-                onClick: (id) => handleEditSchedule(id),
+                onClick: (id: string) => handleEditSchedule(id),
               },
               {
                 label: "Duplicar",
                 icon: <Copy className="mr-2 h-4 w-4" />,
-                onClick: (id, title) => handleDuplicateSchedule(id, title || ""),
+                onClick: (id: string, title?: string) => handleDuplicateSchedule(id, title || ""),
                 disabled: true,
               },
             ]}

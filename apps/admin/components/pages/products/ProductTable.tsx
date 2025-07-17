@@ -14,7 +14,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@eugenios/ui/components/alert-dialog";
 import { useState } from "react";
 import {
@@ -24,9 +23,18 @@ import {
   useDuplicateProduct,
   useDeleteProduct,
   useInvalidateProducts,
-  Product,
 } from "@/hooks/useProducts";
+
+type Product = Record<string, unknown> & {
+  id: string | number;
+  name: string;
+  price: number;
+  description?: string;
+  duration?: string;
+  imageUrl?: string;
+};
 import { useApiClient } from "@/hooks/useApiClient";
+import Image from "next/image";
 
 export default function ProductTable() {
   // Auth hook
@@ -80,7 +88,7 @@ export default function ProductTable() {
 
   const handleDeleteProduct = async () => {
     if (!deleteConfirmation.product) return;
-    await deleteProduct.mutateAsync(deleteConfirmation.product.id);
+    await deleteProduct.mutateAsync(String(deleteConfirmation.product.id));
     setDeleteConfirmation({ isOpen: false, product: null });
   };
 
@@ -101,7 +109,7 @@ export default function ProductTable() {
             {new Intl.NumberFormat("pt-PT", {
               style: "currency",
               currency: "EUR",
-            }).format(value)}
+            }).format(Number(value))}
           </span>
         ),
         align: "right",
@@ -110,7 +118,7 @@ export default function ProductTable() {
         key: "duration",
         header: "Duração",
         type: "custom",
-        render: (value) => <span className="text-sm text-muted-foreground">{value || "N/A"}</span>,
+        render: (value) => <span className="text-sm text-muted-foreground">{String(value) || "N/A"}</span>,
         align: "center",
       },
       {
@@ -118,8 +126,8 @@ export default function ProductTable() {
         header: "Descrição",
         type: "custom",
         render: (value) => (
-          <span className="text-sm max-w-xs truncate block" title={value}>
-            {value}
+          <span className="text-sm max-w-xs truncate block" title={typeof value === "string" ? value : undefined}>
+            {typeof value === "string" ? value : ""}
           </span>
         ),
       },
@@ -129,9 +137,9 @@ export default function ProductTable() {
         type: "custom",
         render: (value, row) => (
           <div className="flex items-center gap-2">
-            <img
-              src={value}
-              alt={row.name}
+            <Image
+              src={typeof value === "string" ? value : ""}
+              alt={typeof row.name === "string" ? row.name : ""}
               className="w-10 h-10 rounded object-cover"
               onError={(e) => {
                 (e.target as HTMLImageElement).src =
@@ -154,13 +162,19 @@ export default function ProductTable() {
       {
         label: "Editar",
         onClick: (product) => {
-          openEditModal(product);
+          openEditModal({
+            ...product,
+            id: String(product.id),
+            description: typeof product.description === "string" ? product.description : "",
+            duration: typeof product.duration === "string" ? product.duration : null,
+            imageUrl: typeof product.imageUrl === "string" ? product.imageUrl : "",
+          });
         },
       },
       {
         label: "Duplicar",
         onClick: (product) => {
-          duplicateProduct.mutate(product.id);
+          duplicateProduct.mutate(String(product.id));
         },
       },
       {
@@ -236,7 +250,7 @@ export default function ProductTable() {
       </div>
 
       {products.length > 0 ? (
-        <ReusableDataTable data={products} config={tableConfig} />
+        <ReusableDataTable data={products as Product[]} config={tableConfig as DataTableConfig<Product>} />
       ) : (
         <div className="text-center py-10">
           <p className="text-muted-foreground">Nenhum produto disponível.</p>

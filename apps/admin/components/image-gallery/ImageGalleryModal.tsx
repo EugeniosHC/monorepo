@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useImageGallery, useUploadImage, useDeleteImages } from "@/hooks/useImageGallery";
+import { useImageGallery, useUploadImage } from "@/hooks/useImageGallery";
 import { Button } from "@eugenios/ui/components/button";
 import { Card } from "@eugenios/ui/components/card";
 import { Input } from "@eugenios/ui/components/input";
@@ -9,6 +9,7 @@ import { ScrollArea } from "@eugenios/ui/components/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@eugenios/ui/components/dialog";
 import { Upload, Search, Image as ImageIcon, CheckCircle2, Circle, X, Eye, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface ImageGalleryModalProps {
   isOpen: boolean;
@@ -203,7 +204,7 @@ export function ImageGalleryModal({
 
                     {/* Imagem */}
                     <div className="aspect-square relative overflow-hidden">
-                      <img
+                      <Image
                         src={image.url}
                         alt={image.key}
                         className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
@@ -247,7 +248,7 @@ export function ImageGalleryModal({
               >
                 <X className="w-6 h-6" />
               </Button>
-              <img
+              <Image
                 src={selectedImagePreview}
                 alt="Preview"
                 className="max-w-full max-h-full object-contain rounded-lg"

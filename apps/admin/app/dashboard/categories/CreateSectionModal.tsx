@@ -38,7 +38,7 @@ export function CreateSectionModal({ isCreateModalOpen, setIsCreateModalOpen }: 
       setTitle("");
       setContent("");
       setIsCreateModalOpen(false);
-    } catch (error) {
+    } catch {
       toast.error("Erro ao criar seção");
     } finally {
       setIsSubmitting(false);

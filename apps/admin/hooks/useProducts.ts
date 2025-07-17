@@ -42,7 +42,7 @@ export function useProducts() {
     queryKey: productKeys.lists(),
     queryFn: async (): Promise<Product[]> => {
       const response = await apiClient.get("/product");
-      return response.data || [];
+      return response.data as Product[];
     },
     enabled: !isLoading && isAuthenticated, // Só executa quando autenticado
     staleTime: 5 * 60 * 1000, // 5 minutos
@@ -58,7 +58,7 @@ export function useProduct(id: string) {
     queryKey: productKeys.detail(id),
     queryFn: async (): Promise<Product> => {
       const response = await apiClient.get(`/product/${id}`);
-      return response.data;
+      return response.data as Product;
     },
     enabled: !!id && !isLoading && isAuthenticated, // Só executa quando autenticado e ID válido
     staleTime: 5 * 60 * 1000,
@@ -74,7 +74,7 @@ export function useCreateProduct() {
   return useMutation({
     mutationFn: async (data: CreateProductData): Promise<Product> => {
       const response = await apiClient.post("/product", data);
-      return response.data;
+      return response.data as Product;
     },
     onSuccess: (newProduct) => {
       // Invalidar e refetch a lista de produtos
@@ -100,7 +100,7 @@ export function useUpdateProduct() {
   return useMutation({
     mutationFn: async ({ id, ...data }: UpdateProductData): Promise<Product> => {
       const response = await apiClient.put(`/product/${id}`, data);
-      return response.data;
+      return response.data as Product;
     },
     onSuccess: (updatedProduct) => {
       // Invalidar a lista de produtos
@@ -126,7 +126,7 @@ export function useDuplicateProduct() {
   return useMutation({
     mutationFn: async (productId: string): Promise<Product> => {
       const response = await apiClient.post(`/product/${productId}/duplicate`);
-      return response.data;
+      return response.data as Product;
     },
     onSuccess: (duplicatedProduct) => {
       // Invalidar a lista de produtos

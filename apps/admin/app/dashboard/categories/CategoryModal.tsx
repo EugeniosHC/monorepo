@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import {
   Dialog,
   DialogContent,
@@ -27,21 +25,19 @@ import { Textarea } from "@eugenios/ui/components/textarea";
 import { Badge } from "@eugenios/ui/components/badge";
 import { ButtonLoading } from "@/components/ui/loading";
 import { ImageGalleryModal } from "@/components/ui/image-gallery-modal";
-import { toast } from "sonner";
+import Image from "next/image";
 import { X, Eye, Image as ImageIcon, FolderPlus } from "lucide-react";
 
 // Schema de validação
-const categorySchema = z.object({
-  name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres"),
-  slug: z.string().min(3, "Slug deve ter pelo menos 3 caracteres"),
-  title: z.string().min(3, "Título deve ter pelo menos 3 caracteres"),
-  subtitle: z.string().min(3, "Subtítulo deve ter pelo menos 3 caracteres"),
-  description: z.string().min(10, "Descrição deve ter pelo menos 10 caracteres"),
-  helpDescription: z.string().min(10, "Descrição de ajuda deve ter pelo menos 10 caracteres"),
-  imageUrl: z.string().url("URL da imagem inválida").min(1, "URL da imagem é obrigatória"),
-});
-
-export type CategoryFormData = z.infer<typeof categorySchema>;
+export type CategoryFormData = {
+  name: string;
+  slug: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  helpDescription: string;
+  imageUrl: string;
+};
 
 export interface Category {
   id: string;
@@ -73,7 +69,6 @@ export function CategoryModal({
   const isEditing = !!category;
 
   const form = useForm<CategoryFormData>({
-    resolver: zodResolver(categorySchema),
     defaultValues: {
       name: category?.name || "",
       slug: category?.slug || "",
@@ -308,10 +303,12 @@ export function CategoryModal({
                           Imagem Selecionada
                         </div>
                         <div className="relative w-full max-w-xs">
-                          <img
+                          <Image
                             src={field.value}
                             alt="Preview"
                             className="w-full h-32 object-cover rounded-lg border"
+                            width={400}
+                            height={128}
                             onError={() => {
                               form.setError("imageUrl", {
                                 type: "manual",

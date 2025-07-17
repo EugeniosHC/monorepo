@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import HeroSection from "@/components/pages/sections/HeroSection";
 import type { SlideType } from "@/components/pages/sections/HeroSection";
 import { Button } from "@eugenios/ui/components/button";
@@ -10,15 +10,12 @@ import { Label } from "@eugenios/ui/components/label";
 import {
   ArrowLeft,
   ArrowRight,
-  Edit,
   Link,
   Save,
   Image as ImageIcon,
   X,
   Upload,
-  Undo,
   ChevronLeft,
-  Settings,
   LayoutDashboard,
   Plus,
   Trash2,
@@ -27,7 +24,6 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@eugenios/ui/components/tooltip";
-import { cn } from "@eugenios/ui/lib/utils";
 
 export default function HeroSectionEditor() {
   const router = useRouter();
@@ -66,17 +62,72 @@ export default function HeroSectionEditor() {
   const [editMode, setEditMode] = useState<"title" | "subtitle" | "button" | "image" | null>(null);
   const [showTopBar, setShowTopBar] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [showSlidesPanel, setShowSlidesPanel] = useState(false);
 
   // Handle the active edit mode
   useEffect(() => {
-    if (editMode && inputRef.current) {
-      inputRef.current.focus();
+    if (editMode) {
+      if (editMode === "title" && textareaRef.current) {
+        textareaRef.current.focus();
+      } else if (inputRef.current) {
+        inputRef.current.focus();
+      }
     }
   }, [editMode]);
 
-  // Handle keyboard shortcuts
+  // ...existing code...
+
+  // ...existing code...
+
+  // ...existing code...
+
+  // Move keyboard shortcuts useEffect below function declarations
+
+  const handleEdit = (index: number, field: keyof SlideType, value: string | boolean) => {
+    const newSlides = [...slides];
+    const currentSlide = newSlides[index];
+    if (currentSlide) {
+      newSlides[index] = {
+        ...currentSlide,
+        [field]: value,
+      } as SlideType;
+      setSlides(newSlides);
+    }
+  };
+
+  const handleNextSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+    setEditMode(null);
+  }, [slides.length]);
+
+  const handlePrevSlide = useCallback(() => {
+    setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+    setEditMode(null);
+  }, [slides.length]);
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          handleEdit(currentSlide, "image", e.target.result as string);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = useCallback(() => {
+    // Here you would typically save to your backend
+    console.log("Saving slides:", slides);
+    // Show success message
+    alert("Alterações guardadas com sucesso!");
+  }, [slides]);
+
+  // Handle keyboard shortcuts (now correctly placed)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Escape to cancel edit mode or close slides panel
@@ -106,49 +157,7 @@ export default function HeroSectionEditor() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [editMode, showSlidesPanel]);
-
-  const handleEdit = (index: number, field: keyof SlideType, value: string | boolean) => {
-    const newSlides = [...slides];
-    const currentSlide = newSlides[index];
-    if (currentSlide) {
-      newSlides[index] = {
-        ...currentSlide,
-        [field]: value,
-      } as SlideType;
-      setSlides(newSlides);
-    }
-  };
-
-  const handleNextSlide = () => {
-    setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-    setEditMode(null);
-  };
-
-  const handlePrevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
-    setEditMode(null);
-  };
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          handleEdit(currentSlide, "image", e.target.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSave = () => {
-    // Here you would typically save to your backend
-    console.log("Saving slides:", slides);
-    // Show success message
-    alert("Alterações guardadas com sucesso!");
-  };
+  }, [editMode, showSlidesPanel, handleNextSlide, handlePrevSlide, handleSave]);
 
   const handleBackToDashboard = () => {
     router.push("/dashboard");
@@ -190,7 +199,7 @@ export default function HeroSectionEditor() {
     <div className="relative w-full h-screen overflow-hidden">
       {/* Main Hero Section Preview */}
       <div className="w-full h-full">
-        <HeroSection data={{ slides: [slides[currentSlide]] }} />
+        {slides[currentSlide] ? <HeroSection data={{ slides: [slides[currentSlide]] }} /> : null}
       </div>
 
       {/* Top Bar - Minimal Control */}
@@ -458,7 +467,7 @@ export default function HeroSectionEditor() {
               <div className="w-72">
                 <Label className="text-white mb-2 block">Título (use # para destaque)</Label>
                 <textarea
-                  ref={inputRef as any}
+                  ref={textareaRef}
                   value={slides[currentSlide]?.title || ""}
                   onChange={(e) => handleEdit(currentSlide, "title", e.target.value)}
                   className="bg-transparent border border-white/30 text-white w-full h-32 rounded-md p-2 resize-none"

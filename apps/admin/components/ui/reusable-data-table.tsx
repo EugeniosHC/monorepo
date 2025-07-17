@@ -60,18 +60,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@eugenios/ui/components/table";
 
 // Types para configuração do componente
-export interface DataTableAction<TData = any> {
+export interface DataTableAction<TData = unknown> {
   label: string;
   onClick: (row: TData) => void;
   variant?: "default" | "destructive";
   separator?: boolean;
 }
 
-export interface DataTableColumn<TData = any> {
+// ...existing code...
+export interface DataTableColumn<TData = unknown> {
   key: keyof TData | string;
   header: string;
   type?: "text" | "badge" | "editable" | "select" | "custom";
-  render?: (value: any, row: TData) => React.ReactNode;
+  render?: (value: unknown, row: TData) => React.ReactNode;
   options?: { label: string; value: string }[];
   sortable?: boolean;
   filterable?: boolean;
@@ -80,7 +81,8 @@ export interface DataTableColumn<TData = any> {
   align?: "left" | "center" | "right";
 }
 
-export interface DataTableConfig<TData = any> {
+// ...existing code...
+export interface DataTableConfig<TData = unknown> {
   columns: DataTableColumn<TData>[];
   actions?: DataTableAction<TData>[];
   enableDragAndDrop?: boolean;
@@ -117,7 +119,7 @@ function DragHandle({ id }: { id: string | number }) {
 // Componente para linha arrastável
 function DraggableRow<TData>({ row, children }: { row: Row<TData>; children: React.ReactNode }) {
   const { transform, transition, setNodeRef, isDragging } = useSortable({
-    id: (row.original as any).id,
+    id: (row.original as { id: string | number }).id,
   });
 
   return (
@@ -145,8 +147,8 @@ function EditableCell({
   rowId,
   columnKey,
 }: {
-  value: any;
-  onSave: (value: any) => void;
+  value: unknown;
+  onSave: (value: unknown) => void;
   type?: "text" | "select";
   options?: { label: string; value: string }[];
   rowId: string | number;
@@ -160,7 +162,7 @@ function EditableCell({
     toast.promise(
       new Promise((resolve) => {
         setTimeout(() => {
-          onSave(newValue);
+          onSave(newValue ?? "");
           resolve(newValue);
         }, 1000);
       }),
@@ -204,7 +206,7 @@ function EditableCell({
   );
 }
 
-export function ReusableDataTable<TData extends Record<string, any> & { id: string | number }>({
+export function ReusableDataTable<TData extends { id: string | number }>({
   data: initialData,
   config,
 }: {

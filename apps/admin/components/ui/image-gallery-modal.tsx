@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Image from "next/image";
 import {
   Dialog,
   DialogContent,
@@ -12,15 +13,9 @@ import {
 import { Button } from "@eugenios/ui/components/button";
 import { Input } from "@eugenios/ui/components/input";
 import { Badge } from "@eugenios/ui/components/badge";
-import { PageLoading, ComponentLoading } from "@/components/ui/loading";
-import {
-  useImageGallery,
-  useUploadImage,
-  useDeleteImages,
-  useInvalidateImageGallery,
-  Image,
-} from "@/hooks/useImageGallery";
-import { Upload, Search, Trash2, Check, X } from "lucide-react";
+import { ComponentLoading } from "@/components/ui/loading";
+import { useImageGallery, useUploadImage, useDeleteImages, useInvalidateImageGallery } from "@/hooks/useImageGallery";
+import { Upload, Search, Trash2, Check } from "lucide-react";
 import { toast } from "sonner";
 
 interface ImageGalleryModalProps {
@@ -248,7 +243,14 @@ export function ImageGalleryModal({ isOpen, onClose, onSelectImage, selectedImag
                     )}
 
                     {/* Imagem */}
-                    <img src={image.url} alt={image.key} className="w-full h-32 object-cover" loading="lazy" />
+                    <Image
+                      src={image.url}
+                      alt={image.key}
+                      width={300}
+                      height={128}
+                      className="w-full h-32 object-cover"
+                      loading="lazy"
+                    />
 
                     {/* Overlay com informações */}
                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2">

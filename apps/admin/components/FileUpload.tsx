@@ -1,6 +1,6 @@
 import { cn } from "@eugenios/ui/lib/utils";
 import React, { useRef, useState } from "react";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { IconUpload } from "@tabler/icons-react";
 import { useDropzone } from "react-dropzone";
 
@@ -33,7 +33,7 @@ export const FileUpload = ({ onChange }: { onChange?: (file: File | null) => voi
   const handleFileChange = (newFiles: File[]) => {
     const newFile = newFiles[0] || null;
     setFile(newFile);
-    onChange && onChange(newFile);
+    if (onChange) onChange(newFile);
 
     // Create preview URL
     if (newFile && newFile.type.startsWith("image/")) {

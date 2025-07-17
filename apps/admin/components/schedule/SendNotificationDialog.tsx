@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@eugenios/ui/components/button";
 import {
   Dialog,
@@ -58,7 +58,7 @@ interface ScheduleChangesResponse {
 
 interface ChangesData {
   totalChanges: number;
-  prevSchedule?: any;
+  prevSchedule?: ScheduleChangesResponse["prevSchedule"];
   changesByDay?: Record<string, DayData>;
 }
 
@@ -124,7 +124,7 @@ export function SendNotificationDialog({
   };
 
   // Helper to normalize class data properties
-  const normalizeClassData = (aula: any): ClassData => {
+  const normalizeClassData = (aula: Partial<ClassData>): ClassData => {
     if (!aula) return {} as ClassData;
 
     return {
@@ -168,7 +168,7 @@ export function SendNotificationDialog({
           });
           setOpen(false);
         },
-        onError: (error: any) => {
+        onError: (error: { message?: string }) => {
           toast.error("Erro ao enviar notificação", {
             description: error.message || "Ocorreu um erro ao enviar a notificação",
           });
@@ -264,7 +264,7 @@ export function SendNotificationDialog({
 
                 <Accordion type="multiple" className="space-y-2">
                   {Object.entries(normalizedChangesData.changesByDay || {}).map(
-                    ([dayNumber, dayData]: [string, any]) => {
+                    ([dayNumber, dayData]: [string, DayData]) => {
                       if (!dayData?.hasChanges) return null;
 
                       const dayName = getDayName(parseInt(dayNumber));
@@ -299,7 +299,7 @@ export function SendNotificationDialog({
                               <div className="mb-4">
                                 <h4 className="text-sm font-medium text-green-700 mb-2">Aulas Adicionadas</h4>
                                 <div className="space-y-2">
-                                  {dayData.added.map((aula: any, idx: number) => {
+                                  {dayData.added.map((aula: ClassData, idx: number) => {
                                     const normalizedAula = normalizeClassData(aula);
                                     const horaInicio = normalizedAula.horaInicio || normalizedAula.hora_inicio;
 
@@ -331,7 +331,7 @@ export function SendNotificationDialog({
                               <div className="mb-4">
                                 <h4 className="text-sm font-medium text-red-700 mb-2">Aulas Removidas</h4>
                                 <div className="space-y-2">
-                                  {dayData.removed.map((aula: any, idx: number) => {
+                                  {dayData.removed.map((aula: ClassData, idx: number) => {
                                     const normalizedAula = normalizeClassData(aula);
                                     const horaInicio = normalizedAula.horaInicio || normalizedAula.hora_inicio;
 
@@ -363,7 +363,7 @@ export function SendNotificationDialog({
                               <div>
                                 <h4 className="text-sm font-medium text-amber-700 mb-2">Aulas Modificadas</h4>
                                 <div className="space-y-2">
-                                  {dayData.modified.map((change: any, idx: number) => {
+                                  {dayData.modified.map((change: ClassChange, idx: number) => {
                                     const newAula = normalizeClassData(change.new);
                                     const oldAula = normalizeClassData(change.old);
                                     const changes = [];

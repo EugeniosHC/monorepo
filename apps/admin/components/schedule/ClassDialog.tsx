@@ -4,7 +4,7 @@ import { Input } from "@eugenios/ui/components/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@eugenios/ui/components/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@eugenios/ui/components/dialog";
 import { Label } from "@eugenios/ui/components/label";
-import { X, Plus, Trash2, Save } from "lucide-react";
+import { X, Trash2, Save } from "lucide-react";
 import { ClassDetails, CLASS_CONSTANTS } from "@/hooks/useCreateClasses";
 
 interface ClassDialogProps {
@@ -37,7 +37,7 @@ export const ClassDialog: React.FC<ClassDialogProps> = ({
     intensidade: currentClass?.intensidade || "",
     custo: currentClass?.custo || 0,
   });
-  const [selectedCategory, setSelectedCategory] = useState<string>(currentClass?.categoria || "");
+  // Removed unused selectedCategory state
   const [availableClassNames, setAvailableClassNames] = useState<string[]>([]);
 
   // Cores para cada categoria de aula - usando as cores definidas nas constantes
@@ -84,7 +84,7 @@ export const ClassDialog: React.FC<ClassDialogProps> = ({
       console.log("Dados completos após processamento:", completeClassData);
 
       setClassData(completeClassData);
-      setSelectedCategory(normalizedCategory);
+      // Removed setSelectedCategory (unused)
 
       // Obter os nomes de aulas para a categoria normalizada
       if (normalizedCategory) {
@@ -130,7 +130,11 @@ export const ClassDialog: React.FC<ClassDialogProps> = ({
     // Validações específicas para Express
     if (normalizedCategory === "Express") {
       // Verificar se o horário selecionado é válido para Express (deve ser uma meia hora)
-      if (!CLASS_CONSTANTS.HORARIOS_EXPRESS.includes(classData.horaInicio as any)) {
+      if (
+        !CLASS_CONSTANTS.HORARIOS_EXPRESS.includes(
+          classData.horaInicio as (typeof CLASS_CONSTANTS.HORARIOS_EXPRESS)[number]
+        )
+      ) {
         alert("Aulas Express só podem começar nas meias horas (XX:30)");
         return;
       }
@@ -213,7 +217,7 @@ export const ClassDialog: React.FC<ClassDialogProps> = ({
                 onValueChange={(value) => {
                   console.log(`Categoria selecionada: ${value}`);
                   const normalizedValue = normalizeCategory(value);
-                  setSelectedCategory(normalizedValue);
+                  // Removed setSelectedCategory (unused)
 
                   // Se a categoria for Express, configurar a duração para 15 minutos
                   const duracaoAjustada =

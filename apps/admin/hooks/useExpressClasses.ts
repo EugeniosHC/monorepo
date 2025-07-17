@@ -53,7 +53,7 @@ export function useExpressClasses() {
     queryKey: expressClassesKeys.lists(),
     queryFn: async (): Promise<ExpressClass[]> => {
       const response = await apiClient.get("/class/express");
-      return response.data;
+      return response.data as ExpressClass[];
     },
     enabled: !isLoading && isAuthenticated,
     staleTime: 5 * 60 * 1000,
@@ -69,7 +69,7 @@ export function useExpressClassProposals() {
     queryKey: expressClassesKeys.proposals(),
     queryFn: async (): Promise<ExpressClassScheduleProposal[]> => {
       const response = await apiClient.get("/class/express-schedule");
-      return response.data;
+      return response.data as ExpressClassScheduleProposal[];
     },
     enabled: !isLoading && isAuthenticated,
     staleTime: 2 * 60 * 1000,

@@ -1,5 +1,6 @@
-// @ts-ignore
-import { useDrag } from "react-dnd";
+import { useDrag, DragSourceMonitor } from "react-dnd";
+import React from "react";
+import Image from "next/image";
 import { ItemTypes, DragItem } from "@eugenios/types";
 
 interface Product {
@@ -19,14 +20,14 @@ export const DraggableProduct = ({ product }: DraggableProductProps) => {
   const [{ isDragging }, drag] = useDrag<DragItem, unknown, { isDragging: boolean }>(() => ({
     type: ItemTypes.PRODUCT,
     item: { id: product.id, type: ItemTypes.PRODUCT },
-    collect: (monitor: any) => ({
-      isDragging: !!monitor.isDragging(),
+    collect: (monitor: DragSourceMonitor<DragItem, unknown>) => ({
+      isDragging: monitor.isDragging(),
     }),
   }));
 
   return (
     <div
-      ref={drag as any}
+      ref={drag as unknown as React.Ref<HTMLDivElement>}
       className={`group p-3 mb-2 border rounded-lg cursor-move transition-all duration-200 ${
         isDragging
           ? "opacity-50 bg-blue-50 border-blue-200 shadow-lg scale-105"
@@ -36,7 +37,13 @@ export const DraggableProduct = ({ product }: DraggableProductProps) => {
       <div className="flex items-center gap-3">
         <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
           {product.imageUrl ? (
-            <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" />
+            <Image
+              src={product.imageUrl}
+              alt={product.name}
+              className="w-full h-full object-cover"
+              width={48}
+              height={48}
+            />
           ) : (
             <div className="text-blue-600 text-xs font-semibold">IMG</div>
           )}

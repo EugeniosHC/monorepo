@@ -2,11 +2,7 @@
 
 import * as React from "react";
 import {
-  BookOpen,
-  Bot,
-  CameraIcon,
-  Command,
-  Dumbbell,
+  CameraIcon, Dumbbell,
   FolderIcon,
   Frame,
   LayoutTemplate,
@@ -15,10 +11,7 @@ import {
   MapIcon,
   Package,
   PieChart,
-  Send,
-  Settings2,
-  SquareTerminal,
-  Users,
+  Send, Users
 } from "lucide-react";
 
 import { NavMain } from "@/components/layouts/sidebar/nav-main";

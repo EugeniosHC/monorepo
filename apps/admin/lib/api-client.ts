@@ -47,28 +47,28 @@ class ApiClient {
   }
 
   // Métodos HTTP
-  public get<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
-    return this.instance.get(url, config);
+  public get<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    return this.instance.get<T>(url, config);
   }
 
-  public post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
-    return this.instance.post(url, data, config);
+  public post<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    return this.instance.post<T>(url, data, config);
   }
 
-  public put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
-    return this.instance.put(url, data, config);
+  public put<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    return this.instance.put<T>(url, data, config);
   }
 
-  public patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
-    return this.instance.patch(url, data, config);
+  public patch<T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    return this.instance.patch<T>(url, data, config);
   }
 
-  public delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
-    return this.instance.delete(url, config);
+  public delete<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    return this.instance.delete<T>(url, config);
   }
 
   // Método para fazer requests com token específico
-  public authenticatedRequest<T = any>(token: string, config: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public authenticatedRequest<T = unknown>(token: string, config: AxiosRequestConfig): Promise<AxiosResponse<T>> {
     const configWithAuth = {
       ...config,
       headers: {
@@ -77,17 +77,17 @@ class ApiClient {
       },
     };
 
-    return this.instance.request(configWithAuth);
+    return this.instance.request<T>(configWithAuth);
   }
 
   // Método para fazer requests sem token (ex: endpoints públicos)
-  public publicRequest<T = any>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+  public publicRequest<T = unknown>(config: AxiosRequestConfig): Promise<AxiosResponse<T>> {
     const publicInstance = axios.create({
       baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000",
       timeout: 10000,
     });
 
-    return publicInstance.request(config);
+    return publicInstance.request<T>(config);
   }
 }
 

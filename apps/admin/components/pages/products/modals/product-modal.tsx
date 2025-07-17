@@ -27,8 +27,8 @@ import { Textarea } from "@eugenios/ui/components/textarea";
 import { Badge } from "@eugenios/ui/components/badge";
 import { ButtonLoading } from "@/components/ui/loading";
 import { ImageGalleryModal } from "@/components/ui/image-gallery-modal";
-import { toast } from "sonner";
-import { X, Upload, Eye, Image as ImageIcon } from "lucide-react";
+import { X, Eye, Image as ImageIcon } from "lucide-react";
+import Image from "next/image";
 
 // Schema de validação
 const productSchema = z.object({
@@ -246,7 +246,7 @@ export function ProductModal({ isOpen, onClose, onSubmit, product = null, isSubm
                           Imagem Selecionada
                         </div>
                         <div className="relative w-full max-w-xs">
-                          <img
+                          <Image
                             src={field.value}
                             alt="Preview"
                             className="w-full h-32 object-cover rounded-lg border"

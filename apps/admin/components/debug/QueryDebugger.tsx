@@ -1,7 +1,7 @@
 // components/debug/QueryDebugger.tsx
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, Query } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { logQueryCacheStatus } from "@/lib/queryDebug";
 import { Button } from "@eugenios/ui/components/button";
@@ -9,7 +9,7 @@ import { Button } from "@eugenios/ui/components/button";
 export default function QueryDebugger() {
   const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
-  const [queries, setQueries] = useState<any[]>([]);
+  const [queries, setQueries] = useState<Query[]>([]);
 
   useEffect(() => {
     if (isOpen) {
@@ -69,16 +69,16 @@ export default function QueryDebugger() {
                       state.status === "success"
                         ? "text-green-600"
                         : state.status === "error"
-                        ? "text-red-600"
-                        : "text-blue-600"
+                          ? "text-red-600"
+                          : "text-blue-600"
                     }`}
                   >
                     {state.status}
                   </span>
                 </p>
                 <p>Updated: {new Date(state.dataUpdatedAt).toLocaleTimeString()}</p>
-                <p>Stale: {state.isStale ? "Yes" : "No"}</p>
-                <p>Fetching: {state.isFetching ? "Yes" : "No"}</p>
+                <p>Stale: {query.isStale() ? "Yes" : "No"}</p>
+                <p>Fetch Status: {query.state.fetchStatus}</p>
               </div>
             );
           })}

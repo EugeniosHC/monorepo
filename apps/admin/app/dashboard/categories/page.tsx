@@ -24,6 +24,8 @@ import { ProductModal, useProductModal } from "@/components/pages/products/modal
 import { useCreateProduct } from "@/hooks/useProducts";
 import { useCreateCategory, useUpdateCategory } from "@/hooks/useCategories";
 import { Plus, Package, Grid3X3, FolderPlus, ChevronDown } from "lucide-react";
+import { CreateProductData } from "@/hooks/useProducts";
+import { CreateCategory, EditCategory } from "@eugenios/types";
 
 export default function CategoriesPage() {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -51,7 +53,8 @@ export default function CategoriesPage() {
 
   const { data: categories = [], isLoading: isLoadingCategories, isError: isErrorCategories } = useCategories();
   const { data: products = [], isLoading: isLoadingProducts, isError: isErrorProducts } = useProducts();
-  const { data: sections = [], isLoading: isLoadingSections, isError: isErrorSections } = useCategorySections();
+  const { data: rawSections, isLoading: isLoadingSections, isError: isErrorSections } = useCategorySections();
+  const sections = (rawSections ?? []) as import("@eugenios/types").CategorySection[];
 
   // Verificar se todos os dados estão sendo carregados
   const isLoading = isLoadingCategories || isLoadingProducts || isLoadingSections;
@@ -64,22 +67,19 @@ export default function CategoriesPage() {
     ) || [];
 
   // Handler para criar produto
-  const handleCreateProduct = async (data: any) => {
+  const handleCreateProduct = async (data: CreateProductData) => {
     await createProduct.mutateAsync(data);
   };
 
   // Handler para criar categoria
-  const handleCreateCategory = async (data: any) => {
+  const handleCreateCategory = async (data: CreateCategory) => {
     await createCategory.mutateAsync(data);
   };
 
   // Handler para atualizar categoria
-  const handleUpdateCategory = async (data: any) => {
+  const handleUpdateCategory = async (data: EditCategory) => {
     if (!editingCategory) return;
-    await updateCategory.mutateAsync({
-      id: editingCategory.id,
-      ...data,
-    });
+    await updateCategory.mutateAsync(data);
   };
 
   if (isLoading) {
@@ -195,7 +195,7 @@ export default function CategoriesPage() {
               </div>
               <div className="ml-3">
                 <p className="text-sm font-medium text-gray-600">Total Seções</p>
-                <p className="text-2xl font-bold text-gray-900">{sections?.length || 0}</p>
+                <p className="text-2xl font-bold text-gray-900">{sections.length}</p>
               </div>
             </div>
           </Card>
@@ -284,12 +284,12 @@ export default function CategoriesPage() {
                   Seções Disponíveis
                 </h3>
                 <Badge variant="outline" className="text-sm font-medium">
-                  {sections?.length || 0}
+                  {sections.length}
                 </Badge>
               </div>
 
               <div className="max-h-[400px] overflow-y-auto">
-                {!sections || sections.length === 0 ? (
+                {sections.length === 0 ? (
                   <div className="text-center py-8">
                     <Grid3X3 className="w-10 h-10 text-gray-400 mx-auto mb-3" />
                     <p className="text-sm text-gray-500 font-medium">Nenhuma seção disponível</p>
@@ -297,7 +297,7 @@ export default function CategoriesPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {sections.map((section) => (
+                    {sections.map((section: import("@eugenios/types").CategorySection) => (
                       <DraggableSection key={section.id} section={section} />
                     ))}
                   </div>

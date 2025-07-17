@@ -13,9 +13,9 @@ export function useCategorySections() {
 
   return useQuery<CategorySection[] | null>({
     queryKey: categorySections.lists(),
-    queryFn: async () => {
+    queryFn: async (): Promise<CategorySection[] | null> => {
       const response = await apiClient.get("/categorySection");
-      return response.data;
+      return response.data as CategorySection[] | null;
     },
     enabled: !isLoading && isAuthenticated,
     staleTime: 5 * 60 * 1000,

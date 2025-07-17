@@ -14,6 +14,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@eugen
 import { ImageGalleryModal } from "@/components/image-gallery";
 import { useSectionsById, useUpdateSection } from "@/hooks/useSections";
 import type { Slide, SlideItem } from "@eugenios/types";
+import Image from "next/image";
 
 interface EditorPageProps {
   params: Promise<{
@@ -32,10 +33,11 @@ export default function HeroSectionEditorPage({ params }: EditorPageProps) {
     show: boolean;
   }>({ type: "success", message: "", show: false });
   const [activeSlideUpdate, setActiveSlideUpdate] = useState<{
-    updateFn: ((field: keyof SlideItem, value: any) => void) | null;
+    updateFn: ((field: keyof SlideItem, value: string | boolean) => void) | null;
     slide: SlideItem | null;
   }>({ updateFn: null, slide: null });
-  const { data: section, isLoading, isError } = useSectionsById(id);
+  const { data: sectionRaw, isLoading, isError } = useSectionsById(id);
+  let section: import("@eugenios/types").Section | undefined = undefined;
   const updateSectionMutation = useUpdateSection();
 
   // Function to show notifications
@@ -63,7 +65,7 @@ export default function HeroSectionEditorPage({ params }: EditorPageProps) {
   }
 
   // Error state
-  if (isError || !section) {
+  if (isError || !sectionRaw) {
     return (
       <div className="fixed inset-0 bg-black flex items-center justify-center">
         <div className="text-center max-w-md mx-auto px-6">
@@ -98,6 +100,7 @@ export default function HeroSectionEditorPage({ params }: EditorPageProps) {
     );
   }
 
+  section = sectionRaw as import("@eugenios/types").Section;
   if (section.type !== "HERO") {
     return (
       <div className="fixed inset-0 bg-black flex items-center justify-center">
@@ -126,47 +129,32 @@ export default function HeroSectionEditorPage({ params }: EditorPageProps) {
   }
 
   // Convert slides from API (without id) to SlideItems (with id) for editor
-  const slides: SlideItem[] = (section?.data?.slides || []).map((slide: Slide, index: number) => ({
+  const slides: SlideItem[] = (section?.data?.slides || []).map((slide: Slide) => ({
     ...slide,
-    id: index + 1, // Add temporary ID for editor
   }));
 
   const handleSave = async (slides: SlideItem[]) => {
     try {
-      console.log("🚀 HANDLE SAVE START 🚀");
-      console.log("Slides received in handleSave:", slides);
-      console.log("First slide in handleSave:", slides[0]);
-      console.log("First slide buttonText:", slides[0]?.buttonText);
-      console.log("First slide buttonUrl:", slides[0]?.buttonUrl);
-
+      // ...existing code...
       // Convert SlideItems back to Slides (remove id) for API
-      const slidesForApi: Slide[] = slides.map(({ id, ...slide }) => slide);
-
-      console.log("🔄 After removing ID:");
-      console.log("Slides for API:", slidesForApi);
-      console.log("First slide for API:", slidesForApi[0]);
-      console.log("First slide for API buttonText:", slidesForApi[0]?.buttonText);
-      console.log("First slide for API buttonUrl:", slidesForApi[0]?.buttonUrl);
-      console.log("🚀 HANDLE SAVE END 🚀");
-
-      console.log("Slides being sent to API:", JSON.stringify(slidesForApi, null, 2));
-      console.log("Section ID:", section.id);
-
-      // Call the backend API to save the section data
+      const slidesForApi: Slide[] = slides.map((slide) => {
+        const slideCopy = { ...slide };
+        delete (slideCopy as Partial<SlideItem>).id;
+        return slideCopy;
+      });
+      // ...existing code...
       await updateSectionMutation.mutateAsync({
-        id: section.id, // Use the actual section ID from the loaded data
+        id: section.id,
         data: { slides: slidesForApi },
       });
-
-      // Show success notification only if mutation succeeds
       showNotification("success", "Alterações guardadas com sucesso!");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error saving:", error);
-
-      // Try to get a more specific error message from the API response
-      const errorMessage =
-        error?.response?.data?.message || error?.message || "Erro ao guardar alterações. Tente novamente.";
-
+      let errorMessage = "Erro ao guardar alterações. Tente novamente.";
+      if (typeof error === "object" && error !== null) {
+        const err = error as { response?: { data?: { message?: string } }; message?: string };
+        errorMessage = err?.response?.data?.message || err?.message || errorMessage;
+      }
       showNotification("error", errorMessage);
     }
   };
@@ -190,17 +178,24 @@ export default function HeroSectionEditorPage({ params }: EditorPageProps) {
   };
 
   const renderPreview = (slide: SlideItem) => {
-    console.log("renderPreview called with slide image:", slide.imageUrl);
-    // Create a unique key combining id and image URL to force re-render when image changes
-    const key = `slide-${slide.id}-${slide.imageUrl}`;
-    // Convert SlideItem back to Slide for the HeroSection component
-    const { id, ...slideData } = slide;
-    return <HeroSection key={key} data={{ slides: [slideData] }} />;
+    const key = `slide-${slide.imageUrl}`;
+    // Convert SlideItem to SlideType for HeroSection
+    const slideType = {
+      id: slide.id,
+      image: slide.imageUrl,
+      alt: slide.imageAlt,
+      title: slide.title,
+      subtitle: slide.subtitle,
+      buttonText: slide.buttonText,
+      buttonUrl: slide.buttonUrl,
+      buttonIsVisible: slide.buttonIsVisible,
+    };
+    return <HeroSection key={key} data={{ slides: [slideType] }} />;
   };
 
   // No longer needed as we're using the image gallery
 
-  const renderEditor = (slide: SlideItem, onUpdate: (field: keyof SlideItem, value: any) => void) => {
+  const renderEditor = (slide: SlideItem, onUpdate: (field: keyof SlideItem, value: string | boolean) => void) => {
     return (
       <>
         {/* Floating Edit Buttons */}
@@ -449,7 +444,7 @@ export default function HeroSectionEditorPage({ params }: EditorPageProps) {
                 <div>
                   <div className="rounded-md overflow-hidden mb-3 aspect-video bg-gray-800">
                     {slide.imageUrl ? (
-                      <img
+                      <Image
                         src={slide.imageUrl}
                         alt={slide.imageAlt || "Preview"}
                         className="w-full h-full object-cover"

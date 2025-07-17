@@ -51,7 +51,7 @@ const defaultSlides: SlideType[] = [
 ];
 
 interface HeroSectionProps {
-  data?: any;
+  data?: { slides?: SlideType[] };
 }
 export default function HeroSection({ data }: HeroSectionProps) {
   const router = useRouter();
@@ -60,20 +60,22 @@ export default function HeroSection({ data }: HeroSectionProps) {
   const [autoplayPaused, setAutoplayPaused] = useState(false);
 
   // Reset the current slide index when data changes
+  // Extract firstImage for useEffect dependency
+  const firstImage = data?.slides?.[0]?.image;
   useEffect(() => {
     setCurrent(0);
-  }, [data?.slides?.[0]?.image]);
+  }, [firstImage]);
 
   // Use data from API if available, otherwise use default data
   // Ensure slides is always a valid array of SlideType objects with all required properties
   const slidesFromData =
     data?.slides && Array.isArray(data.slides)
-      ? data.slides.map((slide: any, index: number) => {
+      ? data.slides.map((slide: SlideType, index: number) => {
           const defaultIndex = index % defaultSlides.length;
           return {
             id: slide.id || index + 1,
-            image: slide.image || slide.imageUrl || defaultSlides[defaultIndex]?.image || "/images/home/hero-1.jpg",
-            alt: slide.alt || slide.imageAlt || defaultSlides[defaultIndex]?.alt || "Eugénios Health Club",
+            image: slide.image || defaultSlides[defaultIndex]?.image || "/images/home/hero-1.jpg",
+            alt: slide.alt || defaultSlides[defaultIndex]?.alt || "Eugénios Health Club",
             title: slide.title || defaultSlides[defaultIndex]?.title || "Os melhores\nTreinam Juntos",
             subtitle: slide.subtitle || defaultSlides[defaultIndex]?.subtitle || "7 dias grátis",
             buttonText: slide.buttonText || defaultSlides[defaultIndex]?.buttonText || "SABER MAIS",
@@ -140,7 +142,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
 
   // Animation variants for Framer Motion
   const slideVariants = {
-    enter: (direction: string) => ({
+    enter: () => ({
       opacity: 0,
     }),
     center: {
@@ -150,7 +152,7 @@ export default function HeroSection({ data }: HeroSectionProps) {
         ease: "easeOut",
       },
     },
-    exit: (direction: string) => ({
+    exit: () => ({
       opacity: 0,
       transition: {
         duration: 0.8,
@@ -160,9 +162,9 @@ export default function HeroSection({ data }: HeroSectionProps) {
   };
 
   const subtitleVariants = {
-    hidden: (direction: string) => ({
+    hidden: () => ({
       opacity: 0,
-      y: direction === "next" ? -30 : 30,
+      y: -30,
     }),
     visible: {
       opacity: 1,
@@ -173,9 +175,9 @@ export default function HeroSection({ data }: HeroSectionProps) {
         delay: 0.3,
       },
     },
-    exit: (direction: string) => ({
+    exit: () => ({
       opacity: 0,
-      y: direction === "next" ? 30 : -30,
+      y: 30,
       transition: {
         duration: 0.5,
         ease: "easeIn",
@@ -184,9 +186,9 @@ export default function HeroSection({ data }: HeroSectionProps) {
   };
 
   const titleVariants = {
-    hidden: (direction: string) => ({
+    hidden: () => ({
       opacity: 0,
-      x: direction === "next" ? -30 : 30,
+      x: -30,
     }),
     visible: {
       opacity: 1,
@@ -197,9 +199,9 @@ export default function HeroSection({ data }: HeroSectionProps) {
         delay: 0.6,
       },
     },
-    exit: (direction: string) => ({
+    exit: () => ({
       opacity: 0,
-      x: direction === "next" ? 30 : -30,
+      x: 30,
       transition: {
         duration: 0.5,
         ease: "easeIn",
@@ -252,8 +254,9 @@ export default function HeroSection({ data }: HeroSectionProps) {
                 {currentSlide.image.startsWith("https://") ? (
                   // For external images (cloudflare, etc), use regular img
                   <div className="absolute inset-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      key={currentSlide.image} // Key for forced re-render
+                      key={currentSlide.image}
                       src={currentSlide.image}
                       alt={currentSlide.alt || "Eugénios Health Club"}
                       className="w-full h-full object-cover"

@@ -1,5 +1,4 @@
 // Exportar todos os componentes da pasta schedule
-export { default as ElegantClassSchedule } from "../ScheduleRefactored";
 export { MultiSelectFilter } from "./MultiSelectFilter";
 export { TabSelector } from "./TabSelector";
 export { WeekPicker } from "./WeekPicker";

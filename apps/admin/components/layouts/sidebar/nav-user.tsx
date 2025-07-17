@@ -3,13 +3,12 @@
 import { MoreVerticalIcon } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@eugenios/ui/components/avatar";
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@eugenios/ui/components/sidebar";
+import { SidebarMenu, SidebarMenuItem } from "@eugenios/ui/components/sidebar";
 
 import { UserButton, useUser } from "@clerk/nextjs";
 
 export function NavUser() {
   const { user, isLoaded } = useUser();
-  const { isMobile } = useSidebar();
 
   // Verificação mais robusta do estado de carregamento e user
   if (!isLoaded) {

@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 
 import { useState } from "react";
 import { useImageGallery, useUploadImage, useDeleteImages } from "@/hooks/useImageGallery";
@@ -346,10 +347,12 @@ export default function GalleryPage() {
 
               {/* Imagem */}
               <div className="aspect-square relative overflow-hidden">
-                <img
+                <Image
                   src={image.url}
                   alt={image.key}
                   className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                  width={400}
+                  height={400}
                   loading="lazy"
                 />
               </div>
@@ -382,10 +385,12 @@ export default function GalleryPage() {
             >
               <X className="w-6 h-6" />
             </Button>
-            <img
-              src={selectedImagePreview}
+            <Image
+              src={selectedImagePreview || ""}
               alt="Preview"
               className="max-w-full max-h-full object-contain rounded-lg"
+              width={800}
+              height={800}
               onClick={(e) => e.stopPropagation()}
             />
           </div>

@@ -34,7 +34,7 @@ export function useImageGallery() {
     queryKey: imageKeys.gallery(),
     queryFn: async (): Promise<ImageGallery> => {
       const response = await apiClient.get("/cloudflare");
-      return response.data;
+      return response.data as ImageGallery;
     },
     enabled: !isLoading && isAuthenticated, // Só executa quando autenticado
     staleTime: 2 * 60 * 1000, // 2 minutos
@@ -57,7 +57,7 @@ export function useUploadImage() {
           "Content-Type": "multipart/form-data",
         },
       });
-      return response.data;
+      return response.data as Image;
     },
     onSuccess: (newImage) => {
       // Adicionar a nova imagem ao cache da galeria
@@ -87,7 +87,7 @@ export function useDeleteImages() {
       const response = await apiClient.delete("/cloudflare/delete", {
         data: { keys },
       });
-      return response.data;
+      return response.data as DeleteImagesResponse;
     },
     onSuccess: (result) => {
       // Remover imagens eliminadas do cache

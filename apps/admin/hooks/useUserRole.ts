@@ -6,8 +6,8 @@ interface UseUserRoleReturn {
   hasRole: (role: UserRole) => boolean;
   hasAnyRole: (roles: UserRole[]) => boolean;
   isAdmin: () => boolean;
-  isDirector: () => boolean;
-  isModerator: () => boolean;
+  isPTManager: () => boolean;
+  isClubManager: () => boolean;
   isUser: () => boolean;
   canAccessAdmin: () => boolean;
   canManageUsers: () => boolean;
@@ -37,12 +37,12 @@ export function useUserRole(): UseUserRoleReturn {
     return hasRole(UserRole.ADMIN);
   };
 
-  const isDirector = (): boolean => {
-    return hasRole(UserRole.DIRECTOR);
+  const isPTManager = (): boolean => {
+    return hasRole(UserRole.PT_MANAGER);
   };
 
-  const isModerator = (): boolean => {
-    return hasRole(UserRole.MODERATOR);
+  const isClubManager = (): boolean => {
+    return hasRole(UserRole.CLUB_MANAGER);
   };
 
   const isUser = (): boolean => {
@@ -50,11 +50,11 @@ export function useUserRole(): UseUserRoleReturn {
   };
 
   const canAccessAdmin = (): boolean => {
-    return hasAnyRole([UserRole.ADMIN, UserRole.DIRECTOR]);
+    return hasAnyRole([UserRole.ADMIN]);
   };
 
   const canManageUsers = (): boolean => {
-    return hasAnyRole([UserRole.ADMIN, UserRole.DIRECTOR, UserRole.MODERATOR]);
+    return hasAnyRole([UserRole.ADMIN, UserRole.CLUB_MANAGER]);
   };
 
   return {
@@ -62,8 +62,8 @@ export function useUserRole(): UseUserRoleReturn {
     hasRole,
     hasAnyRole,
     isAdmin,
-    isDirector,
-    isModerator,
+    isPTManager,
+    isClubManager,
     isUser,
     canAccessAdmin,
     canManageUsers,

@@ -5,11 +5,9 @@ import { useRouter } from "next/navigation";
 import { Button } from "@eugenios/ui/components/button";
 import { Input } from "@eugenios/ui/components/input";
 import { Textarea } from "@eugenios/ui/components/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@eugenios/ui/components/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@eugenios/ui/components/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@eugenios/ui/components/dialog";
 import { Label } from "@eugenios/ui/components/label";
-import { X, Plus, Save, ArrowLeft, Loader2 } from "lucide-react";
+import { X, Save, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { ClassDetails, CLASS_CONSTANTS } from "@/hooks/useCreateClasses";
 import { useCreateSchedule } from "@/hooks/useScheduleOperations";
@@ -31,9 +29,6 @@ export default function CreateClassesPage() {
 
   // Estado para o diálogo de edição/criação de aula
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedDay, setSelectedDay] = useState<number>(1); // Segunda-feira por padrão
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [availableClassNames, setAvailableClassNames] = useState<string[]>([]);
   const [currentClass, setCurrentClass] = useState<ClassDetails | null>(null);
   const [editMode, setEditMode] = useState<"create" | "edit">("create");
 
@@ -46,9 +41,6 @@ export default function CreateClassesPage() {
   };
 
   const handleOpenCreateDialog = (dia: number) => {
-    setSelectedDay(dia);
-    setSelectedCategory("");
-    setAvailableClassNames([]);
     setCurrentClass({
       nome: "",
       categoria: "",
@@ -63,15 +55,6 @@ export default function CreateClassesPage() {
 
   // Função para abrir o diálogo de edição de aula
   const handleOpenEditDialog = (aula: ClassDetails) => {
-    setSelectedDay(aula.diaSemana);
-    setSelectedCategory(aula.categoria);
-
-    // Obter os nomes de aulas para a categoria selecionada
-    const classNames =
-      CLASS_CONSTANTS.AULAS_POR_CATEGORIA[aula.categoria as keyof typeof CLASS_CONSTANTS.AULAS_POR_CATEGORIA];
-    // Converter o array readonly para um array mutável
-    setAvailableClassNames(classNames ? Array.from(classNames) : []);
-
     // Garantir que a duração esteja correta para aulas Express
     const aulaAjustada = { ...aula };
     if (aula.categoria === "Express" && aula.duracao !== CLASS_CONSTANTS.DURACAO_EXPRESS) {
@@ -105,8 +88,6 @@ export default function CreateClassesPage() {
 
     setIsDialogOpen(false);
     setCurrentClass(null);
-    setSelectedCategory("");
-    setAvailableClassNames([]);
   };
 
   // Função para excluir uma aula

@@ -56,7 +56,6 @@ export function useScheduleChanges(prevScheduleId?: string, newScheduleId?: stri
     },
     enabled: !!prevScheduleId && !!newScheduleId,
     staleTime: 0, // Considerar os dados obsoletos imediatamente
-    cacheTime: 0, // Não armazenar em cache
     refetchOnWindowFocus: true, // Recarregar ao focar na janela
   });
 }

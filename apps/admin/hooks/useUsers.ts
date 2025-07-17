@@ -35,7 +35,7 @@ export const useUsers = (page = 1, limit = 20) => {
     queryFn: async () => {
       if (!isAuthenticated) throw new Error("Authentication required");
       const response = await apiClient.get(`/admin/users?page=${page}&limit=${limit}`);
-      return response.data;
+      return response.data as UserListResponse;
     },
     enabled: isAuthenticated,
     staleTime: 1000 * 60 * 5, // 5 minutes
@@ -50,7 +50,7 @@ export const useUserById = (userId: string) => {
     queryFn: async () => {
       if (!isAuthenticated) throw new Error("Authentication required");
       const response = await apiClient.get(`/admin/users/${userId}`);
-      return response.data;
+      return response.data as User;
     },
     enabled: isAuthenticated && !!userId,
   });

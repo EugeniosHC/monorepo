@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "@eugenios/ui/styles/web/globals.css";
 import { Inter } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
-import { AuthTokenProvider } from "@/components/security/AuthTokenProvider";
 
 export const metadata: Metadata = {
   title: "Eugenios HC",

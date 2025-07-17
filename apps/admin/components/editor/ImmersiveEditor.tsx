@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, ReactNode } from "react";
+import { useState, useEffect, useCallback, ReactNode } from "react";
 import { Button } from "@eugenios/ui/components/button";
 import {
   ChevronLeft,
@@ -15,12 +15,13 @@ import {
   Monitor,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@eugenios/ui/components/tooltip";
+import Image from "next/image";
 
 interface EditorItem {
   id: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 type ViewportDevice = "desktop" | "tablet" | "mobile";
@@ -214,14 +215,14 @@ function SidebarPanel<T extends EditorItem>({
                     onClick={() => onSelect(idx)}
                   >
                     {preview.image && (
-                      <div
-                        key={preview.image} // Add key to force re-render
-                        className="h-12 w-16 rounded-md overflow-hidden relative flex-shrink-0"
-                      >
-                        <img
+                      <div key={preview.image} className="h-12 w-16 rounded-md overflow-hidden relative flex-shrink-0">
+                        <Image
                           src={preview.image}
                           alt={preview.title || "Preview"}
-                          className="h-full w-full object-cover"
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 16vw"
+                          priority={false}
                         />
                         <div className="absolute inset-0 bg-black/20" />
                       </div>
@@ -316,7 +317,7 @@ export interface ImmersiveEditorProps<T extends EditorItem> {
   onBack: () => void;
   editorTitle: string;
   renderPreview: (item: T) => ReactNode;
-  renderEditor: (item: T, onUpdate: (field: keyof T, value: any) => void) => ReactNode;
+  renderEditor: (item: T, onUpdate: (field: keyof T, value: unknown) => void) => ReactNode;
   createNewItem: () => T;
   renderItemPreview: (item: T) => {
     title: string;
@@ -335,7 +336,6 @@ export default function ImmersiveEditor<T extends EditorItem>({
   createNewItem,
   renderItemPreview,
 }: ImmersiveEditorProps<T>) {
-  const router = useRouter();
   const [items, setItems] = useState<T[]>(initialItems.length > 0 ? initialItems : [createNewItem()]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showSidebar, setShowSidebar] = useState(false);
@@ -344,6 +344,65 @@ export default function ImmersiveEditor<T extends EditorItem>({
 
   // Make sure we always have a valid current item
   const safeCurrentIndex = items.length === 0 ? 0 : Math.min(Math.max(0, currentIndex), items.length - 1);
+
+  // Handle keyboard shortcuts
+  // (Moved below handleSave, handleNext, handlePrevious declarations)
+
+  const handleUpdate = (field: keyof T, value: unknown) => {
+    if (items.length === 0) return;
+
+    console.log(`🔄 ImmersiveEditor: Updating ${String(field)} to:`, value);
+
+    // Special logging for button fields
+    if (String(field) === "buttonText" || String(field) === "buttonUrl") {
+      console.log(`🔴 BUTTON UPDATE: ${String(field)} = "${value}"`);
+      console.log(`🔴 Current item before update:`, items[safeCurrentIndex]);
+    }
+
+    const newItems = [...items];
+    newItems[safeCurrentIndex] = {
+      ...newItems[safeCurrentIndex],
+      [field]: value,
+    } as T;
+    setItems(newItems);
+
+    console.log("🔄 Items after update:", newItems);
+
+    // Special logging for button fields after update
+    if (String(field) === "buttonText" || String(field) === "buttonUrl") {
+      console.log(`🔴 BUTTON AFTER UPDATE: Updated item:`, newItems[safeCurrentIndex]);
+    }
+  };
+
+  const handleNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev === items.length - 1 ? 0 : prev + 1));
+    setEditMode(false);
+  }, [items.length]);
+
+  const handlePrevious = useCallback(() => {
+    setCurrentIndex((prev) => (prev === 0 ? items.length - 1 : prev - 1));
+    setEditMode(false);
+  }, [items.length]);
+
+  const handleSave = useCallback(() => {
+    console.log("💾 ImmersiveEditor handleSave called");
+    console.log("💾 Items being passed to onSave:", items);
+    console.log("💾 First item:", items[0]);
+    console.log("💾 First item buttonText:", (items[0] as unknown as T)?.buttonText);
+    console.log("💾 First item buttonUrl:", (items[0] as unknown as T)?.buttonUrl);
+    onSave(items);
+  }, [items, onSave]);
+
+  const handleBackToDashboard = () => {
+    onBack();
+  };
+
+  const handleAddItem = () => {
+    const newItem = createNewItem();
+    setItems([...items, newItem]);
+    setCurrentIndex(items.length);
+    setShowSidebar(false);
+  };
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -381,63 +440,7 @@ export default function ImmersiveEditor<T extends EditorItem>({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [editMode, showSidebar]);
-
-  const handleUpdate = (field: keyof T, value: any) => {
-    if (items.length === 0) return;
-
-    console.log(`🔄 ImmersiveEditor: Updating ${String(field)} to:`, value);
-
-    // Special logging for button fields
-    if (String(field) === "buttonText" || String(field) === "buttonUrl") {
-      console.log(`🔴 BUTTON UPDATE: ${String(field)} = "${value}"`);
-      console.log(`🔴 Current item before update:`, items[safeCurrentIndex]);
-    }
-
-    const newItems = [...items];
-    newItems[safeCurrentIndex] = {
-      ...newItems[safeCurrentIndex],
-      [field]: value,
-    } as T;
-    setItems(newItems);
-
-    console.log("🔄 Items after update:", newItems);
-
-    // Special logging for button fields after update
-    if (String(field) === "buttonText" || String(field) === "buttonUrl") {
-      console.log(`🔴 BUTTON AFTER UPDATE: Updated item:`, newItems[safeCurrentIndex]);
-    }
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev === items.length - 1 ? 0 : prev + 1));
-    setEditMode(false);
-  };
-
-  const handlePrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? items.length - 1 : prev - 1));
-    setEditMode(false);
-  };
-
-  const handleSave = () => {
-    console.log("💾 ImmersiveEditor handleSave called");
-    console.log("💾 Items being passed to onSave:", items);
-    console.log("💾 First item:", items[0]);
-    console.log("💾 First item buttonText:", (items[0] as any)?.buttonText);
-    console.log("💾 First item buttonUrl:", (items[0] as any)?.buttonUrl);
-    onSave(items);
-  };
-
-  const handleBackToDashboard = () => {
-    onBack();
-  };
-
-  const handleAddItem = () => {
-    const newItem = createNewItem();
-    setItems([...items, newItem]);
-    setCurrentIndex(items.length);
-    setShowSidebar(false);
-  };
+  }, [editMode, showSidebar, handleSave, handleNext, handlePrevious]);
 
   const handleDeleteItem = (index: number) => {
     if (items.length <= 1) {

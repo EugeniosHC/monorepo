@@ -3,8 +3,7 @@
 import { useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@eugenios/ui/components/button";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@eugenios/ui/components/card";
-import { Separator } from "@eugenios/ui/components/separator";
+import { Card, CardHeader, CardTitle, CardContent } from "@eugenios/ui/components/card";
 import { Badge } from "@eugenios/ui/components/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@eugenios/ui/components/tabs";
 import {
@@ -40,7 +39,6 @@ import {
   useScheduleById,
   useUpdateScheduleStatus,
   ScheduleStatus,
-  ScheduleClass,
   useDeleteSchedule,
 } from "@/hooks/useScheduleOperations";
 import { useDuplicateSchedule } from "@/hooks/useSchedules";
@@ -338,8 +336,11 @@ export default function ScheduleDetailsPage({ params }: { params: Promise<{ id: 
       await deleteMutation.mutateAsync(schedule.id);
       toast.success("Programação excluída com sucesso");
       router.push("/dashboard/classes");
-    } catch (error: any) {
-      const errorMessage = error?.message || "Erro ao excluir programação";
+    } catch (error: unknown) {
+      let errorMessage = "Erro ao excluir programação";
+      if (typeof error === "object" && error !== null && "message" in error) {
+        errorMessage = (error as { message?: string }).message || errorMessage;
+      }
       toast.error(errorMessage);
       console.error("Erro ao excluir programação:", error);
     } finally {
@@ -667,7 +668,7 @@ export default function ScheduleDetailsPage({ params }: { params: Promise<{ id: 
                             {formatDate(historyItem.createdAt)} - {historyItem.alteradoPor}
                           </p>
                           {historyItem.nota && (
-                            <p className="text-sm italic text-muted-foreground mt-1">"{historyItem.nota}"</p>
+                            <p className="text-sm italic text-muted-foreground mt-1">&quot;{historyItem.nota}&quot;</p>
                           )}
                         </div>
                       </div>

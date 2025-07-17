@@ -15,7 +15,7 @@ export function useCategories() {
     queryKey: categoriesKeys.lists(),
     queryFn: async (): Promise<Category[]> => {
       const response = await apiClient.get("/category");
-      return response.data;
+      return response.data as Category[];
     },
     enabled: !isLoading && isAuthenticated,
     staleTime: 5 * 60 * 1000,

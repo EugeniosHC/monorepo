@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@eugenios/ui/component
 import { X, Save, ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { ClassDetails, CLASS_CONSTANTS } from "@/hooks/useCreateClasses";
-import { useScheduleById, useUpdateSchedule, ScheduleClass } from "@/hooks/useScheduleOperations";
+import { useScheduleById, useUpdateSchedule } from "@/hooks/useScheduleOperations";
 import { ScheduleStatus } from "@/hooks/useSchedules";
 import { ClassMap } from "@/components/schedule/ClassMap";
 import { ClassDialog } from "@/components/schedule/ClassDialog";
@@ -33,9 +33,6 @@ export default function EditSchedulePage({ params }: EditSchedulePageProps) {
 
   // Estado para o diálogo de edição/criação de aula
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedDay, setSelectedDay] = useState<number>(1);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [availableClassNames, setAvailableClassNames] = useState<string[]>([]);
   const [currentClass, setCurrentClass] = useState<ClassDetails | null>(null);
   const [editMode, setEditMode] = useState<"create" | "edit">("create");
 
@@ -76,9 +73,6 @@ export default function EditSchedulePage({ params }: EditSchedulePageProps) {
   };
 
   const handleOpenCreateDialog = (dia: number) => {
-    setSelectedDay(dia);
-    setSelectedCategory("");
-    setAvailableClassNames([]);
     setCurrentClass({
       nome: "",
       categoria: "",
@@ -119,9 +113,6 @@ export default function EditSchedulePage({ params }: EditSchedulePageProps) {
       }
     }
 
-    setSelectedDay(aula.diaSemana);
-    setSelectedCategory(aula.categoria);
-
     // Corrigir durações, especialmente para Express
     if (aula.categoria === "Express" && (!aula.duracao || aula.duracao !== CLASS_CONSTANTS.DURACAO_EXPRESS)) {
       aula.duracao = CLASS_CONSTANTS.DURACAO_EXPRESS;
@@ -143,18 +134,6 @@ export default function EditSchedulePage({ params }: EditSchedulePageProps) {
       intensidade: aula.intensidade || "Moderada",
       custo: aula.categoria === "Express" ? 0 : (aula.custo ?? 0),
     };
-
-    // Obter os nomes de aulas para a categoria selecionada
-    try {
-      const classNames =
-        CLASS_CONSTANTS.AULAS_POR_CATEGORIA[aulaAjustada.categoria as keyof typeof CLASS_CONSTANTS.AULAS_POR_CATEGORIA];
-
-      // Converter o array readonly para um array mutável
-      setAvailableClassNames(classNames ? Array.from(classNames) : []);
-    } catch (error) {
-      console.error(`Erro ao obter nomes para categoria ${aulaAjustada.categoria}:`, error);
-      setAvailableClassNames([]);
-    }
 
     setCurrentClass(aulaAjustada);
     setEditMode("edit");
@@ -183,8 +162,6 @@ export default function EditSchedulePage({ params }: EditSchedulePageProps) {
 
     setIsDialogOpen(false);
     setCurrentClass(null);
-    setSelectedCategory("");
-    setAvailableClassNames([]);
   };
 
   // Função para excluir uma aula

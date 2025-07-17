@@ -40,7 +40,7 @@ export function useClasses(date?: string) {
     queryFn: async () => {
       const params = date ? { date } : {};
       const response = await apiClient.get("class/mock-data", { params });
-      return response.data;
+      return response.data as AulasDaSemanaResponse;
     },
     enabled: isAuthenticated && !authLoading,
     staleTime: 1000 * 60 * 60 * 24, // 24 horas
@@ -135,7 +135,7 @@ export function useClassesByDate(date: string) {
       const response = await apiClient.get("class/mock-data", {
         params: { date },
       });
-      return response.data;
+      return response.data as AulasDaSemanaResponse;
     },
     enabled: isAuthenticated && !authLoading && !!date,
     staleTime: 1000 * 60 * 60 * 24, // 24 horas

@@ -6,9 +6,7 @@ import { Button } from "@eugenios/ui/components/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@eugenios/ui/components/card";
 import { Badge } from "@eugenios/ui/components/badge";
 import { ArrowLeft, Printer } from "lucide-react";
-import { useScheduleById, ScheduleClass } from "@/hooks/useScheduleOperations";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { useScheduleById } from "@/hooks/useScheduleOperations";
 import { ClassMap } from "@/components/schedule/ClassMap";
 
 export default function ScheduleMapPage({ params }: { params: Promise<{ id: string }> }) {

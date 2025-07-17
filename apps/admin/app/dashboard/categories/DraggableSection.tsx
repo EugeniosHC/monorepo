@@ -1,14 +1,7 @@
-// @ts-ignore
-import { useDrag } from "react-dnd";
+import { useDrag, DragSourceMonitor } from "react-dnd";
 import { CategorySection, ItemTypes, DragItem } from "@eugenios/types";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@eugenios/ui/components/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@eugenios/ui/components/dialog";
+import React from "react";
 import { Button } from "@eugenios/ui/components/button";
 import { Eye, Grid3X3 } from "lucide-react";
 import { useState } from "react";
@@ -23,8 +16,8 @@ export const DraggableSection = ({ section }: DraggableSectionProps) => {
   const [{ isDragging }, drag] = useDrag<DragItem, unknown, { isDragging: boolean }>(() => ({
     type: ItemTypes.SECTION,
     item: { id: section.id, type: ItemTypes.SECTION },
-    collect: (monitor: any) => ({
-      isDragging: !!monitor.isDragging(),
+    collect: (monitor: DragSourceMonitor<DragItem, unknown>) => ({
+      isDragging: monitor.isDragging(),
     }),
   }));
 
@@ -36,7 +29,7 @@ export const DraggableSection = ({ section }: DraggableSectionProps) => {
   return (
     <>
       <div
-        ref={drag as any}
+        ref={drag as unknown as React.Ref<HTMLDivElement>}
         className={`group p-3 mb-2 border rounded-lg cursor-move transition-all duration-200 ${
           isDragging
             ? "opacity-50 bg-purple-50 border-purple-200 shadow-lg scale-105"
