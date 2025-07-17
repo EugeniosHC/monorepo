@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { InfiniteMovingCards } from "@/components/infinite-moving-cards";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Star } from "lucide-react";
 import { Typography } from "@eugenios/ui/components/ui/Typography";
 
@@ -71,14 +71,24 @@ const testimonials = [
 
 // CSS for slide-in animation
 const slideAnimationStyle = `
-  @keyframes slideIn {
+  @keyframes slideInLeft {
     0% {
-      transform: translateX(100%);
+      transform: translateX(-100%);
       opacity: 0;
     }
     100% {
       transform: translateX(0);
       opacity: 1;
+    }
+  }
+  @keyframes slideOutRight {
+    0% {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100%);
+      opacity: 0;
     }
   }
 `;
@@ -87,14 +97,37 @@ export default function FeedbackSection() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [autoRotate, setAutoRotate] = useState(true);
   const [touchStartX, setTouchStartX] = useState(0);
+  const [animating, setAnimating] = useState(false);
+  const [animationDirection, setAnimationDirection] = useState<"left" | "right" | null>(null);
+  const prevTestimonialRef = useRef(currentTestimonial);
 
   // Simple function to go to the next or previous testimonial
   const goToNext = () => {
-    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    if (animating) return;
+    setAnimationDirection("right");
+    setAnimating(true);
+    setTimeout(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+      setAnimationDirection("left");
+      setTimeout(() => {
+        setAnimating(false);
+        setAnimationDirection(null);
+      }, 500);
+    }, 500);
   };
 
   const goToPrevious = () => {
-    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    if (animating) return;
+    setAnimationDirection("left");
+    setAnimating(true);
+    setTimeout(() => {
+      setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+      setAnimationDirection("right");
+      setTimeout(() => {
+        setAnimating(false);
+        setAnimationDirection(null);
+      }, 500);
+    }, 500);
   };
 
   // Auto rotate testimonials every 5 seconds
@@ -147,6 +180,11 @@ export default function FeedbackSection() {
 
   // Current testimonial data
   const testimonial = testimonials[currentTestimonial];
+  const prevTestimonial = testimonials[prevTestimonialRef.current];
+
+  useEffect(() => {
+    prevTestimonialRef.current = currentTestimonial;
+  }, [currentTestimonial]);
   return (
     <>
       <style dangerouslySetInnerHTML={{ __html: slideAnimationStyle }} />
@@ -161,61 +199,53 @@ export default function FeedbackSection() {
             Referência no fitness desde 1998
           </Typography>
           <Typography as="p" variant="body" className="text-center text-white">
-            O maior health club de Vila Nova de Famalicão 
+            O maior health club de Vila Nova de Famalicão
           </Typography>
         </div>
-        {/* Desktop version - Infinite moving cards */}
+        {/* Desktop: Infinite moving cards */}
         <div className="hidden md:block w-full">
           <InfiniteMovingCards items={testimonials} direction="right" speed="slow" />
-        </div>{" "}
-        {/* Mobile version - Single testimonial with swipe navigation */}
+        </div>
+        {/* Mobile: Card animado igual ao desktop, com animação de entrada/saída */}
         <div className="md:hidden w-full mx-auto">
           <div
-            className="relative w-full rounded-2xl border border-zinc-200 backdrop-blur-2xl 
-                       bg-white/40 shadow-lg px-6 py-4 flex flex-col h-[250px] overflow-hidden"
+            className="relative  max-w-full shrink-0 rounded-2xl border-none backdrop-blur-2xl bg-neutral-800/40  shadow-sm px-6 py-4 flex flex-col h-[250px] overflow-hidden"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
+            style={{
+              animation:
+                animating && animationDirection === "right"
+                  ? "0.5s ease-out 0s 1 slideOutRight forwards"
+                  : animating && animationDirection === "left"
+                    ? "0.5s ease-out 0s 1 slideInLeft forwards"
+                    : undefined,
+            }}
+            key={currentTestimonial}
           >
-            {" "}
-            {/* Animated content container with slide-in effect */}
-            <div
-              className="flex flex-col justify-start h-full w-full py-2"
-              style={{
-                animation: "0.5s ease-out 0s 1 slideIn forwards",
-              }}
-              key={currentTestimonial} // Key changes trigger re-render with animation
-            >
-              {testimonial && (
-                <>
-                  {/* Header com nome e estrelas */}
-                  <div>
-                    {/* Nome no topo */}
-                    <span className="relative z-20 text-base leading-[1.6] font-semibold text-white block">
-                      {testimonial.name}
-                    </span>
-
-                    {/* Estrelas logo abaixo do nome */}
-                    <div className="flex mb-3">
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-3 w-3 ${
-                            i < testimonial.rating ? "fill-secondary text-secondary" : "text-gray-300"
-                          }`}
-                        />
-                      ))}
-                    </div>
+            {testimonial && (
+              <>
+                {/* Header com nome e estrelas */}
+                <div>
+                  <span className="relative z-20 text-base leading-[1.6] font-semibold text-white block mb-1">
+                    {testimonial.name}
+                  </span>
+                  <div className="flex gap-1 mb-2">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-3 w-3 ${i < testimonial.rating ? "fill-secondary text-secondary" : "text-gray-300"}`}
+                      />
+                    ))}
                   </div>
-
-                  {/* Footer com a quote */}
-                  <div className="mt-auto min-h-[120px] flex items-start">
-                    <span className="relative z-20 text-sm leading-[1.6] font-normal text-white block">
-                      "{testimonial.quote}"
-                    </span>
-                  </div>
-                </>
-              )}
-            </div>
+                </div>
+                {/* Footer com a quote */}
+                <div className=" min-h-[120px] flex items-start">
+                  <span className="relative z-20 text-sm leading-[1.6] font-normal text-white block">
+                    "{testimonial.quote}"
+                  </span>
+                </div>
+              </>
+            )}
             {/* Swipe indicator */}
             <div className="absolute bottom-2 left-0 right-0 flex justify-center ">
               <div className="text-white/50 text-xs flex items-center">
@@ -223,7 +253,6 @@ export default function FeedbackSection() {
               </div>
             </div>
           </div>
-
           {/* Navigation dots */}
           <div className="mt-6 flex justify-center space-x-2">
             {testimonials.map((_, index) => (
@@ -239,7 +268,7 @@ export default function FeedbackSection() {
               />
             ))}
           </div>
-        </div>{" "}
+        </div>
       </div>
     </>
   );
