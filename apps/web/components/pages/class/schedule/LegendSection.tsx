@@ -1,9 +1,16 @@
 "use client";
 
+import { Typography } from "@eugenios/ui/src/components/ui/Typography";
+
 export function LegendSection() {
   return (
     <div className="mt-8 mb-8 space-y-4">
       {/* Legenda das categorias */}
+      <div className="container bg-white py-4">
+        <Typography as="p" variant="body" className="text-center">
+          Treinos express, de 15 minutos, com os nossos monitores de sala. Todos os dias, a todas as horas!
+        </Typography>
+      </div>
       <div className="rounded-2xl">
         <div className="flex items-center justify-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">

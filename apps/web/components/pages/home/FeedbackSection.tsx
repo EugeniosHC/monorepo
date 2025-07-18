@@ -199,7 +199,7 @@ export default function FeedbackSection() {
             Referência no fitness desde 1998
           </Typography>
           <Typography as="p" variant="body" className="text-center text-white">
-            O maior health club de Vila Nova de Famalicão
+            O melhor health club de Vila Nova de Famalicão
           </Typography>
         </div>
         {/* Desktop: Infinite moving cards */}

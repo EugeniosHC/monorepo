@@ -24,7 +24,7 @@ export default function RecruitmentSection() {
               Quer fazer parte da nossa equipa?
             </Typography>
             <Typography as="p" variant="body">
-              Se é apaixonado pelo mundo do fitness e saúde, queremos conhecê-lo!
+              Se é apaixonado pelo mundo do fitness. <br /> Queremos conhecê-lo!
             </Typography>
           </div>
 

@@ -170,7 +170,7 @@ export default function ServicesSection() {
           Conheça os nossos serviços
         </Typography>
         <Typography as="p" variant="body" className="text-center">
-          No Eugénios Health Club, oferecemos uma variedade de serviços para atender às suas necessidades.
+          No Eugénios HC, oferecemos uma variedade de serviços para atender às suas necessidades.
         </Typography>
       </div>
 

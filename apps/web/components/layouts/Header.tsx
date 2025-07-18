@@ -87,8 +87,8 @@ export default function Header() {
   const navLinks = [
     { href: "/#sobre-nos", label: "SOBRE NÓS" },
     { href: "/#servicos", label: "SERVIÇOS" },
-    { href: "/#recrutamento", label: "RECRUTAMENTO" },
     { href: "/aulas", label: "AULAS DE GRUPO" },
+    { href: "/#recrutamento", label: "RECRUTAMENTO" },
     { href: "/#contactos", label: "CONTACTOS" },
   ];
 
